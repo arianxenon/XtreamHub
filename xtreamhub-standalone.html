@@ -1,0 +1,1376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XtreamHub - Video Platform</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        :root {
+            --bg-primary: #0f0f0f;
+            --bg-secondary: #181818;
+            --bg-tertiary: #212121;
+            --bg-hover: #272727;
+            --text-primary: #ffffff;
+            --text-secondary: #aaaaaa;
+            --accent: #ff0000;
+            --accent-hover: #cc0000;
+        }
+        
+        body {
+            font-family: 'Roboto', Arial, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+        }
+        
+        /* Header */
+        .header {
+            height: 56px;
+            background: var(--bg-secondary);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 2px;
+            cursor: pointer;
+            font-size: 20px;
+            font-weight: bold;
+        }
+        
+        .logo span { color: var(--accent); }
+        
+        .search-box {
+            display: flex;
+            flex: 1;
+            max-width: 600px;
+            margin: 0 24px;
+        }
+        
+        .search-input {
+            flex: 1;
+            padding: 10px 16px;
+            background: var(--bg-primary);
+            border: 1px solid #303030;
+            border-radius: 20px 0 0 20px;
+            color: white;
+            font-size: 14px;
+            outline: none;
+        }
+        
+        .search-input:focus { border-color: #1c62b9; }
+        
+        .search-btn {
+            width: 64px;
+            background: #222;
+            border: 1px solid #303030;
+            border-left: none;
+            border-radius: 0 20px 20px 0;
+            color: white;
+            cursor: pointer;
+            font-size: 18px;
+        }
+        
+        .search-btn:hover { background: #333; }
+        
+        .header-right { display: flex; align-items: center; gap: 8px; }
+        
+        .btn {
+            padding: 10px 16px;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+        
+        .btn-primary { background: var(--accent); color: white; }
+        .btn-primary:hover { background: var(--accent-hover); }
+        
+        .btn-secondary { background: #333; color: white; }
+        .btn-secondary:hover { background: #444; }
+        
+        .btn-icon {
+            width: 36px;
+            height: 36px;
+            padding: 0;
+            border-radius: 50%;
+            justify-content: center;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 12px;
+            background: #333;
+            border-radius: 20px;
+        }
+        
+        .avatar {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: var(--accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 12px;
+            overflow: hidden;
+        }
+        
+        .avatar img { width: 100%; height: 100%; object-fit: cover; }
+        
+        /* Main */
+        .main { padding-top: 56px; display: flex; }
+        
+        /* Sidebar */
+        .sidebar {
+            width: 240px;
+            background: var(--bg-secondary);
+            height: calc(100vh - 56px);
+            overflow-y: auto;
+            padding: 12px;
+            flex-shrink: 0;
+        }
+        
+        .sidebar-item {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            padding: 10px 12px;
+            border-radius: 10px;
+            cursor: pointer;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+        
+        .sidebar-item:hover { background: var(--bg-hover); }
+        .sidebar-item.active { background: var(--bg-hover); }
+        .sidebar-icon { font-size: 20px; }
+        
+        .sidebar-divider {
+            height: 1px;
+            background: #333;
+            margin: 12px 0;
+        }
+        
+        .sidebar-title {
+            font-size: 14px;
+            color: var(--text-secondary);
+            padding: 8px 12px;
+        }
+        
+        .channel-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 12px;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+        
+        .channel-item:hover { background: var(--bg-hover); }
+        
+        .channel-avatar {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            overflow: hidden;
+        }
+        
+        /* Content */
+        .content { flex: 1; padding: 24px; overflow-y: auto; }
+        
+        .category-pills {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+            overflow-x: auto;
+            padding-bottom: 8px;
+        }
+        
+        .pill {
+            padding: 8px 12px;
+            background: #272727;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+        
+        .pill:hover { background: #3f3f3f; }
+        .pill.active { background: white; color: black; }
+        
+        /* Video Grid */
+        .video-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 16px;
+        }
+        
+        .video-card {
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        .video-card:hover { transform: scale(1.02); }
+        
+        .thumbnail {
+            position: relative;
+            width: 100%;
+            padding-top: 56.25%;
+            background: #212121;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        
+        .thumbnail img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .duration {
+            position: absolute;
+            bottom: 8px;
+            right: 8px;
+            background: rgba(0,0,0,0.8);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+        
+        .platform-badge {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            background: rgba(0,0,0,0.7);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+        }
+        
+        .video-info {
+            display: flex;
+            gap: 12px;
+            padding: 12px 0;
+        }
+        
+        .video-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #333;
+            flex-shrink: 0;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .video-avatar img { width: 100%; height: 100%; object-fit: cover; }
+        
+        .video-details { flex: 1; min-width: 0; }
+        
+        .video-title {
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 4px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        
+        .video-meta {
+            color: var(--text-secondary);
+            font-size: 12px;
+        }
+        
+        /* Add Card */
+        .add-card {
+            background: var(--bg-secondary);
+            border: 2px dashed #444;
+            border-radius: 12px;
+            min-height: 180px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .add-card:hover { border-color: var(--accent); background: #222; }
+        .add-card-icon { font-size: 48px; margin-bottom: 8px; }
+        .add-card-text { color: var(--text-secondary); }
+        
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        
+        .modal-overlay.active { display: flex; }
+        
+        .modal {
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .modal-header {
+            padding: 16px 24px;
+            border-bottom: 1px solid #333;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .modal-title { font-size: 18px; font-weight: 600; }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            color: #888;
+            cursor: pointer;
+            font-size: 24px;
+        }
+        
+        .modal-close:hover { color: white; }
+        
+        .modal-body { padding: 24px; }
+        
+        .modal-footer {
+            padding: 16px 24px;
+            border-top: 1px solid #333;
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+        }
+        
+        /* Form */
+        .form-group { margin-bottom: 16px; }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 12px;
+            background: var(--bg-primary);
+            border: 1px solid #333;
+            border-radius: 8px;
+            color: white;
+            font-size: 14px;
+            outline: none;
+        }
+        
+        .form-input:focus { border-color: var(--accent); }
+        
+        .form-select {
+            width: 100%;
+            padding: 12px;
+            background: var(--bg-primary);
+            border: 1px solid #333;
+            border-radius: 8px;
+            color: white;
+            font-size: 14px;
+        }
+        
+        .form-error { color: var(--accent); font-size: 13px; margin-top: 8px; text-align: center; }
+        
+        /* Tabs */
+        .tabs {
+            display: flex;
+            background: #333;
+            border-radius: 8px;
+            padding: 4px;
+            margin-bottom: 16px;
+        }
+        
+        .tab {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            background: none;
+            color: #888;
+            cursor: pointer;
+            border-radius: 6px;
+        }
+        
+        .tab.active { background: var(--bg-primary); color: white; }
+        
+        /* Channel Page */
+        .channel-banner {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 12px;
+            margin-bottom: 24px;
+            overflow: hidden;
+        }
+        
+        .channel-banner img { width: 100%; height: 100%; object-fit: cover; }
+        
+        .channel-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+        
+        .channel-avatar-large {
+            width: 160px;
+            height: 160px;
+            border-radius: 50%;
+            background: #333;
+            overflow: hidden;
+            border: 4px solid var(--bg-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+        }
+        
+        .channel-avatar-large img { width: 100%; height: 100%; object-fit: cover; }
+        
+        .channel-info { flex: 1; }
+        .channel-name { font-size: 28px; font-weight: bold; margin-bottom: 8px; }
+        .channel-handle { color: var(--text-secondary); font-size: 14px; margin-bottom: 16px; }
+        .channel-stats { display: flex; gap: 24px; color: var(--text-secondary); font-size: 14px; }
+        
+        /* Video Page */
+        .video-page { display: flex; gap: 24px; }
+        
+        .video-main { flex: 1; }
+        
+        .player-container {
+            width: 100%;
+            padding-top: 56.25%;
+            background: #000;
+            border-radius: 12px;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 16px;
+        }
+        
+        .player-placeholder {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+        }
+        
+        .play-btn {
+            width: 80px;
+            height: 80px;
+            background: var(--accent);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            cursor: pointer;
+            margin-bottom: 20px;
+            transition: transform 0.2s;
+        }
+        
+        .play-btn:hover { transform: scale(1.1); }
+        
+        .video-title-large { font-size: 20px; font-weight: 600; margin-bottom: 12px; }
+        
+        .video-sidebar { width: 400px; }
+        .sidebar-video { display: flex; gap: 12px; margin-bottom: 12px; cursor: pointer; }
+        .sidebar-video:hover .video-title { color: var(--accent); }
+        .sidebar-thumb { width: 168px; height: 94px; background: #212121; border-radius: 8px; overflow: hidden; flex-shrink: 0; }
+        .sidebar-thumb img { width: 100%; height: 100%; object-fit: cover; }
+        
+        /* Admin */
+        .admin-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px;
+            background: #333;
+            border-radius: 8px;
+            margin-bottom: 8px;
+        }
+        
+        .admin-item-left { display: flex; align-items: center; gap: 12px; }
+        
+        .admin-actions { display: flex; gap: 8px; }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar { display: none; }
+            .search-box { display: none; }
+            .video-grid { grid-template-columns: 1fr; }
+            .video-sidebar { display: none; }
+            .channel-header { flex-direction: column; align-items: center; text-align: center; }
+            .channel-avatar-large { width: 100px; height: 100px; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="logo" onclick="showHome()">
+            <span>X</span>tream<span>Hub</span>
+        </div>
+        
+        <div class="search-box">
+            <input type="text" class="search-input" id="searchInput" placeholder="Search">
+            <button class="search-btn" onclick="handleSearch()">🔍</button>
+        </div>
+        
+        <div class="header-right" id="headerRight"></div>
+    </header>
+
+    <!-- Main -->
+    <main class="main">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-item active" onclick="showHome()">
+                <span class="sidebar-icon">🏠</span>
+                <span>Home</span>
+            </div>
+            <div class="sidebar-item" onclick="showChannels()">
+                <span class="sidebar-icon">🧭</span>
+                <span>Explore</span>
+            </div>
+            <div class="sidebar-item" onclick="showAdmin()">
+                <span class="sidebar-icon">🛡️</span>
+                <span>Admin</span>
+            </div>
+            
+            <div class="sidebar-divider"></div>
+            <div class="sidebar-title">Channels</div>
+            <div id="sidebarChannels"></div>
+        </aside>
+
+        <!-- Content -->
+        <div class="content" id="content"></div>
+    </main>
+
+    <!-- Auth Modal -->
+    <div class="modal-overlay" id="authModal">
+        <div class="modal">
+            <div class="modal-header">
+                <span class="modal-title">Welcome to XtreamHub</span>
+                <button class="modal-close" onclick="closeModal('authModal')">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="tabs">
+                    <button class="tab active" onclick="switchTab('login')">Login</button>
+                    <button class="tab" onclick="switchTab('register')">Register</button>
+                </div>
+                
+                <div id="loginTab">
+                    <div class="form-group">
+                        <label class="form-label">Username</label>
+                        <input type="text" class="form-input" id="loginUsername" placeholder="Enter username">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Password</label>
+                        <input type="password" class="form-input" id="loginPassword" placeholder="Enter password">
+                    </div>
+                    <div class="form-error" id="loginError"></div>
+                    <button class="btn btn-primary" style="width: 100%;" onclick="handleLogin()">🔑 Login</button>
+                </div>
+                
+                <div id="registerTab" style="display: none;">
+                    <div class="form-group">
+                        <label class="form-label">Username</label>
+                        <input type="text" class="form-input" id="regUsername" placeholder="Choose username">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Password</label>
+                        <input type="password" class="form-input" id="regPassword" placeholder="Choose password">
+                    </div>
+                    <div class="form-error" id="regError"></div>
+                    <button class="btn btn-primary" style="width: 100%;" onclick="handleRegister()">👤 Register</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Channel Modal -->
+    <div class="modal-overlay" id="channelModal">
+        <div class="modal">
+            <div class="modal-header">
+                <span class="modal-title" id="channelModalTitle">Add Channel</span>
+                <button class="modal-close" onclick="closeModal('channelModal')">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Channel Name *</label>
+                    <input type="text" class="form-input" id="channelName" placeholder="Enter name">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Handle *</label>
+                    <input type="text" class="form-input" id="channelHandle" placeholder="@username">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Avatar URL</label>
+                    <input type="text" class="form-input" id="channelAvatar" placeholder="https://..." dir="ltr">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Banner URL</label>
+                    <input type="text" class="form-input" id="channelBanner" placeholder="https://..." dir="ltr">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('channelModal')">Cancel</button>
+                <button class="btn btn-primary" onclick="saveChannel()">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Video Modal -->
+    <div class="modal-overlay" id="videoModal">
+        <div class="modal">
+            <div class="modal-header">
+                <span class="modal-title" id="videoModalTitle">Add Video</span>
+                <button class="modal-close" onclick="closeModal('videoModal')">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Channel *</label>
+                    <select class="form-select" id="videoChannel"></select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Video Title *</label>
+                    <input type="text" class="form-input" id="videoTitle" placeholder="Enter title">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Video URL *</label>
+                    <input type="text" class="form-input" id="videoUrl" placeholder="https://youtube.com/watch?v=..." dir="ltr">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Platform</label>
+                    <select class="form-select" id="videoPlatform">
+                        <option value="youtube">🔴 YouTube</option>
+                        <option value="twitch">🟣 Twitch</option>
+                        <option value="aparat">🎬 Aparat</option>
+                        <option value="kick">💚 Kick</option>
+                        <option value="other">📺 Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Thumbnail URL</label>
+                    <input type="text" class="form-input" id="videoThumbnail" placeholder="https://..." dir="ltr">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Duration</label>
+                    <input type="text" class="form-input" id="videoDuration" placeholder="10:30">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('videoModal')">Cancel</button>
+                <button class="btn btn-primary" onclick="saveVideo()">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Modal -->
+    <div class="modal-overlay" id="adminModal">
+        <div class="modal" style="max-width: 600px;">
+            <div class="modal-header">
+                <span class="modal-title">🛡️ Admin Panel</span>
+                <button class="modal-close" onclick="closeModal('adminModal')">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="tabs">
+                    <button class="tab active" onclick="switchAdminTab('channels')">Channels</button>
+                    <button class="tab" onclick="switchAdminTab('videos')">Videos</button>
+                </div>
+                <div id="adminChannels"></div>
+                <div id="adminVideos" style="display: none;"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Constants
+        const ADMIN_USER = 'arianxenon';
+        const ADMIN_PASS = '2981354361max';
+        const DEFAULT_THUMB = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIwIiBoZWlnaHQ9IjE4MCIgdmlld0JveD0iMCAwIDMyMCAxODAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMjAiIGhlaWdodD0iMTgwIiBmaWxsPSIjMjEyMTIxIi8+CjxwYXRoIGQ9Ik0xMjggNzBMMTkyIDkwTDEyOCAxMTBWN1oiIGZpbGw9IiNmZjAwMDAiLz4KPC9zdmc+';
+        
+        // State
+        let currentUser = null;
+        let channels = [];
+        let videos = [];
+        let currentPage = 'home';
+        let currentChannel = null;
+        let currentVideo = null;
+        let editingChannel = null;
+        let editingVideo = null;
+        
+        // Initialize
+        function init() {
+            loadData();
+            renderHeader();
+            renderSidebar();
+            renderPage();
+        }
+        
+        // Data
+        function loadData() {
+            const savedUser = localStorage.getItem('xt_user');
+            if (savedUser) currentUser = JSON.parse(savedUser);
+            
+            const savedChannels = localStorage.getItem('xt_channels');
+            channels = savedChannels ? JSON.parse(savedChannels) : [];
+            
+            const savedVideos = localStorage.getItem('xt_videos');
+            videos = savedVideos ? JSON.parse(savedVideos) : [];
+            
+            // Create admin if not exists
+            if (!channels.find(c => c.handle === '@admin')) {
+                channels.push({
+                    id: 'ch_admin',
+                    name: 'Admin Channel',
+                    handle: '@admin',
+                    avatar: '',
+                    banner: '',
+                    createdAt: Date.now()
+                });
+            }
+        }
+        
+        function saveData() {
+            if (currentUser) localStorage.setItem('xt_user', JSON.stringify(currentUser));
+            else localStorage.removeItem('xt_user');
+            localStorage.setItem('xt_channels', JSON.stringify(channels));
+            localStorage.setItem('xt_videos', JSON.stringify(videos));
+        }
+        
+        // Header
+        function renderHeader() {
+            const el = document.getElementById('headerRight');
+            if (currentUser) {
+                el.innerHTML = `
+                    <div class="user-info">
+                        <div class="avatar" style="background: ${currentUser.color}">${currentUser.name[0].toUpperCase()}</div>
+                        <span>${currentUser.name}</span>
+                        ${currentUser.isAdmin ? '🛡️' : ''}
+                    </div>
+                    <button class="btn btn-icon btn-secondary" onclick="logout()" title="Logout">🚪</button>
+                `;
+            } else {
+                el.innerHTML = `<button class="btn btn-primary" onclick="openModal('authModal')">🔑 Sign in</button>`;
+            }
+        }
+        
+        // Sidebar
+        function renderSidebar() {
+            const el = document.getElementById('sidebarChannels');
+            el.innerHTML = channels.map(c => `
+                <div class="channel-item" onclick="showChannel('${c.id}')">
+                    <div class="channel-avatar">${c.avatar ? `<img src="${c.avatar}">` : c.name[0]}</div>
+                    <span style="font-size: 14px;">${c.name}</span>
+                </div>
+            `).join('');
+        }
+        
+        // Pages
+        function renderPage() {
+            const el = document.getElementById('content');
+            
+            if (currentPage === 'home') {
+                renderHome(el);
+            } else if (currentPage === 'channel') {
+                renderChannel(el);
+            } else if (currentPage === 'video') {
+                renderVideo(el);
+            } else if (currentPage === 'channels') {
+                renderChannels(el);
+            }
+        }
+        
+        function renderHome(el) {
+            let html = `
+                <div class="category-pills">
+                    <div class="pill active">All</div>
+                    <div class="pill">Gaming</div>
+                    <div class="pill">Music</div>
+                    <div class="pill">Sports</div>
+                    <div class="pill">News</div>
+                </div>
+            `;
+            
+            // Admin quick add
+            if (currentUser?.isAdmin) {
+                html += `
+                    <div class="video-grid" style="margin-bottom: 32px;">
+                        <div class="add-card" onclick="openChannelModal()">
+                            <div class="add-card-icon">➕</div>
+                            <div class="add-card-text">Add Channel</div>
+                        </div>
+                        <div class="add-card" onclick="openVideoModal()">
+                            <div class="add-card-icon">▶️</div>
+                            <div class="add-card-text">Add Video</div>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            if (videos.length === 0) {
+                html += `
+                    <div style="text-align: center; padding: 64px;">
+                        <div style="font-size: 64px; margin-bottom: 16px;">🎬</div>
+                        <h3>No videos yet</h3>
+                        <p style="color: #888;">Login as admin to add content</p>
+                    </div>
+                `;
+            } else {
+                html += `<div class="video-grid">${videos.map(v => renderVideoCard(v)).join('')}</div>`;
+            }
+            
+            el.innerHTML = html;
+        }
+        
+        function renderVideoCard(v) {
+            const ch = channels.find(c => c.id === v.channelId);
+            const platform = getPlatform(v.platform);
+            const thumb = v.thumbnail || DEFAULT_THUMB;
+            
+            return `
+                <div class="video-card" onclick="showVideo('${v.id}')">
+                    <div class="thumbnail">
+                        <img src="${thumb}" onerror="this.src='${DEFAULT_THUMB}'">
+                        ${v.duration ? `<span class="duration">${v.duration}</span>` : ''}
+                        <span class="platform-badge">${platform.icon} ${platform.name}</span>
+                    </div>
+                    <div class="video-info">
+                        <div class="video-avatar" onclick="event.stopPropagation(); showChannel('${v.channelId}')">
+                            ${ch?.avatar ? `<img src="${ch.avatar}">` : (ch?.name || '?')[0]}
+                        </div>
+                        <div class="video-details">
+                            <div class="video-title">${v.title}</div>
+                            <div class="video-meta">${ch?.name || 'Unknown'}</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function renderChannel(el) {
+            if (!currentChannel) return;
+            
+            const chVideos = videos.filter(v => v.channelId === currentChannel.id);
+            
+            let html = `
+                <div class="channel-banner">
+                    ${currentChannel.banner ? `<img src="${currentChannel.banner}">` : ''}
+                </div>
+                <div class="channel-header">
+                    <div class="channel-avatar-large">
+                        ${currentChannel.avatar ? `<img src="${currentChannel.avatar}">` : currentChannel.name[0]}
+                    </div>
+                    <div class="channel-info">
+                        <div class="channel-name">${currentChannel.name}</div>
+                        <div class="channel-handle">${currentChannel.handle}</div>
+                        <div class="channel-stats">
+                            <span>${chVideos.length} videos</span>
+                        </div>
+                        ${currentUser?.isAdmin ? `<button class="btn btn-secondary" style="margin-top: 12px;" onclick="editChannel('${currentChannel.id}')">Edit Channel</button>` : ''}
+                    </div>
+                </div>
+                <h2 style="margin-bottom: 16px;">Videos</h2>
+            `;
+            
+            if (chVideos.length === 0) {
+                html += `<p style="color: #888; text-align: center; padding: 32px;">No videos yet</p>`;
+            } else {
+                html += `<div class="video-grid">${chVideos.map(v => renderVideoCard(v)).join('')}</div>`;
+            }
+            
+            el.innerHTML = html;
+        }
+        
+        function renderVideo(el) {
+            if (!currentVideo) return;
+            
+            const ch = channels.find(c => c.id === currentVideo.channelId);
+            const platform = getPlatform(currentVideo.platform);
+            
+            let html = `
+                <div class="video-page">
+                    <div class="video-main">
+                        <div class="player-container">
+                            <div class="player-placeholder">
+                                <div class="avatar" style="width: 80px; height: 80px; font-size: 32px; margin-bottom: 20px;">
+                                    ${ch?.avatar ? `<img src="${ch.avatar}">` : (ch?.name || '?')[0]}
+                                </div>
+                                <div class="play-btn" onclick="window.open('${currentVideo.url}', '_blank')">▶</div>
+                                <p style="color: #888; margin-bottom: 12px;">Click to watch on ${platform.name}</p>
+                                <button class="btn btn-primary" onclick="window.open('${currentVideo.url}', '_blank')">
+                                    🚀 Watch on ${platform.name}
+                                </button>
+                            </div>
+                        </div>
+                        <div class="video-title-large">${currentVideo.title}</div>
+                        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
+                            <div style="display: flex; align-items: center; gap: 12px; cursor: pointer;" onclick="showChannel('${currentVideo.channelId}')">
+                                <div class="avatar">${ch?.avatar ? `<img src="${ch.avatar}">` : (ch?.name || '?')[0]}</div>
+                                <div>
+                                    <div style="font-weight: 500;">${ch?.name || 'Unknown'}</div>
+                                    <div style="font-size: 12px; color: #888;">${currentVideo.views || 0} views</div>
+                                </div>
+                            </div>
+                            ${currentUser?.isAdmin ? `
+                                <div style="margin-left: auto; display: flex; gap: 8px;">
+                                    <button class="btn btn-secondary btn-sm" onclick="editVideo('${currentVideo.id}')">Edit</button>
+                                    <button class="btn btn-primary btn-sm" onclick="deleteVideo('${currentVideo.id}')" style="background: #ff4757;">Delete</button>
+                                </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                    <div class="video-sidebar">
+                        <h3 style="margin-bottom: 16px;">Related Videos</h3>
+                        ${videos.filter(v => v.id !== currentVideo.id).slice(0, 10).map(v => {
+                            const vc = channels.find(c => c.id === v.channelId);
+                            return `
+                                <div class="sidebar-video" onclick="showVideo('${v.id}')">
+                                    <div class="sidebar-thumb">
+                                        <img src="${v.thumbnail || DEFAULT_THUMB}" style="width: 100%; height: 100%; object-fit: cover;">
+                                    </div>
+                                    <div>
+                                        <div class="video-title" style="font-size: 13px;">${v.title}</div>
+                                        <div class="video-meta" style="font-size: 11px;">${vc?.name || 'Unknown'}</div>
+                                    </div>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                </div>
+            `;
+            
+            el.innerHTML = html;
+        }
+        
+        function renderChannels(el) {
+            let html = `<h1 style="margin-bottom: 24px;">All Channels</h1>`;
+            
+            if (channels.length === 0) {
+                html += `<p style="color: #888; text-align: center; padding: 64px;">No channels</p>`;
+            } else {
+                html += `<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 24px;">`;
+                html += channels.map(c => {
+                    const count = videos.filter(v => v.channelId === c.id).length;
+                    return `
+                        <div style="text-align: center; cursor: pointer;" onclick="showChannel('${c.id}')">
+                            <div class="avatar" style="width: 96px; height: 96px; font-size: 32px; margin: 0 auto 12px;">
+                                ${c.avatar ? `<img src="${c.avatar}">` : c.name[0]}
+                            </div>
+                            <div style="font-weight: 500;">${c.name}</div>
+                            <div style="font-size: 12px; color: #888;">${count} videos</div>
+                        </div>
+                    `;
+                }).join('');
+                html += `</div>`;
+            }
+            
+            el.innerHTML = html;
+        }
+        
+        // Navigation
+        function showHome() {
+            currentPage = 'home';
+            currentChannel = null;
+            currentVideo = null;
+            renderPage();
+        }
+        
+        function showChannels() {
+            currentPage = 'channels';
+            renderPage();
+        }
+        
+        function showChannel(id) {
+            currentChannel = channels.find(c => c.id === id);
+            currentPage = 'channel';
+            renderPage();
+        }
+        
+        function showVideo(id) {
+            currentVideo = videos.find(v => v.id === id);
+            if (currentVideo) {
+                currentVideo.views = (currentVideo.views || 0) + 1;
+                saveData();
+            }
+            currentPage = 'video';
+            renderPage();
+        }
+        
+        function showAdmin() {
+            if (!currentUser?.isAdmin) {
+                alert('Admin only!');
+                return;
+            }
+            openModal('adminModal');
+            renderAdminChannels();
+        }
+        
+        // Auth
+        function handleLogin() {
+            const name = document.getElementById('loginUsername').value.trim();
+            const pass = document.getElementById('loginPassword').value;
+            const error = document.getElementById('loginError');
+            
+            if (!name || !pass) {
+                error.textContent = 'Enter username and password';
+                return;
+            }
+            
+            // Check admin
+            if (name === ADMIN_USER && pass === ADMIN_PASS) {
+                currentUser = { name, isAdmin: true, color: '#ff0000' };
+                saveData();
+                closeModal('authModal');
+                renderHeader();
+                showHome();
+                return;
+            }
+            
+            error.textContent = 'Invalid credentials';
+        }
+        
+        function handleRegister() {
+            const name = document.getElementById('regUsername').value.trim();
+            const pass = document.getElementById('regPassword').value;
+            const error = document.getElementById('regError');
+            
+            if (!name || !pass) {
+                error.textContent = 'Enter username and password';
+                return;
+            }
+            
+            if (name.length < 3) {
+                error.textContent = 'Username must be at least 3 characters';
+                return;
+            }
+            
+            if (pass.length < 4) {
+                error.textContent = 'Password must be at least 4 characters';
+                return;
+            }
+            
+            currentUser = { name, isAdmin: false, color: getRandomColor() };
+            saveData();
+            closeModal('authModal');
+            renderHeader();
+            showHome();
+        }
+        
+        function logout() {
+            currentUser = null;
+            saveData();
+            renderHeader();
+            showHome();
+        }
+        
+        // Channel
+        function openChannelModal() {
+            editingChannel = null;
+            document.getElementById('channelModalTitle').textContent = 'Add Channel';
+            document.getElementById('channelName').value = '';
+            document.getElementById('channelHandle').value = '';
+            document.getElementById('channelAvatar').value = '';
+            document.getElementById('channelBanner').value = '';
+            openModal('channelModal');
+        }
+        
+        function editChannel(id) {
+            editingChannel = channels.find(c => c.id === id);
+            document.getElementById('channelModalTitle').textContent = 'Edit Channel';
+            document.getElementById('channelName').value = editingChannel.name;
+            document.getElementById('channelHandle').value = editingChannel.handle;
+            document.getElementById('channelAvatar').value = editingChannel.avatar || '';
+            document.getElementById('channelBanner').value = editingChannel.banner || '';
+            openModal('channelModal');
+        }
+        
+        function saveChannel() {
+            const name = document.getElementById('channelName').value.trim();
+            const handle = document.getElementById('channelHandle').value.trim();
+            const avatar = document.getElementById('channelAvatar').value.trim();
+            const banner = document.getElementById('channelBanner').value.trim();
+            
+            if (!name || !handle) {
+                alert('Name and handle are required');
+                return;
+            }
+            
+            if (editingChannel) {
+                editingChannel.name = name;
+                editingChannel.handle = handle;
+                editingChannel.avatar = avatar;
+                editingChannel.banner = banner;
+            } else {
+                channels.push({
+                    id: 'ch_' + Date.now(),
+                    name,
+                    handle,
+                    avatar,
+                    banner,
+                    createdAt: Date.now()
+                });
+            }
+            
+            saveData();
+            closeModal('channelModal');
+            renderSidebar();
+            renderPage();
+        }
+        
+        function deleteChannel(id) {
+            if (!confirm('Delete this channel and all its videos?')) return;
+            channels = channels.filter(c => c.id !== id);
+            videos = videos.filter(v => v.channelId !== id);
+            saveData();
+            closeModal('adminModal');
+            renderSidebar();
+            showHome();
+        }
+        
+        // Video
+        function openVideoModal() {
+            editingVideo = null;
+            document.getElementById('videoModalTitle').textContent = 'Add Video';
+            
+            const select = document.getElementById('videoChannel');
+            select.innerHTML = channels.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+            
+            document.getElementById('videoTitle').value = '';
+            document.getElementById('videoUrl').value = '';
+            document.getElementById('videoPlatform').value = 'youtube';
+            document.getElementById('videoThumbnail').value = '';
+            document.getElementById('videoDuration').value = '';
+            openModal('videoModal');
+        }
+        
+        function editVideo(id) {
+            editingVideo = videos.find(v => v.id === id);
+            document.getElementById('videoModalTitle').textContent = 'Edit Video';
+            
+            const select = document.getElementById('videoChannel');
+            select.innerHTML = channels.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+            select.value = editingVideo.channelId;
+            
+            document.getElementById('videoTitle').value = editingVideo.title;
+            document.getElementById('videoUrl').value = editingVideo.url;
+            document.getElementById('videoPlatform').value = editingVideo.platform;
+            document.getElementById('videoThumbnail').value = editingVideo.thumbnail || '';
+            document.getElementById('videoDuration').value = editingVideo.duration || '';
+            openModal('videoModal');
+        }
+        
+        function saveVideo() {
+            const channelId = document.getElementById('videoChannel').value;
+            const title = document.getElementById('videoTitle').value.trim();
+            const url = document.getElementById('videoUrl').value.trim();
+            const platform = document.getElementById('videoPlatform').value;
+            const thumbnail = document.getElementById('videoThumbnail').value.trim();
+            const duration = document.getElementById('videoDuration').value.trim();
+            
+            if (!channelId || !title || !url) {
+                alert('Channel, title and URL are required');
+                return;
+            }
+            
+            if (editingVideo) {
+                editingVideo.channelId = channelId;
+                editingVideo.title = title;
+                editingVideo.url = url;
+                editingVideo.platform = platform;
+                editingVideo.thumbnail = thumbnail;
+                editingVideo.duration = duration;
+            } else {
+                videos.push({
+                    id: 'v_' + Date.now(),
+                    channelId,
+                    title,
+                    url,
+                    platform,
+                    thumbnail,
+                    duration,
+                    views: 0,
+                    createdAt: Date.now()
+                });
+            }
+            
+            saveData();
+            closeModal('videoModal');
+            renderPage();
+        }
+        
+        function deleteVideo(id) {
+            if (!confirm('Delete this video?')) return;
+            videos = videos.filter(v => v.id !== id);
+            saveData();
+            showHome();
+        }
+        
+        // Admin
+        function renderAdminChannels() {
+            const el = document.getElementById('adminChannels');
+            el.innerHTML = channels.map(c => `
+                <div class="admin-item">
+                    <div class="admin-item-left">
+                        <div class="avatar" style="width: 40px; height: 40px;">${c.avatar ? `<img src="${c.avatar}">` : c.name[0]}</div>
+                        <div>
+                            <div style="font-weight: 500;">${c.name}</div>
+                            <div style="font-size: 12px; color: #888;">${videos.filter(v => v.channelId === c.id).length} videos</div>
+                        </div>
+                    </div>
+                    <div class="admin-actions">
+                        <button class="btn btn-secondary btn-sm" onclick="editChannel('${c.id}'); closeModal('adminModal');">Edit</button>
+                        <button class="btn btn-primary btn-sm" onclick="deleteChannel('${c.id}')" style="background: #ff4757;">Delete</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        function renderAdminVideos() {
+            const el = document.getElementById('adminVideos');
+            el.innerHTML = videos.map(v => {
+                const ch = channels.find(c => c.id === v.channelId);
+                return `
+                    <div class="admin-item">
+                        <div class="admin-item-left">
+                            <div style="width: 80px; height: 45px; background: #333; border-radius: 4px; overflow: hidden;">
+                                <img src="${v.thumbnail || DEFAULT_THUMB}" style="width: 100%; height: 100%; object-fit: cover;">
+                            </div>
+                            <div>
+                                <div style="font-weight: 500; font-size: 13px;">${v.title}</div>
+                                <div style="font-size: 11px; color: #888;">${ch?.name || 'Unknown'}</div>
+                            </div>
+                        </div>
+                        <div class="admin-actions">
+                            <button class="btn btn-secondary btn-sm" onclick="editVideo('${v.id}'); closeModal('adminModal');">Edit</button>
+                            <button class="btn btn-primary btn-sm" onclick="deleteVideo('${v.id}'); closeModal('adminModal');" style="background: #ff4757;">Delete</button>
+                        </div>
+                    </div>
+                `;
+            }).join('') || '<p style="color: #888; text-align: center;">No videos</p>';
+        }
+        
+        // Helpers
+        function getPlatform(p) {
+            const platforms = {
+                youtube: { name: 'YouTube', icon: '🔴' },
+                twitch: { name: 'Twitch', icon: '🟣' },
+                aparat: { name: 'Aparat', icon: '🎬' },
+                kick: { name: 'Kick', icon: '💚' },
+                other: { name: 'Other', icon: '📺' }
+            };
+            return platforms[p] || platforms.other;
+        }
+        
+        function getRandomColor() {
+            const colors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#ffeaa7', '#fd79a8', '#a29bfe', '#00b894'];
+            return colors[Math.floor(Math.random() * colors.length)];
+        }
+        
+        function handleSearch() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            if (!query) return;
+            
+            const filtered = videos.filter(v => v.title.toLowerCase().includes(query));
+            const el = document.getElementById('content');
+            
+            if (filtered.length === 0) {
+                el.innerHTML = `<div style="text-align: center; padding: 64px;"><h3>No results for "${query}"</h3></div>`;
+            } else {
+                el.innerHTML = `<h2 style="margin-bottom: 16px;">Search: "${query}"</h2><div class="video-grid">${filtered.map(v => renderVideoCard(v)).join('')}</div>`;
+            }
+        }
+        
+        // Modal
+        function openModal(id) { document.getElementById(id).classList.add('active'); }
+        function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+        
+        function switchTab(tab) {
+            document.querySelectorAll('.tabs .tab').forEach(t => t.classList.remove('active'));
+            document.getElementById('loginTab').style.display = 'none';
+            document.getElementById('registerTab').style.display = 'none';
+            
+            if (tab === 'login') {
+                document.querySelector('#authModal .tab').classList.add('active');
+                document.getElementById('loginTab').style.display = 'block';
+            } else {
+                document.querySelectorAll('#authModal .tab')[1].classList.add('active');
+                document.getElementById('registerTab').style.display = 'block';
+            }
+        }
+        
+        function switchAdminTab(tab) {
+            document.querySelectorAll('#adminModal .tab').forEach(t => t.classList.remove('active'));
+            document.getElementById('adminChannels').style.display = 'none';
+            document.getElementById('adminVideos').style.display = 'none';
+            
+            if (tab === 'channels') {
+                document.querySelector('#adminModal .tab').classList.add('active');
+                document.getElementById('adminChannels').style.display = 'block';
+                renderAdminChannels();
+            } else {
+                document.querySelectorAll('#adminModal .tab')[1].classList.add('active');
+                document.getElementById('adminVideos').style.display = 'block';
+                renderAdminVideos();
+            }
+        }
+        
+        // Start
+        init();
+    </script>
+</body>
+</html>
