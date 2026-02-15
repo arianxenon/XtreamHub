@@ -238,11 +238,6 @@
         .chat-indicator { width: 6px; height: 6px; background: var(--success); border-radius: 50%; animation: blink 2s infinite; }
         @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
 
-        /* Loading */
-        .loading { display: flex; align-items: center; justify-content: center; height: 100vh; flex-direction: column; gap: 16px; }
-        .loading-spinner { width: 44px; height: 44px; border: 3px solid var(--bg-tertiary); border-top-color: var(--accent); border-radius: 50%; animation: spin 1s linear infinite; }
-        @keyframes spin { to { transform: rotate(360deg); } }
-
         /* Mini Popup Player - Bottom Left Corner */
         .mini-player { position: fixed; bottom: 20px; left: 20px; width: 320px; background: var(--bg-secondary); border-radius: 12px; box-shadow: 0 8px 32px rgba(0,0,0,0.5); z-index: 9999; overflow: hidden; display: none; border: 1px solid var(--border-color); }
         .mini-player.active { display: block; animation: slideUp 0.3s ease; }
@@ -287,11 +282,8 @@
     </style>
 </head>
 <body>
-    <!-- Loading -->
-    <div id="loading" class="loading"><div class="loading-spinner"></div><div>Loading XtreamHub...</div></div>
-
     <!-- App -->
-    <div id="app" style="display: none;">
+    <div id="app">
         <!-- Header -->
         <header class="header">
             <div class="header-left">
@@ -655,7 +647,7 @@
         function toggleChat() { chatExpanded=!chatExpanded; document.getElementById('chatPanel').classList.toggle('expanded',chatExpanded); document.getElementById('chatToggle').textContent=chatExpanded?'▼':'▲'; }
 
         // Init
-        function init() { loadData(); render(); document.getElementById('loading').style.display='none'; document.getElementById('app').style.display='block'; }
+        function init() { loadData(); render(); }
         function render() { renderHeader(); renderSidebar(); renderPage(); }
 
         // Header
