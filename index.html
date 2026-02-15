@@ -231,11 +231,6 @@
         .chat-indicator { width: 6px; height: 6px; background: var(--success); border-radius: 50%; animation: blink 2s infinite; }
         @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
 
-        /* Loading */
-        .loading { display: flex; align-items: center; justify-content: center; height: 100vh; flex-direction: column; gap: 16px; }
-        .loading-spinner { width: 44px; height: 44px; border: 3px solid var(--bg-tertiary); border-top-color: var(--accent); border-radius: 50%; animation: spin 1s linear infinite; }
-        @keyframes spin { to { transform: rotate(360deg); } }
-
         /* Music Player Bar */
         .music-bar { position: fixed; bottom: 0; left: 0; right: 0; height: 60px; background: var(--bg-secondary); border-top: 1px solid var(--border-color); display: flex; align-items: center; padding: 0 20px; gap: 20px; z-index: 1000; margin-left: 240px; transition: margin-left 0.3s; }
         .main-content.expanded + .music-bar { margin-left: 72px; }
@@ -245,7 +240,7 @@
         .music-title { font-size: 13px; font-weight: 500; }
         .music-artist { font-size: 11px; color: var(--text-secondary); }
         .music-progress { flex: 1; max-width: 400px; display: flex; align-items: center; gap: 10px; }
-        .music-progress-bar { flex: 1; height: 4px; background: var(--bg-tertiary); border-radius: 2px; overflow: hidden; }
+        .music-progress-bar { flex: 1; height: 4px; background: var(--bg-tertiary); border-radius: 2px; overflow: hidden; cursor: pointer; }
         .music-progress-fill { height: 100%; width: 0%; background: var(--accent); }
         .music-time { font-size: 11px; color: var(--text-secondary); }
 
@@ -280,11 +275,8 @@
     </style>
 </head>
 <body>
-    <!-- Loading -->
-    <div id="loading" class="loading"><div class="loading-spinner"></div><div>Loading XtreamHub...</div></div>
-
-    <!-- App -->
-    <div id="app" style="display: none;">
+    <!-- App - بدون لودینگ -->
+    <div id="app">
         <!-- Header -->
         <header class="header">
             <div class="header-left">
@@ -321,6 +313,14 @@
 
         <!-- Main -->
         <main id="mainContent" class="main-content"><div id="pageContent"></div></main>
+
+        <!-- Chat Panel -->
+        <div class="chat-panel" id="chatPanel">
+            <div class="chat-tab" onclick="toggleChat()"><span class="chat-indicator"></span><span>Live Chat</span></div>
+            <div class="chat-header" onclick="toggleChat()"><div class="chat-title">💬 Chat <span class="chat-online" id="chatOnline">(12 online)</span></div><button class="chat-toggle" id="chatToggle">▲</button></div>
+            <div class="chat-messages" id="chatMessages"></div>
+            <div class="chat-input-area"><input type="text" class="chat-input" id="chatInput" placeholder="Type..." onkeypress="if(event.key==='Enter')sendChat()"><button class="chat-send" onclick="sendChat()">➤</button></div>
+        </div>
 
         <!-- Music Player Bar -->
         <div class="music-bar" id="musicBar">
@@ -516,7 +516,10 @@
             const admin=users.find(u=>u.username===ADMIN_USER); if(admin){admin.password=ADMIN_PASS;admin.isAdmin=true;}
             
             const saved=localStorage.getItem('xh-current'); if(saved){const u=users.find(x=>x.id===saved&&!x.isBanned); if(u)currentUser=u;}
-            initChat(); saveData();
+            initChat(); 
+            render(); 
+            initMusicPlayer();
+            generateQR();
         }
         function saveData() {
             localStorage.setItem('xh-users',JSON.stringify(users));
@@ -662,12 +665,8 @@
         // Init
         function init() { 
             loadData(); 
-            render(); 
-            document.getElementById('loading').style.display='none'; 
-            document.getElementById('app').style.display='block';
-            initMusicPlayer();
-            generateQR();
         }
+
         function render() { 
             renderHeader(); 
             renderSidebar(); 
