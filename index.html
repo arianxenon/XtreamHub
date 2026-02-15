@@ -519,7 +519,8 @@
         function liveCard(v) { const ch=channels.find(x=>x.id===v.channelId); return `<div class="live-card" onclick="openPlayer('${v.id}','live')"><div class="video-thumbnail"><img src="${v.thumbnail||DEFAULT_THUMB}" onerror="this.src='${DEFAULT_THUMB}'"><div class="live-badge">🔴 LIVE</div><div class="live-viewers">👁️ ${formatNum(v.viewers||Math.floor(Math.random()*10000))}</div>${currentUser?.isAdmin?`<div class="admin-controls" style="position:absolute;top:8px;right:8px;display:flex;gap:4px"><button class="btn btn-sm" style="background:rgba(0,0,0,0.8)" onclick="event.stopPropagation();editContent('${v.id}','live')">✏️</button><button class="btn btn-sm btn-danger" onclick="event.stopPropagation();deleteContent('${v.id}','live')">🗑️</button></div>`:''}</div><div class="live-info"><div class="channel-avatar">${getAvatar(ch)}</div><div><div class="live-title">${v.title}</div><div class="live-streamer">${ch?.name||'Unknown'}</div>${v.game?`<div class="live-game">🎮 ${v.game}</div>`:''}</div></div></div>`; }
         function videoCard(v) { const ch=channels.find(x=>x.id===v.channelId); return `<div class="video-card" onclick="openPlayer('${v.id}','video')"><div class="video-thumbnail"><img src="${v.thumbnail||DEFAULT_THUMB}" onerror="this.src='${DEFAULT_THUMB}'">${v.duration?`<span class="video-duration">${v.duration}</span>`:''}<span class="video-platform">${getPlatformIcon(v.platform)} ${getPlatformName(v.platform)}</span>${currentUser?.isAdmin?`<div class="admin-controls" style="position:absolute;top:8px;right:8px;display:flex;gap:4px"><button class="btn btn-sm" style="background:rgba(0,0,0,0.8)" onclick="event.stopPropagation();editContent('${v.id}','video')">✏️</button><button class="btn btn-sm btn-danger" onclick="event.stopPropagation();deleteContent('${v.id}','video')">🗑️</button></div>`:''}</div><div class="video-info"><div class="channel-avatar" onclick="event.stopPropagation();showChannel('${v.channelId}')">${getAvatar(ch)}</div><div class="video-details"><div class="video-title">${v.title}</div><div class="video-meta">${ch?.name||'Unknown'} • ${formatNum(v.views||0)} views</div></div></div></div>`; }
 
-        // Player Modal
+        // Player Modal - Small Popup Window
+        let popupWindow = null;
         function openPlayer(id, type) {
             let item;
             if(type==='short')item=shorts.find(x=>x.id===id);
@@ -532,44 +533,87 @@
             const isShort=type==='short';
             const isLive=type==='live';
             
-            document.getElementById('playerTitle').textContent=item.title;
-            document.getElementById('playerBody').innerHTML=`
-                <div class="player-container">
-                    <div class="player-placeholder ${isShort?'player-short':isLive?'player-live':'player-video'}">
-                        <div class="player-play-btn" onclick="goToExternal()">▶</div>
-                        <p style="color:var(--text-secondary);margin-bottom:12px;text-align:center">${isLive?'🔴 LIVE NOW':isShort?'⚡ Short Video':'Click to watch'}</p>
-                        <button class="btn btn-primary" onclick="goToExternal()">🚀 Watch on ${getPlatformName(item.platform)}</button>
-                    </div>
-                </div>
-                <div class="player-badges">
-                    <span class="player-badge player-badge-platform">${getPlatformIcon(item.platform)} ${getPlatformName(item.platform)}</span>
-                    ${item.category&&item.category!=='all'?`<span class="player-badge player-badge-category">${item.category}</span>`:''}
-                    ${isLive?`<span class="player-badge player-badge-live">🔴 LIVE</span>`:''}
-                </div>
-                <h2 style="font-size:18px;font-weight:600;margin-bottom:12px">${item.title}</h2>
-                <div class="player-info">
-                    <div class="player-channel" onclick="closeModal('playerModal');showChannel('${ch?.id}')">
-                        <div class="channel-avatar">${getAvatar(ch)}</div>
-                        <div><div style="font-weight:500">${ch?.name||'Unknown'}</div><div style="font-size:12px;color:var(--text-secondary)">${ch?.handle||''}</div></div>
-                    </div>
-                    <div class="player-actions">
-                        ${currentUser?.isAdmin?`<button class="btn btn-sm btn-ghost" onclick="closeModal('playerModal');editContent('${item.id}','${type}')">✏️ Edit</button><button class="btn btn-sm btn-danger" onclick="closeModal('playerModal');deleteContent('${item.id}','${type}')">🗑️</button>`:''}
-                    </div>
-                </div>
-                <div class="player-meta">
-                    <span>👁️ ${formatNum(item.views||0)} views</span>
-                    ${item.duration?`<span>⏱️ ${item.duration}</span>`:''}
-                    ${isLive?`<span>👥 ${formatNum(item.viewers||0)} watching</span>`:''}
-                    ${item.game?`<span>🎮 ${item.game}</span>`:''}
-                </div>
-                ${item.description?`<div class="player-description">${item.description}</div>`:''}
-            `;
+            // Popup dimensions based on content type
+            const width = isShort ? 320 : 640;
+            const height = isShort ? 568 : 400;
+            const left = (screen.width - width) / 2;
+            const top = (screen.height - height) / 2;
+            
+            // Generate popup HTML
+            const popupHTML = `
+<!DOCTYPE html>
+<html>
+<head>
+    <title>${item.title}</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: #0f0f0f; color: white; font-family: Arial, sans-serif; min-height: 100vh; display: flex; flex-direction: column; }
+        .player-header { padding: 10px 12px; background: #181818; border-bottom: 1px solid #303030; display: flex; align-items: center; justify-content: space-between; }
+        .player-title { font-size: 13px; font-weight: 600; max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .close-btn { background: none; border: none; color: #aaa; font-size: 20px; cursor: pointer; }
+        .close-btn:hover { color: white; }
+        .player-area { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #000; position: relative; }
+        .player-area.short { padding: 10px; }
+        .thumbnail { width: 100%; height: 100%; object-fit: contain; }
+        .play-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(0,0,0,0.5); }
+        .play-btn { width: 70px; height: 70px; background: #ff0000; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 28px; cursor: pointer; margin-bottom: 15px; transition: transform 0.2s; }
+        .play-btn:hover { transform: scale(1.1); }
+        .watch-btn { padding: 10px 24px; background: #ff0000; color: white; border: none; border-radius: 20px; font-size: 14px; font-weight: 600; cursor: pointer; }
+        .watch-btn:hover { background: #cc0000; }
+        .player-info { padding: 10px 12px; background: #181818; }
+        .channel-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+        .channel-avatar { width: 28px; height: 28px; border-radius: 50%; background: #333; display: flex; align-items: center; justify-content: center; font-size: 14px; }
+        .channel-name { font-size: 12px; font-weight: 500; }
+        .meta-row { display: flex; gap: 12px; font-size: 11px; color: #aaa; }
+        .badge { padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 500; background: #333; }
+        .badge-live { background: #ff0000; }
+        .badge-short { background: #9146ff; }
+    </style>
+</head>
+<body>
+    <div class="player-header">
+        <div class="player-title">${item.title}</div>
+        <button class="close-btn" onclick="window.close()">✕</button>
+    </div>
+    <div class="player-area ${isShort?'short':''}">
+        <img class="thumbnail" src="${item.thumbnail||'${DEFAULT_THUMB}'}" onerror="this.src='${DEFAULT_THUMB}'">
+        <div class="play-overlay">
+            <div class="play-btn" onclick="window.open('${item.url}','_blank')">▶</div>
+            <button class="watch-btn" onclick="window.open('${item.url}','_blank')">🚀 Watch on ${getPlatformName(item.platform)}</button>
+        </div>
+    </div>
+    <div class="player-info">
+        <div class="channel-row">
+            <div class="channel-avatar">${getEmoji(ch?.name||'?')}</div>
+            <div class="channel-name">${ch?.name||'Unknown'}</div>
+            ${isLive?'<span class="badge badge-live">🔴 LIVE</span>':''}
+            ${isShort?'<span class="badge badge-short">⚡ SHORT</span>':''}
+        </div>
+        <div class="meta-row">
+            <span>👁️ ${formatNum(item.views||0)}</span>
+            ${item.duration?`<span>⏱️ ${item.duration}</span>`:''}
+            ${isLive?`<span>👥 ${formatNum(item.viewers||0)}</span>`:''}
+        </div>
+    </div>
+</body>
+</html>`;
+            
+            // Close existing popup if open
+            if(popupWindow && !popupWindow.closed) popupWindow.close();
+            
+            // Open new popup window
+            popupWindow = window.open('', 'XtreamPlayer', 
+                `width=${width},height=${height},left=${left},top=${top},resizable=yes,scrollbars=no,status=no,menubar=no,toolbar=no,location=no`);
+            
+            if(popupWindow) {
+                popupWindow.document.write(popupHTML);
+                popupWindow.document.close();
+                popupWindow.focus();
+            }
             
             // Add to history
             let h=JSON.parse(localStorage.getItem('xh-history')||'[]');
             h=h.filter(x=>x!==id); h.unshift(id); localStorage.setItem('xh-history',JSON.stringify(h.slice(0,50)));
-            
-            openModal('playerModal');
         }
         
         function goToExternal() {
