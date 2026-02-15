@@ -188,27 +188,6 @@
         .modal-body { padding: 20px; }
         .modal-footer { padding: 16px 20px; border-top: 1px solid var(--border-color); display: flex; gap: 12px; justify-content: flex-end; }
 
-        /* Content Player Modal */
-        .player-modal { max-width: 1000px; }
-        .player-container { position: relative; width: 100%; background: #000; border-radius: 12px; overflow: hidden; margin-bottom: 16px; }
-        .player-video { width: 100%; aspect-ratio: 16/9; }
-        .player-short { width: 270px; aspect-ratio: 9/16; margin: 0 auto; }
-        .player-live { width: 100%; aspect-ratio: 16/9; }
-        .player-placeholder { width: 100%; height: 100%; min-height: 300px; display: flex; flex-direction: column; align-items: center; justify-content: center; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); }
-        .player-play-btn { width: 80px; height: 80px; background: var(--accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 32px; cursor: pointer; margin-bottom: 20px; transition: transform 0.2s, background 0.2s; }
-        .player-play-btn:hover { transform: scale(1.1); background: var(--accent-hover); }
-        .player-info { display: flex; gap: 16px; margin-bottom: 16px; }
-        .player-channel { display: flex; align-items: center; gap: 12px; cursor: pointer; }
-        .player-channel:hover { opacity: 0.8; }
-        .player-actions { display: flex; gap: 8px; margin-left: auto; }
-        .player-description { background: var(--bg-tertiary); border-radius: 8px; padding: 12px; font-size: 14px; color: var(--text-secondary); line-height: 1.5; }
-        .player-meta { display: flex; gap: 16px; margin-bottom: 12px; font-size: 13px; color: var(--text-secondary); }
-        .player-badges { display: flex; gap: 8px; margin-bottom: 12px; }
-        .player-badge { padding: 4px 12px; border-radius: 4px; font-size: 12px; font-weight: 500; }
-        .player-badge-platform { background: var(--bg-tertiary); }
-        .player-badge-category { background: var(--purple); }
-        .player-badge-live { background: var(--live); animation: pulse 2s infinite; }
-
         /* Form */
         .form-group { margin-bottom: 14px; }
         .form-label { display: block; margin-bottom: 6px; color: var(--text-secondary); font-size: 13px; font-weight: 500; }
@@ -264,12 +243,36 @@
         .loading-spinner { width: 44px; height: 44px; border: 3px solid var(--bg-tertiary); border-top-color: var(--accent); border-radius: 50%; animation: spin 1s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
 
+        /* Mini Popup Player - Bottom Left Corner */
+        .mini-player { position: fixed; bottom: 20px; left: 20px; width: 320px; background: var(--bg-secondary); border-radius: 12px; box-shadow: 0 8px 32px rgba(0,0,0,0.5); z-index: 9999; overflow: hidden; display: none; border: 1px solid var(--border-color); }
+        .mini-player.active { display: block; animation: slideUp 0.3s ease; }
+        @keyframes slideUp { from { transform: translateY(100px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .mini-player-header { padding: 8px 12px; background: linear-gradient(135deg, #181818 0%, #212121 100%); display: flex; align-items: center; justify-content: space-between; }
+        .mini-player-title { font-size: 12px; font-weight: 600; max-width: 180px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .mini-player-close { background: none; border: none; color: #aaa; font-size: 18px; cursor: pointer; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+        .mini-player-close:hover { background: #333; color: white; }
+        .mini-player-video { width: 100%; aspect-ratio: 16/9; background: #000; }
+        .mini-player-video iframe { width: 100%; height: 100%; border: none; }
+        .mini-player-info { padding: 8px 12px; display: flex; align-items: center; gap: 8px; }
+        .mini-channel-avatar { width: 24px; height: 24px; border-radius: 50%; background: var(--accent); display: flex; align-items: center; justify-content: center; font-size: 12px; overflow: hidden; flex-shrink: 0; }
+        .mini-channel-avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .mini-channel-name { font-size: 11px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .mini-player-actions { padding: 8px 12px; display: flex; gap: 6px; border-top: 1px solid var(--border-color); }
+        .mini-btn { flex: 1; padding: 6px 8px; border: none; border-radius: 6px; font-size: 10px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px; transition: all 0.2s; }
+        .mini-btn-yt { background: #ff0000; color: white; }
+        .mini-btn-yt:hover { background: #cc0000; }
+        .mini-btn-dl { background: #00b894; color: white; }
+        .mini-btn-dl:hover { background: #00a085; }
+        .mini-btn-pop { background: #9146ff; color: white; }
+        .mini-btn-pop:hover { background: #7b2fd9; }
+
         /* Responsive */
         @media (max-width: 1024px) {
             .sidebar { transform: translateX(-100%); }
             .sidebar.open { transform: translateX(0); }
             .main-content { margin-left: 0; padding-right: 20px; }
             .chat-panel { width: 240px; }
+            .mini-player { width: 280px; left: 10px; bottom: 10px; }
         }
         @media (max-width: 768px) {
             .header-center { display: none; }
@@ -279,7 +282,7 @@
             .channel-header { flex-direction: column; align-items: center; text-align: center; }
             .channel-avatar-large { width: 80px; height: 80px; font-size: 32px; }
             .chat-panel { width: 100%; height: 300px; border-radius: 12px 12px 0 0; }
-            .player-modal { max-width: 100%; }
+            .mini-player { width: calc(100% - 20px); left: 10px; }
         }
     </style>
 </head>
@@ -322,6 +325,26 @@
 
         <!-- Main -->
         <main id="mainContent" class="main-content"><div id="pageContent"></div></main>
+
+        <!-- Mini Player - Bottom Left Corner -->
+        <div class="mini-player" id="miniPlayer">
+            <div class="mini-player-header">
+                <div class="mini-player-title" id="miniPlayerTitle">Video Title</div>
+                <button class="mini-player-close" onclick="closeMiniPlayer()">✕</button>
+            </div>
+            <div class="mini-player-video" id="miniPlayerVideo">
+                <div id="miniPlayerIframe"></div>
+            </div>
+            <div class="mini-player-info">
+                <div class="mini-channel-avatar" id="miniChannelAvatar">🎮</div>
+                <div class="mini-channel-name" id="miniChannelName">Channel Name</div>
+            </div>
+            <div class="mini-player-actions">
+                <button class="mini-btn mini-btn-yt" onclick="openOnYouTube()">▶️ YouTube</button>
+                <button class="mini-btn mini-btn-dl" onclick="downloadVideo()">⬇️ Download</button>
+                <button class="mini-btn mini-btn-pop" onclick="openPopupWindow()">🖼️ Popup</button>
+            </div>
+        </div>
 
         <!-- Chat Panel -->
         <div class="chat-panel" id="chatPanel">
@@ -425,8 +448,9 @@
         // State
         let currentUser = null, users = [], channels = [], videos = [], shorts = [], lives = [];
         let currentPage = 'home', currentChannel = null, activeCategory = 'All', channelTab = 'videos';
-        let editingItem = null, editingType = null, currentPlayerItem = null;
+        let editingItem = null, editingType = null;
         let chatExpanded = false, chatMessages = [];
+        let currentMiniPlayerItem = null;
         let popupWindow = null;
 
         // Helpers
@@ -435,7 +459,7 @@
         const formatNum = n => n>=1000000?(n/1000000).toFixed(1)+'M':n>=1000?(n/1000).toFixed(1)+'K':n;
         const formatDate = t => t?new Date(t).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'Unknown';
         const getPlatformIcon = p => ({youtube:'🔴',twitch:'🟣',aparat:'🎬',kick:'💚'}[p]||'📺');
-        const getPlatformName = p => ({youtube:'YouTube',twitch:'Twitch',aparat:'Aparat',kick:'Kick'}[p]||'Platform');
+        const getPlatformName = p => ({youtube:'YouTube',twitch:'Twitch',aparat:'Aparat',kick:'Kick'}[p]||'Platform';
 
         function showToast(msg,type='success') {
             const t=document.getElementById('toast'),i=document.getElementById('toastIcon'),m=document.getElementById('toastMsg');
@@ -473,6 +497,153 @@
                 saveData();
             }
             return item ? item.views : 0;
+        }
+
+        // Extract YouTube Video ID
+        function getYouTubeId(url) {
+            if(!url) return null;
+            const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+            const match = url.match(regExp);
+            return (match && match[2].length === 11) ? match[2] : null;
+        }
+
+        // Mini Player Functions
+        function openMiniPlayer(id, type) {
+            let item;
+            if(type==='short') item=shorts.find(x=>x.id===id);
+            else if(type==='live') item=lives.find(x=>x.id===id);
+            else item=videos.find(x=>x.id===id);
+            if(!item) return;
+
+            // Increment view count
+            incrementViews(id, type);
+            currentMiniPlayerItem = item;
+
+            const ch = channels.find(x=>x.id===item.channelId);
+            const ytId = getYouTubeId(item.url);
+
+            // Update mini player UI
+            document.getElementById('miniPlayerTitle').textContent = item.title;
+            document.getElementById('miniChannelName').textContent = ch?.name || 'Unknown';
+            
+            // Channel Avatar (small)
+            const avatarEl = document.getElementById('miniChannelAvatar');
+            if(ch?.avatar) {
+                avatarEl.innerHTML = `<img src="${ch.avatar}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+            } else {
+                avatarEl.textContent = getEmoji(ch?.name || '?');
+            }
+
+            // Embed YouTube if possible
+            const iframeContainer = document.getElementById('miniPlayerIframe');
+            if(ytId && item.platform === 'youtube') {
+                iframeContainer.innerHTML = `<iframe src="https://www.youtube.com/embed/${ytId}?autoplay=1&rel=0" allowfullscreen allow="autoplay; encrypted-media"></iframe>`;
+            } else {
+                iframeContainer.innerHTML = `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:#000;cursor:pointer" onclick="openOnYouTube()"><img src="${item.thumbnail||DEFAULT_THUMB}" style="width:100%;height:100%;object-fit:cover" onerror="this.src='${DEFAULT_THUMB}'"><div style="position:absolute;width:50px;height:50px;background:rgba(255,0,0,0.9);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px">▶</div></div>`;
+            }
+
+            // Show mini player
+            document.getElementById('miniPlayer').classList.add('active');
+            showToast('Mini player opened!');
+
+            // Add to history
+            let h=JSON.parse(localStorage.getItem('xh-history')||'[]');
+            h=h.filter(x=>x!==id); h.unshift(id); localStorage.setItem('xh-history',JSON.stringify(h.slice(0,50)));
+
+            // Refresh to show updated views
+            render();
+        }
+
+        function closeMiniPlayer() {
+            document.getElementById('miniPlayer').classList.remove('active');
+            document.getElementById('miniPlayerIframe').innerHTML = '';
+            currentMiniPlayerItem = null;
+        }
+
+        function openOnYouTube() {
+            if(currentMiniPlayerItem && currentMiniPlayerItem.url) {
+                window.open(currentMiniPlayerItem.url, '_blank');
+            }
+        }
+
+        function downloadVideo() {
+            if(!currentMiniPlayerItem) return;
+            const url = currentMiniPlayerItem.url;
+            const title = currentMiniPlayerItem.title;
+            
+            // Try to open for download
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = title || 'video';
+            a.target = '_blank';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+
+            showToast('Opening download...');
+        }
+
+        function openPopupWindow() {
+            if(!currentMiniPlayerItem) return;
+            
+            const item = currentMiniPlayerItem;
+            const ch = channels.find(x=>x.id===item.channelId);
+            const ytId = getYouTubeId(item.url);
+            
+            const width = 480;
+            const height = 380;
+            const left = 0;
+            const top = screen.height - height - 50;
+
+            const popupHTML = `
+<!DOCTYPE html>
+<html>
+<head>
+    <title>${item.title}</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: #0f0f0f; color: white; font-family: Arial, sans-serif; }
+        .header { padding: 8px 12px; background: #181818; display: flex; align-items: center; justify-content: space-between; }
+        .title { font-size: 12px; max-width: 200px; white-space: nowrap; overflow: hidden; }
+        .close { background: none; border: none; color: #aaa; font-size: 18px; cursor: pointer; }
+        .video { width: 100%; aspect-ratio: 16/9; }
+        .video iframe { width: 100%; height: 100%; border: none; }
+        .info { padding: 8px 12px; display: flex; align-items: center; gap: 8px; }
+        .avatar { width: 20px; height: 20px; border-radius: 50%; background: #333; display: flex; align-items: center; justify-content: center; font-size: 10px; }
+        .name { font-size: 11px; }
+        .actions { padding: 8px 12px; display: flex; gap: 6px; }
+        .btn { flex: 1; padding: 6px; border: none; border-radius: 6px; font-size: 10px; cursor: pointer; }
+        .btn-yt { background: #ff0000; color: white; }
+        .btn-dl { background: #00b894; color: white; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="title">${item.title}</div>
+        <button class="close" onclick="window.close()">✕</button>
+    </div>
+    <div class="video">
+        ${ytId ? `<iframe src="https://www.youtube.com/embed/${ytId}?autoplay=1" allowfullscreen allow="autoplay"></iframe>` : `<div style="width:100%;height:100%;background:#000;display:flex;align-items:center;justify-content:center;cursor:pointer" onclick="window.open('${item.url}')"><div style="font-size:48px">▶</div></div>`}
+    </div>
+    <div class="info">
+        <div class="avatar">${getEmoji(ch?.name||'?')}</div>
+        <div class="name">${ch?.name||'Unknown'}</div>
+    </div>
+    <div class="actions">
+        <button class="btn btn-yt" onclick="window.open('${item.url}')">▶ YouTube</button>
+        <button class="btn btn-dl" onclick="window.open('${item.url}')">⬇ Download</button>
+    </div>
+</body>
+</html>`;
+
+            if(popupWindow && !popupWindow.closed) popupWindow.close();
+            
+            popupWindow = window.open('', 'XtreamPopup', `width=${width},height=${height},left=${left},top=${top},resizable=yes`);
+            if(popupWindow) {
+                popupWindow.document.write(popupHTML);
+                popupWindow.document.close();
+                popupWindow.focus();
+            }
         }
 
         // Chat
@@ -534,11 +705,11 @@
             c.innerHTML=html;
         }
 
-        // Cards with Popup Button
+        // Cards
         function shortCard(v) { 
             const ch=channels.find(x=>x.id===v.channelId); 
             return `<div class="short-card">
-                <div class="short-thumbnail" onclick="openPopupPlayer('${v.id}','short')">
+                <div class="short-thumbnail" onclick="openMiniPlayer('${v.id}','short')">
                     <img src="${v.thumbnail||DEFAULT_THUMB}" onerror="this.src='${DEFAULT_THUMB}'">
                     <div class="short-badge">SHORT</div>
                     ${currentUser?.isAdmin?`<div class="admin-controls" style="position:absolute;top:8px;right:8px;display:flex;gap:4px"><button class="btn btn-sm" style="background:rgba(0,0,0,0.8)" onclick="event.stopPropagation();editContent('${v.id}','short')">✏️</button><button class="btn btn-sm btn-danger" onclick="event.stopPropagation();deleteContent('${v.id}','short')">🗑️</button></div>`:''}
@@ -553,12 +724,12 @@
         function liveCard(v) { 
             const ch=channels.find(x=>x.id===v.channelId); 
             return `<div class="live-card">
-                <div class="video-thumbnail" onclick="openPopupPlayer('${v.id}','live')">
+                <div class="video-thumbnail" onclick="openMiniPlayer('${v.id}','live')">
                     <img src="${v.thumbnail||DEFAULT_THUMB}" onerror="this.src='${DEFAULT_THUMB}'">
                     <div class="live-badge">🔴 LIVE</div>
                     <div class="live-viewers">👁️ ${formatNum(v.viewers||Math.floor(Math.random()*10000))}</div>
                     ${currentUser?.isAdmin?`<div class="admin-controls" style="position:absolute;top:8px;right:8px;display:flex;gap:4px"><button class="btn btn-sm" style="background:rgba(0,0,0,0.8)" onclick="event.stopPropagation();editContent('${v.id}','live')">✏️</button><button class="btn btn-sm btn-danger" onclick="event.stopPropagation();deleteContent('${v.id}','live')">🗑️</button></div>`:''}
-                    <button class="btn btn-sm btn-popup popup-btn-overlay" onclick="event.stopPropagation();openPopupPlayer('${v.id}','live')" style="position:absolute;top:8px;right:8px;">🎬 Popup</button>
+                    <button class="btn btn-sm btn-popup popup-btn-overlay" onclick="event.stopPropagation();openMiniPlayer('${v.id}','live')">🎬 Play</button>
                 </div>
                 <div class="live-info">
                     <div class="channel-avatar">${getAvatar(ch)}</div>
@@ -574,11 +745,11 @@
         function videoCard(v) { 
             const ch=channels.find(x=>x.id===v.channelId); 
             return `<div class="video-card">
-                <div class="video-thumbnail" onclick="openPopupPlayer('${v.id}','video')">
+                <div class="video-thumbnail" onclick="openMiniPlayer('${v.id}','video')">
                     <img src="${v.thumbnail||DEFAULT_THUMB}" onerror="this.src='${DEFAULT_THUMB}'">
                     ${v.duration?`<span class="video-duration">${v.duration}</span>`:''}
                     <span class="video-platform">${getPlatformIcon(v.platform)} ${getPlatformName(v.platform)}</span>
-                    <button class="btn btn-sm btn-popup popup-btn-overlay" onclick="event.stopPropagation();openPopupPlayer('${v.id}','video')" title="Open in Popup Player">🎬 Popup</button>
+                    <button class="btn btn-sm btn-popup popup-btn-overlay" onclick="event.stopPropagation();openMiniPlayer('${v.id}','video')" title="Play in Mini Player">🎬 Play</button>
                     ${currentUser?.isAdmin?`<div class="admin-controls" style="position:absolute;bottom:8px;right:8px;display:flex;gap:4px"><button class="btn btn-sm" style="background:rgba(0,0,0,0.8)" onclick="event.stopPropagation();editContent('${v.id}','video')">✏️</button><button class="btn btn-sm btn-danger" onclick="event.stopPropagation();deleteContent('${v.id}','video')">🗑️</button></div>`:''}
                 </div>
                 <div class="video-info">
@@ -589,166 +760,6 @@
                     </div>
                 </div>
             </div>`; 
-        }
-
-        // Popup Player - Opens in Separate Window
-        function openPopupPlayer(id, type) {
-            let item;
-            if(type==='short') item=shorts.find(x=>x.id===id);
-            else if(type==='live') item=lives.find(x=>x.id===id);
-            else item=videos.find(x=>x.id===id);
-            if(!item) return;
-            
-            // Increment view count
-            const newViews = incrementViews(id, type);
-            
-            const ch=channels.find(x=>x.id===item.channelId);
-            const isShort=type==='short';
-            const isLive=type==='live';
-            
-            // Popup dimensions based on content type
-            const width = isShort ? 340 : 680;
-            const height = isShort ? 600 : 480;
-            const left = (screen.width - width) / 2;
-            const top = (screen.height - height) / 2;
-            
-            // Generate popup HTML with download button
-            const popupHTML = `
-<!DOCTYPE html>
-<html>
-<head>
-    <title>${item.title} - XtreamHub Player</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { background: #0f0f0f; color: white; font-family: Arial, sans-serif; min-height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
-        .player-header { padding: 10px 14px; background: linear-gradient(135deg, #181818 0%, #212121 100%); border-bottom: 1px solid #303030; display: flex; align-items: center; justify-content: space-between; }
-        .player-title { font-size: 14px; font-weight: 600; max-width: 280px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .header-actions { display: flex; gap: 8px; }
-        .close-btn { background: none; border: none; color: #aaa; font-size: 22px; cursor: pointer; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
-        .close-btn:hover { background: #333; color: white; }
-        .player-area { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #000; position: relative; }
-        .player-area.short { padding: 10px; }
-        .thumbnail { width: 100%; height: 100%; object-fit: contain; max-height: 100%; }
-        .play-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(0,0,0,0.6); }
-        .play-btn { width: 80px; height: 80px; background: linear-gradient(135deg, #ff0000 0%, #cc0000 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 32px; cursor: pointer; margin-bottom: 20px; transition: transform 0.2s, box-shadow 0.2s; border: none; color: white; }
-        .play-btn:hover { transform: scale(1.1); box-shadow: 0 0 30px rgba(255,0,0,0.5); }
-        .watch-btn { padding: 12px 28px; background: linear-gradient(135deg, #ff0000 0%, #9146ff 100%); color: white; border: none; border-radius: 25px; font-size: 14px; font-weight: 600; cursor: pointer; transition: transform 0.2s; }
-        .watch-btn:hover { transform: scale(1.05); }
-        .player-controls { padding: 12px; background: #181818; border-top: 1px solid #303030; }
-        .control-row { display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap; }
-        .btn { padding: 10px 20px; border: none; border-radius: 20px; font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.2s; }
-        .btn-watch { background: linear-gradient(135deg, #ff0000 0%, #cc0000 100%); color: white; }
-        .btn-watch:hover { transform: scale(1.05); }
-        .btn-download { background: linear-gradient(135deg, #00b894 0%, #00a085 100%); color: white; }
-        .btn-download:hover { transform: scale(1.05); }
-        .btn-copy { background: #333; color: white; }
-        .btn-copy:hover { background: #444; }
-        .player-info { padding: 12px; background: #181818; }
-        .channel-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
-        .channel-avatar { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, #9146ff 0%, #ff0000 100%); display: flex; align-items: center; justify-content: center; font-size: 16px; }
-        .channel-name { font-size: 13px; font-weight: 600; }
-        .meta-row { display: flex; gap: 16px; font-size: 12px; color: #aaa; flex-wrap: wrap; }
-        .badge { padding: 3px 10px; border-radius: 4px; font-size: 11px; font-weight: 600; background: #333; }
-        .badge-live { background: #ff0000; animation: pulse 2s infinite; }
-        .badge-short { background: #9146ff; }
-        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
-        .views-count { color: #ff0000; font-weight: 600; }
-    </style>
-</head>
-<body>
-    <div class="player-header">
-        <div class="player-title">${item.title}</div>
-        <div class="header-actions">
-            <button class="close-btn" onclick="window.close()" title="Close">✕</button>
-        </div>
-    </div>
-    <div class="player-area ${isShort?'short':''}">
-        <img class="thumbnail" src="${item.thumbnail||DEFAULT_THUMB}" onerror="this.src='${DEFAULT_THUMB}'">
-        <div class="play-overlay">
-            <button class="play-btn" onclick="watchOnPlatform()">▶</button>
-            <button class="watch-btn" onclick="watchOnPlatform()">🚀 Watch on ${getPlatformName(item.platform)}</button>
-        </div>
-    </div>
-    <div class="player-controls">
-        <div class="control-row">
-            <button class="btn btn-watch" onclick="watchOnPlatform()">▶️ Watch</button>
-            <button class="btn btn-download" onclick="downloadVideo()">⬇️ Download</button>
-            <button class="btn btn-copy" onclick="copyUrl()">📋 Copy URL</button>
-        </div>
-    </div>
-    <div class="player-info">
-        <div class="channel-row">
-            <div class="channel-avatar">${getEmoji(ch?.name||'?')}</div>
-            <div class="channel-name">${ch?.name||'Unknown'}</div>
-            ${isLive?'<span class="badge badge-live">🔴 LIVE</span>':''}
-            ${isShort?'<span class="badge badge-short">⚡ SHORT</span>':''}
-        </div>
-        <div class="meta-row">
-            <span class="views-count">👁️ ${formatNum(newViews)} views</span>
-            ${item.duration?`<span>⏱️ ${item.duration}</span>`:''}
-            ${isLive?`<span>👥 ${formatNum(item.viewers||0)} watching</span>`:''}
-            <span>${getPlatformIcon(item.platform)} ${getPlatformName(item.platform)}</span>
-        </div>
-    </div>
-    <script>
-        const videoUrl = '${item.url}';
-        const videoTitle = '${item.title.replace(/'/g, "\\'")}';
-        
-        function watchOnPlatform() {
-            window.open(videoUrl, '_blank');
-        }
-        
-        function downloadVideo() {
-            // Create download link
-            const a = document.createElement('a');
-            a.href = videoUrl;
-            a.download = videoTitle || 'video';
-            a.target = '_blank';
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            
-            // Also open in new tab as fallback for streaming platforms
-            setTimeout(() => {
-                if(confirm('Direct download not available for streaming platforms.\\nOpen in new tab to use platform download?')) {
-                    window.open(videoUrl, '_blank');
-                }
-            }, 500);
-        }
-        
-        function copyUrl() {
-            navigator.clipboard.writeText(videoUrl).then(() => {
-                alert('URL copied to clipboard!');
-            }).catch(() => {
-                prompt('Copy this URL:', videoUrl);
-            });
-        }
-    <\/script>
-</body>
-</html>`;
-            
-            // Close existing popup if open
-            if(popupWindow && !popupWindow.closed) popupWindow.close();
-            
-            // Open new popup window (separate window, not tab)
-            popupWindow = window.open('', 'XtreamPlayer' + Date.now(), 
-                `width=${width},height=${height},left=${left},top=${top},resizable=yes,scrollbars=no,status=no,menubar=no,toolbar=no,location=no,directories=no,copyhistory=no`);
-            
-            if(popupWindow) {
-                popupWindow.document.write(popupHTML);
-                popupWindow.document.close();
-                popupWindow.focus();
-                showToast('Popup player opened!');
-            } else {
-                showToast('Popup blocked! Allow popups for this site.', 'error');
-            }
-            
-            // Add to history
-            let h=JSON.parse(localStorage.getItem('xh-history')||'[]');
-            h=h.filter(x=>x!==id); h.unshift(id); localStorage.setItem('xh-history',JSON.stringify(h.slice(0,50)));
-            
-            // Refresh page to show updated view count
-            render();
         }
 
         function renderShorts(c) { c.innerHTML=`<div class="section-header"><div class="section-title">⚡ Shorts</div></div>`+(shorts.length?`<div class="shorts-grid" style="flex-wrap:wrap">${shorts.map(v=>shortCard(v)).join('')}</div>`:'<div class="empty-state"><div class="empty-icon">⚡</div><div class="empty-title">No shorts</div></div>'); }
