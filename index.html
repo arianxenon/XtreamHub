@@ -51,8 +51,11 @@
         .btn-ghost { background: transparent; color: var(--text-secondary); }
         .btn-ghost:hover { background: var(--bg-hover); color: white; }
         .btn-danger { background: var(--danger); color: white; }
+        .btn-success { background: var(--success); color: white; }
         .btn-sm { padding: 6px 12px; font-size: 12px; }
         .btn-icon { width: 40px; height: 40px; padding: 0; border-radius: 50%; justify-content: center; }
+        .btn-popup { background: linear-gradient(135deg, #9146ff 0%, #ff0000 100%); color: white; }
+        .btn-popup:hover { transform: scale(1.05); }
 
         /* Sidebar */
         .sidebar { position: fixed; top: 56px; left: 0; width: 240px; height: calc(100vh - 56px); background: var(--bg-secondary); overflow-y: auto; padding: 12px 0; z-index: 100; transition: width 0.3s; }
@@ -106,6 +109,10 @@
         .video-details { flex: 1; min-width: 0; }
         .video-title { font-size: 14px; font-weight: 500; margin-bottom: 4px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.4; }
         .video-meta { font-size: 12px; color: var(--text-secondary); }
+        
+        /* Popup Button Overlay */
+        .popup-btn-overlay { position: absolute; top: 8px; right: 8px; z-index: 10; opacity: 0; transition: opacity 0.2s; }
+        .video-card:hover .popup-btn-overlay { opacity: 1; }
 
         /* Shorts Section */
         .shorts-section { margin-bottom: 32px; }
@@ -347,14 +354,6 @@
         </div>
     </div>
 
-    <!-- Player Modal -->
-    <div id="playerModal" class="modal-overlay">
-        <div class="modal modal-lg player-modal">
-            <div class="modal-header"><span class="modal-title" id="playerTitle">Player</span><button class="modal-close" onclick="closeModal('playerModal')">×</button></div>
-            <div class="modal-body" id="playerBody"></div>
-        </div>
-    </div>
-
     <!-- Add Channel Modal -->
     <div id="addChannelModal" class="modal-overlay">
         <div class="modal">
@@ -428,6 +427,7 @@
         let currentPage = 'home', currentChannel = null, activeCategory = 'All', channelTab = 'videos';
         let editingItem = null, editingType = null, currentPlayerItem = null;
         let chatExpanded = false, chatMessages = [];
+        let popupWindow = null;
 
         // Helpers
         const getEmoji = name => { let h=0; for(let i=0;i<name.length;i++) h=name.charCodeAt(i)+((h<<5)-h); return GAMING_EMOJIS[Math.abs(h)%GAMING_EMOJIS.length]; };
@@ -464,6 +464,17 @@
             else localStorage.removeItem('xh-current');
         }
 
+        // Increment View Count
+        function incrementViews(id, type) {
+            let arr = type==='short'?shorts:type==='live'?lives:videos;
+            let item = arr.find(v=>v.id===id);
+            if(item) {
+                item.views = (item.views || 0) + 1;
+                saveData();
+            }
+            return item ? item.views : 0;
+        }
+
         // Chat
         function initChat() { chatMessages=[{user:'GamerPro',text:'Hey! 👋',color:'#ff6b6b'},{user:'StreamFan',text:'Nice content!',color:'#4ecdc4'}]; renderChat(); }
         function renderChat() { document.getElementById('chatMessages').innerHTML=chatMessages.map((m,i)=>`<div class="chat-msg" id="chatmsg-${i}"><div class="chat-msg-avatar" style="background:${m.color}">${m.user[0]}</div><div class="chat-msg-content"><div class="chat-msg-user">${m.user} ${currentUser?.isAdmin?`<button class="btn btn-sm" style="padding:2px 6px;font-size:9px;background:var(--danger)" onclick="deleteChatMsg(${i})">🗑️</button><button class="btn btn-sm" style="padding:2px 6px;font-size:9px;background:var(--accent)" onclick="banChatUser('${m.user}','${m.color}')">🚫</button>`:''}</div><div class="chat-msg-text">${m.text}</div></div></div>`).join(''); document.getElementById('chatMessages').scrollTop=document.getElementById('chatMessages').scrollHeight; }
@@ -482,104 +493,187 @@
             if(currentUser) {
                 const av=currentUser.avatar?`<img src="${currentUser.avatar}">`:currentUser.username[0].toUpperCase();
                 h.innerHTML=`${currentUser.isAdmin?'<button class="btn btn-icon btn-ghost" onclick="openAdmin()">🛡️</button>':''}<button class="user-menu"><div class="user-avatar" style="background:${currentUser.avatar?'transparent':currentUser.color}">${av}</div><span>${currentUser.username}</span></button><button class="btn btn-icon btn-ghost" onclick="logout()">🚪</button>`;
-            } else h.innerHTML='<button class="btn btn-primary" onclick="openModal(\'authModal\')">🔑 Sign in</button>';
+            } else {
+                h.innerHTML='<button class="btn btn-primary" onclick="openModal(\'authModal\')">🔑 Login</button>';
+            }
         }
 
         // Sidebar
-        function renderSidebar() { document.getElementById('sidebarChannels').innerHTML=channels.slice(0,5).map(c=>`<div class="sidebar-item" onclick="showChannel('${c.id}')"><div class="channel-avatar" style="width:24px;height:24px;font-size:12px">${getAvatar(c)}</div><span class="sidebar-text">${c.name}</span></div>`).join(''); }
-        function toggleSidebar() { document.getElementById('sidebar').classList.toggle('collapsed'); document.getElementById('mainContent').classList.toggle('expanded'); }
+        function renderSidebar() {
+            document.getElementById('sidebarChannels').innerHTML = channels.slice(0,5).map(c=>`<div class="sidebar-item" onclick="showChannel('${c.id}')"><span class="sidebar-icon">${getAvatar(c)}</span><span class="sidebar-text">${c.name}</span></div>`).join('');
+        }
 
-        // Pages
+        // Page
         function renderPage() {
             const c=document.getElementById('pageContent');
+            document.querySelectorAll('.sidebar-item').forEach(x=>x.classList.remove('active'));
+            const items=document.querySelectorAll('.sidebar-item');
+            const idx=['home','shorts','live','explore','channels','history','liked'].indexOf(currentPage);
+            if(idx>=0 && items[idx]) items[idx].classList.add('active');
+            
             if(currentPage==='home') renderHome(c);
             else if(currentPage==='shorts') renderShorts(c);
             else if(currentPage==='live') renderLive(c);
-            else if(currentPage==='channel') renderChannel(c);
-            else if(currentPage==='channels') renderChannels(c);
             else if(currentPage==='explore') renderExplore(c);
+            else if(currentPage==='channels') renderChannels(c);
+            else if(currentPage==='channel') renderChannel(c);
             else if(currentPage==='history') renderHistory(c);
             else if(currentPage==='liked') renderLiked(c);
         }
 
+        // Home
         function renderHome(c) {
-            let html='';
-            if(lives.length) html+=`<div class="live-section"><div class="section-header"><div class="section-title">🔴 Live Now</div><span class="see-all" onclick="showLive()">See all</span></div><div class="live-grid">${lives.slice(0,4).map(v=>liveCard(v)).join('')}</div></div>`;
-            if(shorts.length) html+=`<div class="shorts-section"><div class="section-header"><div class="section-title">⚡ Shorts</div><span class="see-all" onclick="showShorts()">See all</span></div><div class="shorts-grid">${shorts.slice(0,6).map(v=>shortCard(v)).join('')}</div></div>`;
-            html+=`<div class="category-pills">${CATEGORIES.map(cat=>`<button class="category-pill ${activeCategory===cat?'active':''}" onclick="setCategory('${cat}')">${cat}</button>`).join('')}</div>`;
-            if(currentUser?.isAdmin) html+=`<div class="video-grid" style="margin-bottom:16px"><div class="add-card" onclick="openModal('addVideoModal')"><div class="add-card-icon">➕</div><div class="add-card-text">Add Content</div></div><div class="add-card" onclick="openModal('addChannelModal')"><div class="add-card-icon">📺</div><div class="add-card-text">Add Channel</div></div></div>`;
-            html+=`<div class="stats-grid"><div class="stat-card"><div class="stat-value">${videos.length}</div><div class="stat-label">Videos</div></div><div class="stat-card"><div class="stat-value">${shorts.length}</div><div class="stat-label">Shorts</div></div><div class="stat-card"><div class="stat-value">${lives.length}</div><div class="stat-label">Live</div></div><div class="stat-card"><div class="stat-value">${channels.length}</div><div class="stat-label">Channels</div></div></div>`;
-            html+=`<div class="section-header"><div class="section-title">🎬 Videos</div></div>`;
-            let filtered=activeCategory==='All'?videos:videos.filter(v=>(v.category||'all').toLowerCase()===activeCategory.toLowerCase());
-            html+=filtered.length?`<div class="video-grid">${filtered.map(v=>videoCard(v)).join('')}</div>`:`<div class="empty-state"><div class="empty-icon">🎬</div><div class="empty-title">No videos</div></div>`;
+            let html='<div class="category-pills">'+CATEGORIES.map(cat=>`<button class="category-pill ${activeCategory===cat?'active':''}" onclick="setCategory('${cat}')">${cat}</button>`).join('')+'</div>';
+            const filtered=activeCategory==='All'?videos:videos.filter(v=>v.category===activeCategory.toLowerCase());
+            const allContent=[...filtered,...shorts,...lives];
+            const totalViews=allContent.reduce((s,v)=>s+(v.views||0),0);
+            html+=`<div class="stats-grid"><div class="stat-card"><div class="stat-value">${channels.length}</div><div class="stat-label">Channels</div></div><div class="stat-card"><div class="stat-value">${videos.length}</div><div class="stat-label">Videos</div></div><div class="stat-card"><div class="stat-value">${shorts.length}</div><div class="stat-label">Shorts</div></div><div class="stat-card"><div class="stat-value">${lives.length}</div><div class="stat-label">Live</div></div><div class="stat-card"><div class="stat-value">${formatNum(totalViews)}</div><div class="stat-label">Total Views</div></div></div>`;
+            if(shorts.length) html+=`<div class="shorts-section"><div class="section-header"><div class="section-title">⚡ Shorts</div></div><div class="shorts-grid">${shorts.slice(0,6).map(v=>shortCard(v)).join('')}</div></div>`;
+            if(lives.length) html+=`<div class="live-section"><div class="section-header"><div class="section-title">🔴 Live Now</div></div><div class="live-grid">${lives.slice(0,4).map(v=>liveCard(v)).join('')}</div></div>`;
+            html+=`<div class="section-header"><div class="section-title">🎬 Videos</div></div>`+(filtered.length?`<div class="video-grid">${filtered.map(v=>videoCard(v)).join('')}</div>`:'<div class="empty-state"><div class="empty-icon">🎬</div><div class="empty-title">No videos</div></div>');
             c.innerHTML=html;
         }
 
-        function shortCard(v) { const ch=channels.find(x=>x.id===v.channelId); return `<div class="short-card" onclick="openPlayer('${v.id}','short')"><div class="short-thumbnail"><img src="${v.thumbnail||DEFAULT_THUMB}" onerror="this.src='${DEFAULT_THUMB}'"><div class="short-badge">SHORT</div>${currentUser?.isAdmin?`<div class="admin-controls" style="position:absolute;top:8px;right:8px;display:flex;gap:4px"><button class="btn btn-sm" style="background:rgba(0,0,0,0.8)" onclick="event.stopPropagation();editContent('${v.id}','short')">✏️</button><button class="btn btn-sm btn-danger" onclick="event.stopPropagation();deleteContent('${v.id}','short')">🗑️</button></div>`:''}<div class="short-overlay"><div class="short-title">${v.title}</div><div class="short-views">${formatNum(v.views||0)} views</div></div></div></div>`; }
-        function liveCard(v) { const ch=channels.find(x=>x.id===v.channelId); return `<div class="live-card" onclick="openPlayer('${v.id}','live')"><div class="video-thumbnail"><img src="${v.thumbnail||DEFAULT_THUMB}" onerror="this.src='${DEFAULT_THUMB}'"><div class="live-badge">🔴 LIVE</div><div class="live-viewers">👁️ ${formatNum(v.viewers||Math.floor(Math.random()*10000))}</div>${currentUser?.isAdmin?`<div class="admin-controls" style="position:absolute;top:8px;right:8px;display:flex;gap:4px"><button class="btn btn-sm" style="background:rgba(0,0,0,0.8)" onclick="event.stopPropagation();editContent('${v.id}','live')">✏️</button><button class="btn btn-sm btn-danger" onclick="event.stopPropagation();deleteContent('${v.id}','live')">🗑️</button></div>`:''}</div><div class="live-info"><div class="channel-avatar">${getAvatar(ch)}</div><div><div class="live-title">${v.title}</div><div class="live-streamer">${ch?.name||'Unknown'}</div>${v.game?`<div class="live-game">🎮 ${v.game}</div>`:''}</div></div></div>`; }
-        function videoCard(v) { const ch=channels.find(x=>x.id===v.channelId); return `<div class="video-card" onclick="openPlayer('${v.id}','video')"><div class="video-thumbnail"><img src="${v.thumbnail||DEFAULT_THUMB}" onerror="this.src='${DEFAULT_THUMB}'">${v.duration?`<span class="video-duration">${v.duration}</span>`:''}<span class="video-platform">${getPlatformIcon(v.platform)} ${getPlatformName(v.platform)}</span>${currentUser?.isAdmin?`<div class="admin-controls" style="position:absolute;top:8px;right:8px;display:flex;gap:4px"><button class="btn btn-sm" style="background:rgba(0,0,0,0.8)" onclick="event.stopPropagation();editContent('${v.id}','video')">✏️</button><button class="btn btn-sm btn-danger" onclick="event.stopPropagation();deleteContent('${v.id}','video')">🗑️</button></div>`:''}</div><div class="video-info"><div class="channel-avatar" onclick="event.stopPropagation();showChannel('${v.channelId}')">${getAvatar(ch)}</div><div class="video-details"><div class="video-title">${v.title}</div><div class="video-meta">${ch?.name||'Unknown'} • ${formatNum(v.views||0)} views</div></div></div></div>`; }
+        // Cards with Popup Button
+        function shortCard(v) { 
+            const ch=channels.find(x=>x.id===v.channelId); 
+            return `<div class="short-card">
+                <div class="short-thumbnail" onclick="openPopupPlayer('${v.id}','short')">
+                    <img src="${v.thumbnail||DEFAULT_THUMB}" onerror="this.src='${DEFAULT_THUMB}'">
+                    <div class="short-badge">SHORT</div>
+                    ${currentUser?.isAdmin?`<div class="admin-controls" style="position:absolute;top:8px;right:8px;display:flex;gap:4px"><button class="btn btn-sm" style="background:rgba(0,0,0,0.8)" onclick="event.stopPropagation();editContent('${v.id}','short')">✏️</button><button class="btn btn-sm btn-danger" onclick="event.stopPropagation();deleteContent('${v.id}','short')">🗑️</button></div>`:''}
+                    <div class="short-overlay">
+                        <div class="short-title">${v.title}</div>
+                        <div class="short-views">${formatNum(v.views||0)} views</div>
+                    </div>
+                </div>
+            </div>`; 
+        }
+        
+        function liveCard(v) { 
+            const ch=channels.find(x=>x.id===v.channelId); 
+            return `<div class="live-card">
+                <div class="video-thumbnail" onclick="openPopupPlayer('${v.id}','live')">
+                    <img src="${v.thumbnail||DEFAULT_THUMB}" onerror="this.src='${DEFAULT_THUMB}'">
+                    <div class="live-badge">🔴 LIVE</div>
+                    <div class="live-viewers">👁️ ${formatNum(v.viewers||Math.floor(Math.random()*10000))}</div>
+                    ${currentUser?.isAdmin?`<div class="admin-controls" style="position:absolute;top:8px;right:8px;display:flex;gap:4px"><button class="btn btn-sm" style="background:rgba(0,0,0,0.8)" onclick="event.stopPropagation();editContent('${v.id}','live')">✏️</button><button class="btn btn-sm btn-danger" onclick="event.stopPropagation();deleteContent('${v.id}','live')">🗑️</button></div>`:''}
+                    <button class="btn btn-sm btn-popup popup-btn-overlay" onclick="event.stopPropagation();openPopupPlayer('${v.id}','live')" style="position:absolute;top:8px;right:8px;">🎬 Popup</button>
+                </div>
+                <div class="live-info">
+                    <div class="channel-avatar">${getAvatar(ch)}</div>
+                    <div>
+                        <div class="live-title">${v.title}</div>
+                        <div class="live-streamer">${ch?.name||'Unknown'}</div>
+                        ${v.game?`<div class="live-game">🎮 ${v.game}</div>`:''}
+                    </div>
+                </div>
+            </div>`; 
+        }
+        
+        function videoCard(v) { 
+            const ch=channels.find(x=>x.id===v.channelId); 
+            return `<div class="video-card">
+                <div class="video-thumbnail" onclick="openPopupPlayer('${v.id}','video')">
+                    <img src="${v.thumbnail||DEFAULT_THUMB}" onerror="this.src='${DEFAULT_THUMB}'">
+                    ${v.duration?`<span class="video-duration">${v.duration}</span>`:''}
+                    <span class="video-platform">${getPlatformIcon(v.platform)} ${getPlatformName(v.platform)}</span>
+                    <button class="btn btn-sm btn-popup popup-btn-overlay" onclick="event.stopPropagation();openPopupPlayer('${v.id}','video')" title="Open in Popup Player">🎬 Popup</button>
+                    ${currentUser?.isAdmin?`<div class="admin-controls" style="position:absolute;bottom:8px;right:8px;display:flex;gap:4px"><button class="btn btn-sm" style="background:rgba(0,0,0,0.8)" onclick="event.stopPropagation();editContent('${v.id}','video')">✏️</button><button class="btn btn-sm btn-danger" onclick="event.stopPropagation();deleteContent('${v.id}','video')">🗑️</button></div>`:''}
+                </div>
+                <div class="video-info">
+                    <div class="channel-avatar" onclick="event.stopPropagation();showChannel('${v.channelId}')">${getAvatar(ch)}</div>
+                    <div class="video-details">
+                        <div class="video-title">${v.title}</div>
+                        <div class="video-meta">${ch?.name||'Unknown'} • ${formatNum(v.views||0)} views</div>
+                    </div>
+                </div>
+            </div>`; 
+        }
 
-        // Player Modal - Small Popup Window
-        let popupWindow = null;
-        function openPlayer(id, type) {
+        // Popup Player - Opens in Separate Window
+        function openPopupPlayer(id, type) {
             let item;
-            if(type==='short')item=shorts.find(x=>x.id===id);
-            else if(type==='live')item=lives.find(x=>x.id===id);
+            if(type==='short') item=shorts.find(x=>x.id===id);
+            else if(type==='live') item=lives.find(x=>x.id===id);
             else item=videos.find(x=>x.id===id);
-            if(!item)return;
+            if(!item) return;
             
-            currentPlayerItem=item;
+            // Increment view count
+            const newViews = incrementViews(id, type);
+            
             const ch=channels.find(x=>x.id===item.channelId);
             const isShort=type==='short';
             const isLive=type==='live';
             
             // Popup dimensions based on content type
-            const width = isShort ? 320 : 640;
-            const height = isShort ? 568 : 400;
+            const width = isShort ? 340 : 680;
+            const height = isShort ? 600 : 480;
             const left = (screen.width - width) / 2;
             const top = (screen.height - height) / 2;
             
-            // Generate popup HTML
+            // Generate popup HTML with download button
             const popupHTML = `
 <!DOCTYPE html>
 <html>
 <head>
-    <title>${item.title}</title>
+    <title>${item.title} - XtreamHub Player</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { background: #0f0f0f; color: white; font-family: Arial, sans-serif; min-height: 100vh; display: flex; flex-direction: column; }
-        .player-header { padding: 10px 12px; background: #181818; border-bottom: 1px solid #303030; display: flex; align-items: center; justify-content: space-between; }
-        .player-title { font-size: 13px; font-weight: 600; max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .close-btn { background: none; border: none; color: #aaa; font-size: 20px; cursor: pointer; }
-        .close-btn:hover { color: white; }
+        body { background: #0f0f0f; color: white; font-family: Arial, sans-serif; min-height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+        .player-header { padding: 10px 14px; background: linear-gradient(135deg, #181818 0%, #212121 100%); border-bottom: 1px solid #303030; display: flex; align-items: center; justify-content: space-between; }
+        .player-title { font-size: 14px; font-weight: 600; max-width: 280px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .header-actions { display: flex; gap: 8px; }
+        .close-btn { background: none; border: none; color: #aaa; font-size: 22px; cursor: pointer; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+        .close-btn:hover { background: #333; color: white; }
         .player-area { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #000; position: relative; }
         .player-area.short { padding: 10px; }
-        .thumbnail { width: 100%; height: 100%; object-fit: contain; }
-        .play-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(0,0,0,0.5); }
-        .play-btn { width: 70px; height: 70px; background: #ff0000; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 28px; cursor: pointer; margin-bottom: 15px; transition: transform 0.2s; }
-        .play-btn:hover { transform: scale(1.1); }
-        .watch-btn { padding: 10px 24px; background: #ff0000; color: white; border: none; border-radius: 20px; font-size: 14px; font-weight: 600; cursor: pointer; }
-        .watch-btn:hover { background: #cc0000; }
-        .player-info { padding: 10px 12px; background: #181818; }
-        .channel-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
-        .channel-avatar { width: 28px; height: 28px; border-radius: 50%; background: #333; display: flex; align-items: center; justify-content: center; font-size: 14px; }
-        .channel-name { font-size: 12px; font-weight: 500; }
-        .meta-row { display: flex; gap: 12px; font-size: 11px; color: #aaa; }
-        .badge { padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 500; background: #333; }
-        .badge-live { background: #ff0000; }
+        .thumbnail { width: 100%; height: 100%; object-fit: contain; max-height: 100%; }
+        .play-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(0,0,0,0.6); }
+        .play-btn { width: 80px; height: 80px; background: linear-gradient(135deg, #ff0000 0%, #cc0000 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 32px; cursor: pointer; margin-bottom: 20px; transition: transform 0.2s, box-shadow 0.2s; border: none; color: white; }
+        .play-btn:hover { transform: scale(1.1); box-shadow: 0 0 30px rgba(255,0,0,0.5); }
+        .watch-btn { padding: 12px 28px; background: linear-gradient(135deg, #ff0000 0%, #9146ff 100%); color: white; border: none; border-radius: 25px; font-size: 14px; font-weight: 600; cursor: pointer; transition: transform 0.2s; }
+        .watch-btn:hover { transform: scale(1.05); }
+        .player-controls { padding: 12px; background: #181818; border-top: 1px solid #303030; }
+        .control-row { display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap; }
+        .btn { padding: 10px 20px; border: none; border-radius: 20px; font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.2s; }
+        .btn-watch { background: linear-gradient(135deg, #ff0000 0%, #cc0000 100%); color: white; }
+        .btn-watch:hover { transform: scale(1.05); }
+        .btn-download { background: linear-gradient(135deg, #00b894 0%, #00a085 100%); color: white; }
+        .btn-download:hover { transform: scale(1.05); }
+        .btn-copy { background: #333; color: white; }
+        .btn-copy:hover { background: #444; }
+        .player-info { padding: 12px; background: #181818; }
+        .channel-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+        .channel-avatar { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, #9146ff 0%, #ff0000 100%); display: flex; align-items: center; justify-content: center; font-size: 16px; }
+        .channel-name { font-size: 13px; font-weight: 600; }
+        .meta-row { display: flex; gap: 16px; font-size: 12px; color: #aaa; flex-wrap: wrap; }
+        .badge { padding: 3px 10px; border-radius: 4px; font-size: 11px; font-weight: 600; background: #333; }
+        .badge-live { background: #ff0000; animation: pulse 2s infinite; }
         .badge-short { background: #9146ff; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
+        .views-count { color: #ff0000; font-weight: 600; }
     </style>
 </head>
 <body>
     <div class="player-header">
         <div class="player-title">${item.title}</div>
-        <button class="close-btn" onclick="window.close()">✕</button>
+        <div class="header-actions">
+            <button class="close-btn" onclick="window.close()" title="Close">✕</button>
+        </div>
     </div>
     <div class="player-area ${isShort?'short':''}">
-        <img class="thumbnail" src="${item.thumbnail||'${DEFAULT_THUMB}'}" onerror="this.src='${DEFAULT_THUMB}'">
+        <img class="thumbnail" src="${item.thumbnail||DEFAULT_THUMB}" onerror="this.src='${DEFAULT_THUMB}'">
         <div class="play-overlay">
-            <div class="play-btn" onclick="window.open('${item.url}','_blank')">▶</div>
-            <button class="watch-btn" onclick="window.open('${item.url}','_blank')">🚀 Watch on ${getPlatformName(item.platform)}</button>
+            <button class="play-btn" onclick="watchOnPlatform()">▶</button>
+            <button class="watch-btn" onclick="watchOnPlatform()">🚀 Watch on ${getPlatformName(item.platform)}</button>
+        </div>
+    </div>
+    <div class="player-controls">
+        <div class="control-row">
+            <button class="btn btn-watch" onclick="watchOnPlatform()">▶️ Watch</button>
+            <button class="btn btn-download" onclick="downloadVideo()">⬇️ Download</button>
+            <button class="btn btn-copy" onclick="copyUrl()">📋 Copy URL</button>
         </div>
     </div>
     <div class="player-info">
@@ -590,34 +684,71 @@
             ${isShort?'<span class="badge badge-short">⚡ SHORT</span>':''}
         </div>
         <div class="meta-row">
-            <span>👁️ ${formatNum(item.views||0)}</span>
+            <span class="views-count">👁️ ${formatNum(newViews)} views</span>
             ${item.duration?`<span>⏱️ ${item.duration}</span>`:''}
-            ${isLive?`<span>👥 ${formatNum(item.viewers||0)}</span>`:''}
+            ${isLive?`<span>👥 ${formatNum(item.viewers||0)} watching</span>`:''}
+            <span>${getPlatformIcon(item.platform)} ${getPlatformName(item.platform)}</span>
         </div>
     </div>
+    <script>
+        const videoUrl = '${item.url}';
+        const videoTitle = '${item.title.replace(/'/g, "\\'")}';
+        
+        function watchOnPlatform() {
+            window.open(videoUrl, '_blank');
+        }
+        
+        function downloadVideo() {
+            // Create download link
+            const a = document.createElement('a');
+            a.href = videoUrl;
+            a.download = videoTitle || 'video';
+            a.target = '_blank';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            
+            // Also open in new tab as fallback for streaming platforms
+            setTimeout(() => {
+                if(confirm('Direct download not available for streaming platforms.\\nOpen in new tab to use platform download?')) {
+                    window.open(videoUrl, '_blank');
+                }
+            }, 500);
+        }
+        
+        function copyUrl() {
+            navigator.clipboard.writeText(videoUrl).then(() => {
+                alert('URL copied to clipboard!');
+            }).catch(() => {
+                prompt('Copy this URL:', videoUrl);
+            });
+        }
+    <\/script>
 </body>
 </html>`;
             
             // Close existing popup if open
             if(popupWindow && !popupWindow.closed) popupWindow.close();
             
-            // Open new popup window
-            popupWindow = window.open('', 'XtreamPlayer', 
-                `width=${width},height=${height},left=${left},top=${top},resizable=yes,scrollbars=no,status=no,menubar=no,toolbar=no,location=no`);
+            // Open new popup window (separate window, not tab)
+            popupWindow = window.open('', 'XtreamPlayer' + Date.now(), 
+                `width=${width},height=${height},left=${left},top=${top},resizable=yes,scrollbars=no,status=no,menubar=no,toolbar=no,location=no,directories=no,copyhistory=no`);
             
             if(popupWindow) {
                 popupWindow.document.write(popupHTML);
                 popupWindow.document.close();
                 popupWindow.focus();
+                showToast('Popup player opened!');
+            } else {
+                showToast('Popup blocked! Allow popups for this site.', 'error');
             }
             
             // Add to history
             let h=JSON.parse(localStorage.getItem('xh-history')||'[]');
             h=h.filter(x=>x!==id); h.unshift(id); localStorage.setItem('xh-history',JSON.stringify(h.slice(0,50)));
-        }
-        
-        function goToExternal() {
-            if(currentPlayerItem&&currentPlayerItem.url) window.open(currentPlayerItem.url,'_blank');
+            
+            // Refresh page to show updated view count
+            render();
         }
 
         function renderShorts(c) { c.innerHTML=`<div class="section-header"><div class="section-title">⚡ Shorts</div></div>`+(shorts.length?`<div class="shorts-grid" style="flex-wrap:wrap">${shorts.map(v=>shortCard(v)).join('')}</div>`:'<div class="empty-state"><div class="empty-icon">⚡</div><div class="empty-title">No shorts</div></div>'); }
@@ -672,7 +803,7 @@
         function deleteChannel(id) { if(confirm('Delete?')){channels=channels.filter(c=>c.id!==id);videos=videos.filter(v=>v.channelId!==id);shorts=shorts.filter(v=>v.channelId!==id);lives=lives.filter(v=>v.channelId!==id);saveData();showHome();showToast('Deleted');} }
 
         // Content
-        function handleAddVideo() { const type=document.getElementById('videoType').value,ch=document.getElementById('videoChannel').value,t=document.getElementById('videoTitle').value.trim(),u=document.getElementById('videoUrl').value.trim(); if(!ch||!t||!u)return showToast('Required','error'); const item={id:'v'+Date.now(),channelId:ch,title:t,url:u,category:document.getElementById('videoCategory').value,platform:document.getElementById('videoPlatform').value,thumbnail:document.getElementById('videoThumbnail').value.trim(),duration:document.getElementById('videoDuration').value.trim(),game:document.getElementById('videoGame').value.trim(),description:document.getElementById('videoDesc').value.trim(),type:type,views:Math.floor(Math.random()*10000),viewers:Math.floor(Math.random()*5000),createdAt:Date.now()}; if(type==='short')shorts.push(item);else if(type==='live')lives.push(item);else videos.push(item); saveData();closeModal('addVideoModal');render();showToast('Added!'); }
+        function handleAddVideo() { const type=document.getElementById('videoType').value,ch=document.getElementById('videoChannel').value,t=document.getElementById('videoTitle').value.trim(),u=document.getElementById('videoUrl').value.trim(); if(!ch||!t||!u)return showToast('Required','error'); const item={id:'v'+Date.now(),channelId:ch,title:t,url:u,category:document.getElementById('videoCategory').value,platform:document.getElementById('videoPlatform').value,thumbnail:document.getElementById('videoThumbnail').value.trim(),duration:document.getElementById('videoDuration').value.trim(),game:document.getElementById('videoGame').value.trim(),description:document.getElementById('videoDesc').value.trim(),type:type,views:0,viewers:Math.floor(Math.random()*5000),createdAt:Date.now()}; if(type==='short')shorts.push(item);else if(type==='live')lives.push(item);else videos.push(item); saveData();closeModal('addVideoModal');render();showToast('Added!'); }
         function editContent(id,type) { const arr=type==='short'?shorts:type==='live'?lives:videos; editingItem=arr.find(v=>v.id===id);editingType=type; document.getElementById('editTitle').textContent='✏️ Edit'; document.getElementById('editDeleteBtn').style.display='inline-flex'; document.getElementById('editBody').innerHTML=`<div class="form-group"><label class="form-label">Channel</label><select id="editChannel" class="form-select">${channels.map(c=>`<option value="${c.id}"${c.id===editingItem.channelId?' selected':''}>${c.name}</option>`).join('')}</select></div><div class="form-group"><label class="form-label">Title</label><input type="text" id="editTitle" class="form-input" value="${editingItem.title}"></div><div class="form-group"><label class="form-label">URL</label><input type="text" id="editUrl" class="form-input" value="${editingItem.url}" dir="ltr"></div><div class="form-group"><label class="form-label">Thumbnail</label><input type="text" id="editThumbnail" class="form-input" value="${editingItem.thumbnail||''}" dir="ltr"></div><div class="form-group"><label class="form-label">Duration</label><input type="text" id="editDuration" class="form-input" value="${editingItem.duration||''}" dir="ltr"></div>`; openModal('editModal'); }
         function deleteContent(id,type) { if(confirm('Delete?')){if(type==='short')shorts=shorts.filter(v=>v.id!==id);else if(type==='live')lives=lives.filter(v=>v.id!==id);else videos=videos.filter(v=>v.id!==id);saveData();render();showToast('Deleted');} }
 
@@ -684,21 +815,22 @@
         function openAdmin() { openModal('adminModal'); renderAdminChannels(); }
         function switchAdminTab(t) { document.querySelectorAll('.admin-tab').forEach(x=>x.classList.remove('active')); document.getElementById('adminChannelsTab').style.display='none'; document.getElementById('adminVideosTab').style.display='none'; document.getElementById('adminUsersTab').style.display='none'; if(t==='channels'){document.querySelectorAll('.admin-tab')[0].classList.add('active');document.getElementById('adminChannelsTab').style.display='block';renderAdminChannels();}else if(t==='videos'){document.querySelectorAll('.admin-tab')[1].classList.add('active');document.getElementById('adminVideosTab').style.display='block';renderAdminVideos();}else{document.querySelectorAll('.admin-tab')[2].classList.add('active');document.getElementById('adminUsersTab').style.display='block';renderAdminUsers();} }
         function renderAdminChannels() { document.getElementById('adminChannelsTab').innerHTML=channels.length?channels.map(c=>`<div class="admin-item"><div class="admin-item-left"><div class="channel-avatar">${getAvatar(c)}</div><div><div style="font-weight:500">${c.name}</div></div></div><div><button class="btn btn-sm btn-ghost" onclick="closeModal('adminModal');editChannel('${c.id}')">✏️</button><button class="btn btn-sm btn-danger" onclick="deleteChannel('${c.id}');renderAdminChannels()">🗑️</button></div></div>`).join(''):'<div class="empty-state"><div class="empty-title">Empty</div></div>'; }
-        function renderAdminVideos() { const all=[...videos.map(v=>({...v,_type:'video'})),...shorts.map(v=>({...v,_type:'short'})),...lives.map(v=>({...v,_type:'live'}))]; document.getElementById('adminVideosTab').innerHTML=all.length?all.map(v=>`<div class="admin-item"><div class="admin-item-left"><div style="width:40px;height:22px;background:var(--bg-tertiary);border-radius:4px;overflow:hidden"><img src="${v.thumbnail||DEFAULT_THUMB}" style="width:100%;height:100%;object-fit:cover"></div><div><div style="font-weight:500;font-size:12px">${v.title.substring(0,25)}...</div><div style="font-size:10px;color:var(--text-secondary)">${v._type}</div></div></div><div><button class="btn btn-sm btn-ghost" onclick="closeModal('adminModal');editContent('${v.id}','${v._type}')">✏️</button><button class="btn btn-sm btn-danger" onclick="deleteContent('${v.id}','${v._type}');renderAdminVideos()">🗑️</button></div></div>`).join(''):'<div class="empty-state"><div class="empty-title">Empty</div></div>'; }
+        function renderAdminVideos() { const all=[...videos.map(v=>({...v,_type:'video'})),...shorts.map(v=>({...v,_type:'short'})),...lives.map(v=>({...v,_type:'live'}))]; document.getElementById('adminVideosTab').innerHTML=all.length?all.map(v=>`<div class="admin-item"><div class="admin-item-left"><div style="width:40px;height:22px;background:var(--bg-tertiary);border-radius:4px;overflow:hidden"><img src="${v.thumbnail||DEFAULT_THUMB}" style="width:100%;height:100%;object-fit:cover"></div><div><div style="font-weight:500;font-size:12px">${v.title.substring(0,25)}...</div><div style="font-size:10px;color:var(--text-secondary)">${v._type} • ${formatNum(v.views||0)} views</div></div></div><div><button class="btn btn-sm btn-ghost" onclick="closeModal('adminModal');editContent('${v.id}','${v._type}')">✏️</button><button class="btn btn-sm btn-danger" onclick="deleteContent('${v.id}','${v._type}');renderAdminVideos()">🗑️</button></div></div>`).join(''):'<div class="empty-state"><div class="empty-title">Empty</div></div>'; }
         function renderAdminUsers() { document.getElementById('adminUsersTab').innerHTML=users.map(u=>`<div class="admin-item"><div class="admin-item-left"><div class="user-avatar" style="background:${u.avatar?'transparent':u.color}">${u.avatar?`<img src="${u.avatar}">`:u.username[0].toUpperCase()}</div><div><div style="font-weight:500">${u.username} ${u.isAdmin?'<span class="badge badge-admin">Admin</span>':''} ${u.isBanned?'<span class="badge badge-banned">Banned</span>':''}</div></div></div>${!u.isAdmin?`<button class="btn btn-sm ${u.isBanned?'btn-primary':'btn-danger'}" onclick="toggleBan('${u.id}')">${u.isBanned?'Unban':'Ban'}</button>`:''}</div>`).join(''); }
         function toggleBan(id) { const u=users.find(x=>x.id===id); if(u){u.isBanned=!u.isBanned;saveData();renderAdminUsers();showToast(u.isBanned?'Banned':'Unbanned');} }
 
         // Modal helpers
         const openModal=id=>document.getElementById(id).classList.add('active');
-        const closeModal=id=>{document.getElementById(id).classList.remove('active');if(id==='editModal'){editingItem=null;editingType=null;}if(id==='playerModal')currentPlayerItem=null;};
+        const closeModal=id=>{document.getElementById(id).classList.remove('active');if(id==='editModal'){editingItem=null;editingType=null;}};
         const openAddVideoFor=chId=>{document.getElementById('videoChannel').innerHTML='<option value="">Select...</option>'+channels.map(c=>`<option value="${c.id}"${c.id===chId?' selected':''}>${c.name}</option>`).join('');openModal('addVideoModal');};
+        const toggleSidebar=()=>{document.getElementById('sidebar').classList.toggle('collapsed');document.getElementById('mainContent').classList.toggle('expanded');};
 
         // Search
         function handleSearch() { const q=document.getElementById('searchInput').value.trim().toLowerCase(); if(!q)return; const all=[...videos,...shorts,...lives]; const r=all.filter(v=>v.title.toLowerCase().includes(q)); document.getElementById('pageContent').innerHTML=`<h1 style="font-size:22px;margin-bottom:16px">🔍 "${q}"</h1>`+(r.length?`<div class="video-grid">${r.map(v=>v.type==='short'?shortCard(v):v.type==='live'?liveCard(v):videoCard(v)).join('')}</div>`:'<div class="empty-state"><div class="empty-icon">🔍</div><div class="empty-title">No results</div></div>'); }
 
         // Events
         document.addEventListener('DOMContentLoaded',init);
-        document.addEventListener('keydown',e=>{if(e.key==='Escape'){['authModal','playerModal','addChannelModal','addVideoModal','adminModal','editModal'].forEach(closeModal);}});
+        document.addEventListener('keydown',e=>{if(e.key==='Escape'){['authModal','addChannelModal','addVideoModal','adminModal','editModal'].forEach(closeModal);}});
     </script>
 </body>
 </html>
