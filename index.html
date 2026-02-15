@@ -22,7 +22,7 @@
             --live: #ff0000;
             --purple: #9146ff;
         }
-        body { font-family: 'Roboto', Arial, sans-serif; background: var(--bg-primary); color: var(--text-primary); min-height: 100vh; }
+        body { font-family: 'Roboto', Arial, sans-serif; background: var(--bg-primary); color: var(--text-primary); min-height: 100vh; overflow-x: hidden; }
 
         /* Header */
         .header { height: 56px; background: var(--bg-secondary); display: flex; align-items: center; justify-content: space-between; padding: 0 16px; position: fixed; top: 0; left: 0; right: 0; z-index: 1000; }
@@ -55,7 +55,7 @@
         .btn-icon { width: 40px; height: 40px; padding: 0; border-radius: 50%; justify-content: center; }
 
         /* Sidebar */
-        .sidebar { position: fixed; top: 56px; left: 0; width: 240px; height: calc(100vh - 56px); background: var(--bg-secondary); overflow-y: auto; padding: 12px 0; z-index: 100; transition: width 0.3s; }
+        .sidebar { position: fixed; top: 56px; left: 0; width: 240px; height: calc(100vh - 56px); background: var(--bg-secondary); overflow-y: auto; padding: 12px 0; z-index: 900; transition: width 0.3s; }
         .sidebar.collapsed { width: 72px; }
         .sidebar-item { display: flex; align-items: center; gap: 20px; padding: 10px 16px; cursor: pointer; color: var(--text-primary); border-radius: 8px; margin: 0 8px; }
         .sidebar-item:hover { background: var(--bg-hover); }
@@ -69,7 +69,7 @@
         .sidebar.collapsed .sidebar-section { display: none; }
 
         /* Main Content */
-        .main-content { margin-top: 56px; margin-left: 240px; padding: 20px; min-height: calc(100vh - 56px); transition: margin-left 0.3s; padding-right: 80px; }
+        .main-content { margin-top: 56px; margin-left: 240px; padding: 20px; min-height: calc(100vh - 116px); transition: margin-left 0.3s; padding-right: 20px; }
         .main-content.expanded { margin-left: 72px; }
 
         /* Section Headers */
@@ -211,13 +211,13 @@
         .toast.success { border-left: 4px solid var(--success); }
         .toast.error { border-left: 4px solid var(--danger); }
 
-        /* Chat Panel */
-        .chat-panel { position: fixed; bottom: 0; right: 0; width: 280px; height: 360px; background: var(--bg-secondary); border-radius: 12px 0 0 0; z-index: 500; transform: translateY(320px); transition: transform 0.3s ease; box-shadow: -4px -4px 20px rgba(0,0,0,0.3); }
-        .chat-panel:hover, .chat-panel.expanded { transform: translateY(0); }
+        /* Chat Panel - Fixed position on the right */
+        .chat-panel { position: fixed; bottom: 60px; right: 0; width: 280px; height: 360px; background: var(--bg-secondary); border-radius: 12px 0 0 12px; z-index: 950; box-shadow: -4px 4px 20px rgba(0,0,0,0.3); transition: transform 0.3s ease; }
+        .chat-panel.hidden { transform: translateX(100%); }
         .chat-header { padding: 10px 14px; background: var(--bg-tertiary); border-radius: 12px 0 0 0; display: flex; align-items: center; justify-content: space-between; cursor: pointer; }
         .chat-title { font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 6px; }
         .chat-online { font-size: 10px; color: var(--success); }
-        .chat-toggle { background: none; border: none; color: var(--text-secondary); cursor: pointer; font-size: 14px; }
+        .chat-toggle-btn { width: 30px; height: 30px; background: var(--accent); border: none; border-radius: 50%; color: black; cursor: pointer; font-size: 12px; position: absolute; left: -30px; top: 10px; display: flex; align-items: center; justify-content: center; box-shadow: -2px 2px 5px rgba(0,0,0,0.3); }
         .chat-messages { height: 240px; overflow-y: auto; padding: 10px; display: flex; flex-direction: column; gap: 6px; }
         .chat-msg { display: flex; gap: 6px; font-size: 12px; }
         .chat-msg-avatar { width: 20px; height: 20px; border-radius: 50%; background: var(--accent); display: flex; align-items: center; justify-content: center; font-size: 9px; flex-shrink: 0; color: black; }
@@ -227,9 +227,6 @@
         .chat-input-area { padding: 10px; border-top: 1px solid var(--border-color); display: flex; gap: 6px; }
         .chat-input { flex: 1; padding: 6px 10px; background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: 16px; color: white; font-size: 12px; outline: none; }
         .chat-send { width: 30px; height: 30px; background: var(--accent); border: none; border-radius: 50%; color: black; cursor: pointer; font-size: 12px; }
-        .chat-tab { position: absolute; top: -26px; right: 0; background: var(--bg-tertiary); padding: 4px 10px; border-radius: 6px 6px 0 0; font-size: 11px; color: var(--text-secondary); display: flex; align-items: center; gap: 5px; cursor: pointer; }
-        .chat-indicator { width: 6px; height: 6px; background: var(--success); border-radius: 50%; animation: blink 2s infinite; }
-        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
 
         /* Music Player Bar */
         .music-bar { position: fixed; bottom: 0; left: 0; right: 0; height: 60px; background: var(--bg-secondary); border-top: 1px solid var(--border-color); display: flex; align-items: center; padding: 0 20px; gap: 20px; z-index: 1000; margin-left: 240px; transition: margin-left 0.3s; }
@@ -270,12 +267,12 @@
             .short-card { min-width: 130px; max-width: 130px; }
             .channel-header { flex-direction: column; align-items: center; text-align: center; }
             .channel-avatar-large { width: 80px; height: 80px; font-size: 32px; }
-            .chat-panel { width: 100%; height: 300px; border-radius: 12px 12px 0 0; }
+            .chat-panel { width: 240px; }
         }
     </style>
 </head>
 <body>
-    <!-- App - بدون لودینگ -->
+    <!-- App -->
     <div id="app">
         <!-- Header -->
         <header class="header">
@@ -314,12 +311,17 @@
         <!-- Main -->
         <main id="mainContent" class="main-content"><div id="pageContent"></div></main>
 
-        <!-- Chat Panel -->
+        <!-- Chat Panel - Fixed on the right -->
         <div class="chat-panel" id="chatPanel">
-            <div class="chat-tab" onclick="toggleChat()"><span class="chat-indicator"></span><span>Live Chat</span></div>
-            <div class="chat-header" onclick="toggleChat()"><div class="chat-title">💬 Chat <span class="chat-online" id="chatOnline">(12 online)</span></div><button class="chat-toggle" id="chatToggle">▲</button></div>
+            <button class="chat-toggle-btn" onclick="toggleChat()" id="chatToggleBtn">💬</button>
+            <div class="chat-header" onclick="toggleChat()">
+                <div class="chat-title">💬 Live Chat <span class="chat-online" id="chatOnline">(12 online)</span></div>
+            </div>
             <div class="chat-messages" id="chatMessages"></div>
-            <div class="chat-input-area"><input type="text" class="chat-input" id="chatInput" placeholder="Type..." onkeypress="if(event.key==='Enter')sendChat()"><button class="chat-send" onclick="sendChat()">➤</button></div>
+            <div class="chat-input-area">
+                <input type="text" class="chat-input" id="chatInput" placeholder="Type..." onkeypress="if(event.key==='Enter')sendChat()">
+                <button class="chat-send" onclick="sendChat()">➤</button>
+            </div>
         </div>
 
         <!-- Music Player Bar -->
@@ -387,7 +389,7 @@
                 <div class="form-group"><label class="form-label">Type</label><select id="videoType" class="form-select"><option value="video">Video</option><option value="short">Short</option><option value="live">Live Stream</option></select></div>
                 <div class="form-group"><label class="form-label">Channel *</label><select id="videoChannel" class="form-select"><option value="">Select...</option></select></div>
                 <div class="form-group"><label class="form-label">Title *</label><input type="text" id="videoTitle" class="form-input"></div>
-                <div class="form-group"><label class="form-label">URL *</label><input type="text" id="videoUrl" class="form-input" dir="ltr"></div>
+                <div class="form-group"><label class="form-label">URL *</label><input type="text" id="videoUrl" class="form-input" dir="ltr" placeholder="https://youtube.com/watch?v=..."></div>
                 <div class="form-group"><label class="form-label">Category</label><select id="videoCategory" class="form-select"><option value="All">All</option><option value="Gaming">Gaming</option><option value="Music">Music</option><option value="Sports">Sports</option><option value="News">News</option><option value="Entertainment">Entertainment</option></select></div>
                 <div class="form-group"><label class="form-label">Platform</label><select id="videoPlatform" class="form-select"><option value="youtube">🔴 YouTube</option><option value="twitch">🟣 Twitch</option><option value="aparat">🎬 Aparat</option><option value="kick">💚 Kick</option></select></div>
                 <div class="form-group"><label class="form-label">Thumbnail</label><input type="text" id="videoThumbnail" class="form-input" dir="ltr"></div>
@@ -404,10 +406,10 @@
         <div class="modal">
             <div class="modal-header"><span class="modal-title">🎵 Add Music</span><button class="modal-close" onclick="closeModal('addMusicModal')">×</button></div>
             <div class="modal-body">
-                <div class="form-group"><label class="form-label">Title *</label><input type="text" id="musicTitle" class="form-input"></div>
-                <div class="form-group"><label class="form-label">Artist *</label><input type="text" id="musicArtist" class="form-input"></div>
-                <div class="form-group"><label class="form-label">Audio URL *</label><input type="text" id="musicUrl" class="form-input" dir="ltr" placeholder="https://example.com/song.mp3"></div>
-                <div class="form-group"><label class="form-label">Cover URL</label><input type="text" id="musicCover" class="form-input" dir="ltr"></div>
+                <div class="form-group"><label class="form-label">Title *</label><input type="text" id="musicTitleInput" class="form-input"></div>
+                <div class="form-group"><label class="form-label">Artist *</label><input type="text" id="musicArtistInput" class="form-input"></div>
+                <div class="form-group"><label class="form-label">Audio URL *</label><input type="text" id="musicUrlInput" class="form-input" dir="ltr" placeholder="https://example.com/song.mp3"></div>
+                <div class="form-group"><label class="form-label">Cover URL</label><input type="text" id="musicCoverInput" class="form-input" dir="ltr"></div>
             </div>
             <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal('addMusicModal')">Cancel</button><button class="btn btn-primary" onclick="handleAddMusic()">Add</button></div>
         </div>
@@ -481,7 +483,7 @@
         let currentUser = null, users = [], channels = [], videos = [], shorts = [], lives = [], musicList = [], follows = [], bannedUsers = [];
         let currentPage = 'home', currentChannel = null, activeCategory = 'All', channelTab = 'videos';
         let editingItem = null, editingType = null, currentPlayerItem = null;
-        let chatExpanded = false, chatMessages = [];
+        let chatHidden = true, chatMessages = [];
         let musicAudio = null, musicPlaying = false, currentMusicIndex = 0;
         let popupWindow = null;
 
@@ -581,9 +583,9 @@
             renderChat(); 
         }
         function toggleChat() { 
-            chatExpanded=!chatExpanded; 
-            document.getElementById('chatPanel').classList.toggle('expanded',chatExpanded); 
-            document.getElementById('chatToggle').textContent=chatExpanded?'▼':'▲'; 
+            chatHidden = !chatHidden; 
+            document.getElementById('chatPanel').classList.toggle('hidden',chatHidden); 
+            document.getElementById('chatToggleBtn').textContent = chatHidden ? '💬' : '✕';
         }
 
         // Music Player
@@ -651,15 +653,16 @@
             return `${mins}:${secs.toString().padStart(2,'0')}`;
         }
         function handleAddMusic() {
-            const title = document.getElementById('musicTitle').value.trim();
-            const artist = document.getElementById('musicArtist').value.trim();
-            const url = document.getElementById('musicUrl').value.trim();
-            const cover = document.getElementById('musicCover').value.trim();
+            const title = document.getElementById('musicTitleInput').value.trim();
+            const artist = document.getElementById('musicArtistInput').value.trim();
+            const url = document.getElementById('musicUrlInput').value.trim();
+            const cover = document.getElementById('musicCoverInput').value.trim();
             if(!title||!artist||!url) return showToast('Required fields','error');
             musicList.push({id:'m'+Date.now(),title,artist,url,cover,addedBy:currentUser?.id,addedAt:Date.now()});
             saveData();
             closeModal('addMusicModal');
             showToast('Music added');
+            if(!musicAudio) playMusic(0);
         }
 
         // Init
@@ -728,7 +731,7 @@
         function liveCard(v) { const ch=channels.find(x=>x.id===v.channelId); return `<div class="live-card" onclick="openPlayer('${v.id}','live')"><div class="video-thumbnail"><img src="${v.thumbnail||DEFAULT_THUMB}" onerror="this.src='${DEFAULT_THUMB}'"><div class="live-badge">🔴 LIVE</div><div class="live-viewers">👁️ ${formatNum(v.viewers||Math.floor(Math.random()*10000))}</div>${currentUser?.isAdmin?`<div class="admin-controls" style="position:absolute;top:8px;right:8px;display:flex;gap:4px"><button class="btn btn-sm" style="background:rgba(0,0,0,0.8)" onclick="event.stopPropagation();editContent('${v.id}','live')">✏️</button><button class="btn btn-sm btn-danger" onclick="event.stopPropagation();deleteContent('${v.id}','live')">🗑️</button></div>`:''}</div><div class="live-info"><div class="channel-avatar">${getAvatar(ch)}</div><div><div class="live-title">${v.title}</div><div class="live-streamer">${ch?.name||'Unknown'}</div>${v.game?`<div class="live-game">🎮 ${v.game}</div>`:''}</div></div></div>`; }
         function videoCard(v) { const ch=channels.find(x=>x.id===v.channelId); return `<div class="video-card" onclick="openPlayer('${v.id}','video')"><div class="video-thumbnail"><img src="${v.thumbnail||DEFAULT_THUMB}" onerror="this.src='${DEFAULT_THUMB}'">${v.duration?`<span class="video-duration">${v.duration}</span>`:''}<span class="video-platform">${getPlatformIcon(v.platform)} ${getPlatformName(v.platform)}</span>${currentUser?.isAdmin?`<div class="admin-controls" style="position:absolute;top:8px;right:8px;display:flex;gap:4px"><button class="btn btn-sm" style="background:rgba(0,0,0,0.8)" onclick="event.stopPropagation();editContent('${v.id}','video')">✏️</button><button class="btn btn-sm btn-danger" onclick="event.stopPropagation();deleteContent('${v.id}','video')">🗑️</button></div>`:''}</div><div class="video-info"><div class="channel-avatar" onclick="event.stopPropagation();showChannel('${v.channelId}')">${getAvatar(ch)}</div><div class="video-details"><div class="video-title">${v.title}</div><div class="video-meta">${ch?.name||'Unknown'} • ${formatNum(v.views||0)} views</div></div></div></div>`; }
 
-        // Player Modal - Popup Window
+        // Player Popup - با قابلیت پخش ویدیو از خود سرویس
         function openPlayer(id, type) {
             let item;
             if(type==='short')item=shorts.find(x=>x.id===id);
@@ -736,18 +739,30 @@
             else item=videos.find(x=>x.id===id);
             if(!item)return;
             
-            currentPlayerItem=item;
             const ch=channels.find(x=>x.id===item.channelId);
             const isShort=type==='short';
             const isLive=type==='live';
             
-            // Popup dimensions based on content type
-            const width = isShort ? 360 : 720;
-            const height = isShort ? 640 : 480;
+            // تشخیص سرویس و ساخت embed URL
+            let embedUrl = item.url;
+            if(item.url.includes('youtube.com/watch') || item.url.includes('youtu.be')) {
+                const videoId = item.url.includes('youtu.be') ? item.url.split('/').pop() : new URL(item.url).searchParams.get('v');
+                embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+            } else if(item.url.includes('twitch.tv')) {
+                const channelName = item.url.split('/').pop();
+                embedUrl = `https://player.twitch.tv/?channel=${channelName}&parent=${window.location.hostname}&autoplay=true`;
+            } else if(item.url.includes('aparat.com')) {
+                const videoId = item.url.split('/').pop();
+                embedUrl = `https://www.aparat.com/video/video/embed/videohash/${videoId}/vt/frame?autoplay=1`;
+            }
+            
+            // Popup dimensions
+            const width = isShort ? 400 : 800;
+            const height = isShort ? 700 : 500;
             const left = (screen.width - width) / 2;
             const top = (screen.height - height) / 2;
             
-            // Generate popup HTML
+            // Generate popup HTML با پخش مستقیم
             const popupHTML = `
 <!DOCTYPE html>
 <html>
@@ -755,44 +770,29 @@
     <title>${item.title}</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { background: #0f0f0f; color: white; font-family: Arial, sans-serif; min-height: 100vh; display: flex; flex-direction: column; }
-        .player-header { padding: 10px 12px; background: #181818; border-bottom: 1px solid #303030; display: flex; align-items: center; justify-content: space-between; }
-        .player-title { font-size: 13px; font-weight: 600; max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .close-btn { background: none; border: none; color: #aaa; font-size: 20px; cursor: pointer; }
+        body { background: #0f0f0f; color: white; font-family: Arial, sans-serif; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+        .player-header { padding: 8px 12px; background: #181818; border-bottom: 1px solid #303030; display: flex; align-items: center; justify-content: space-between; }
+        .player-title { font-size: 14px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 300px; }
+        .close-btn { background: none; border: none; color: #aaa; font-size: 24px; cursor: pointer; padding: 0 8px; }
         .close-btn:hover { color: white; }
-        .player-area { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #000; position: relative; }
-        .player-area.short { padding: 10px; }
-        .thumbnail { width: 100%; height: 100%; object-fit: contain; max-height: 70vh; }
-        .play-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(0,0,0,0.5); }
-        .play-btn { width: 70px; height: 70px; background: #00ff00; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 28px; cursor: pointer; margin-bottom: 15px; transition: transform 0.2s; color: black; }
-        .play-btn:hover { transform: scale(1.1); }
-        .watch-btn { padding: 10px 24px; background: #00ff00; color: black; border: none; border-radius: 20px; font-size: 14px; font-weight: 600; cursor: pointer; }
-        .watch-btn:hover { background: #00cc00; }
-        .player-info { padding: 10px 12px; background: #181818; }
-        .channel-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
-        .channel-avatar { width: 28px; height: 28px; border-radius: 50%; background: #333; display: flex; align-items: center; justify-content: center; font-size: 14px; }
-        .channel-name { font-size: 12px; font-weight: 500; }
-        .meta-row { display: flex; gap: 12px; font-size: 11px; color: #aaa; }
-        .badge { padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 500; background: #333; }
+        .player-container { flex: 1; background: #000; display: flex; align-items: center; justify-content: center; }
+        iframe { width: 100%; height: 100%; border: none; }
+        .player-info { padding: 10px 12px; background: #181818; border-top: 1px solid #303030; }
+        .channel-row { display: flex; align-items: center; gap: 10px; }
+        .channel-avatar { width: 32px; height: 32px; border-radius: 50%; background: #333; display: flex; align-items: center; justify-content: center; font-size: 16px; }
+        .channel-name { font-size: 14px; font-weight: 500; }
+        .badge { padding: 3px 10px; border-radius: 4px; font-size: 11px; font-weight: 600; background: #333; }
         .badge-live { background: #ff0000; }
         .badge-short { background: #9146ff; }
-        .fullscreen-btn { background: none; border: none; color: white; font-size: 20px; cursor: pointer; margin-left: auto; }
     </style>
 </head>
 <body>
     <div class="player-header">
         <div class="player-title">${item.title}</div>
-        <div style="display:flex; gap:8px;">
-            <button class="fullscreen-btn" onclick="toggleFullscreen()">⛶</button>
-            <button class="close-btn" onclick="window.close()">✕</button>
-        </div>
+        <button class="close-btn" onclick="window.close()">✕</button>
     </div>
-    <div class="player-area ${isShort?'short':''}">
-        <img class="thumbnail" src="${item.thumbnail||'${DEFAULT_THUMB}'}" onerror="this.src='${DEFAULT_THUMB}'">
-        <div class="play-overlay">
-            <div class="play-btn" onclick="window.open('${item.url}','_blank')">▶</div>
-            <button class="watch-btn" onclick="window.open('${item.url}','_blank')">🚀 Watch on ${getPlatformName(item.platform)}</button>
-        </div>
+    <div class="player-container">
+        <iframe src="${embedUrl}" allowfullscreen allow="autoplay; encrypted-media"></iframe>
     </div>
     <div class="player-info">
         <div class="channel-row">
@@ -801,21 +801,7 @@
             ${isLive?'<span class="badge badge-live">🔴 LIVE</span>':''}
             ${isShort?'<span class="badge badge-short">⚡ SHORT</span>':''}
         </div>
-        <div class="meta-row">
-            <span>👁️ ${formatNum(item.views||0)}</span>
-            ${item.duration?`<span>⏱️ ${item.duration}</span>`:''}
-            ${isLive?`<span>👥 ${formatNum(item.viewers||0)}</span>`:''}
-        </div>
     </div>
-    <script>
-        function toggleFullscreen() {
-            if(document.fullscreenElement) {
-                document.exitFullscreen();
-            } else {
-                document.body.requestFullscreen();
-            }
-        }
-    <\/script>
 </body>
 </html>`;
             
@@ -938,17 +924,100 @@
         function deleteChannel(id) { if(confirm('Delete?')){channels=channels.filter(c=>c.id!==id);videos=videos.filter(v=>v.channelId!==id);shorts=shorts.filter(v=>v.channelId!==id);lives=lives.filter(v=>v.channelId!==id);saveData();showHome();showToast('Deleted');} }
 
         // Content
-        function handleAddVideo() { const type=document.getElementById('videoType').value,ch=document.getElementById('videoChannel').value,t=document.getElementById('videoTitle').value.trim(),u=document.getElementById('videoUrl').value.trim(); if(!ch||!t||!u)return showToast('Required','error'); const item={id:'v'+Date.now(),channelId:ch,title:t,url:u,category:document.getElementById('videoCategory').value,platform:document.getElementById('videoPlatform').value,thumbnail:document.getElementById('videoThumbnail').value.trim(),duration:document.getElementById('videoDuration').value.trim(),game:document.getElementById('videoGame').value.trim(),description:document.getElementById('videoDesc').value.trim(),type:type,views:Math.floor(Math.random()*10000),viewers:Math.floor(Math.random()*5000),createdAt:Date.now()}; if(type==='short')shorts.push(item);else if(type==='live')lives.push(item);else videos.push(item); saveData();closeModal('addVideoModal');render();showToast('Added!'); }
+        function handleAddVideo() { 
+            const type=document.getElementById('videoType').value;
+            const ch=document.getElementById('videoChannel').value;
+            const t=document.getElementById('videoTitle').value.trim();
+            const u=document.getElementById('videoUrl').value.trim(); 
+            if(!ch||!t||!u) return showToast('Required fields','error'); 
+            const item={
+                id:'v'+Date.now(),
+                channelId:ch,
+                title:t,
+                url:u,
+                category:document.getElementById('videoCategory').value,
+                platform:document.getElementById('videoPlatform').value,
+                thumbnail:document.getElementById('videoThumbnail').value.trim(),
+                duration:document.getElementById('videoDuration').value.trim(),
+                game:document.getElementById('videoGame').value.trim(),
+                description:document.getElementById('videoDesc').value.trim(),
+                type:type,
+                views:Math.floor(Math.random()*10000),
+                viewers:Math.floor(Math.random()*5000),
+                createdAt:Date.now()
+            }; 
+            if(type==='short') shorts.push(item);
+            else if(type==='live') lives.push(item);
+            else videos.push(item); 
+            saveData();
+            closeModal('addVideoModal');
+            render();
+            showToast('Added!'); 
+        }
         function editContent(id,type) { const arr=type==='short'?shorts:type==='live'?lives:videos; editingItem=arr.find(v=>v.id===id);editingType=type; document.getElementById('editTitle').textContent='✏️ Edit'; document.getElementById('editDeleteBtn').style.display='inline-flex'; document.getElementById('editBody').innerHTML=`<div class="form-group"><label class="form-label">Channel</label><select id="editChannel" class="form-select">${channels.map(c=>`<option value="${c.id}"${c.id===editingItem.channelId?' selected':''}>${c.name}</option>`).join('')}</select></div><div class="form-group"><label class="form-label">Title</label><input type="text" id="editTitle" class="form-input" value="${editingItem.title}"></div><div class="form-group"><label class="form-label">URL</label><input type="text" id="editUrl" class="form-input" value="${editingItem.url}" dir="ltr"></div><div class="form-group"><label class="form-label">Thumbnail</label><input type="text" id="editThumbnail" class="form-input" value="${editingItem.thumbnail||''}" dir="ltr"></div><div class="form-group"><label class="form-label">Duration</label><input type="text" id="editDuration" class="form-input" value="${editingItem.duration||''}" dir="ltr"></div>`; openModal('editModal'); }
         function deleteContent(id,type) { if(confirm('Delete?')){if(type==='short')shorts=shorts.filter(v=>v.id!==id);else if(type==='live')lives=lives.filter(v=>v.id!==id);else videos=videos.filter(v=>v.id!==id);saveData();render();showToast('Deleted');} }
 
         // Edit Save
-        function saveEdit() { if(editingType==='channel'){editingItem.name=document.getElementById('editName').value;editingItem.handle=document.getElementById('editHandle').value;editingItem.description=document.getElementById('editDesc').value;editingItem.avatar=document.getElementById('editAvatar').value;editingItem.banner=document.getElementById('editBanner').value;}else{editingItem.channelId=document.getElementById('editChannel').value;editingItem.title=document.getElementById('editTitle').value;editingItem.url=document.getElementById('editUrl').value;editingItem.thumbnail=document.getElementById('editThumbnail').value;editingItem.duration=document.getElementById('editDuration').value;} saveData();closeModal('editModal');render();showToast('Saved!'); }
-        function deleteFromEdit() { if(editingType==='channel')deleteChannel(editingItem.id);else deleteContent(editingItem.id,editingType);closeModal('editModal'); }
+        function saveEdit() { 
+            if(editingType==='channel'){
+                editingItem.name=document.getElementById('editName').value;
+                editingItem.handle=document.getElementById('editHandle').value;
+                editingItem.description=document.getElementById('editDesc').value;
+                editingItem.avatar=document.getElementById('editAvatar').value;
+                editingItem.banner=document.getElementById('editBanner').value;
+            }else if(editingType==='user'){
+                currentUser.avatar=document.getElementById('editAvatar').value;
+                if(!currentUser.social) currentUser.social={};
+                currentUser.social.twitter=document.getElementById('editTwitter').value;
+                currentUser.social.instagram=document.getElementById('editInstagram').value;
+                currentUser.social.github=document.getElementById('editGithub').value;
+                const userIndex=users.findIndex(u=>u.id===currentUser.id);
+                if(userIndex>=0) users[userIndex]=currentUser;
+            }else{
+                editingItem.channelId=document.getElementById('editChannel').value;
+                editingItem.title=document.getElementById('editTitle').value;
+                editingItem.url=document.getElementById('editUrl').value;
+                editingItem.thumbnail=document.getElementById('editThumbnail').value;
+                editingItem.duration=document.getElementById('editDuration').value;
+            } 
+            saveData();
+            closeModal('editModal');
+            render();
+            showToast('Saved!'); 
+        }
+        function deleteFromEdit() { if(editingType==='channel')deleteChannel(editingItem.id);else if(editingType==='user'){}else deleteContent(editingItem.id,editingType);closeModal('editModal'); }
 
         // Admin
         function openAdmin() { openModal('adminModal'); renderAdminChannels(); }
-        function switchAdminTab(t) { document.querySelectorAll('.admin-tab').forEach(x=>x.classList.remove('active')); document.getElementById('adminChannelsTab').style.display='none'; document.getElementById('adminVideosTab').style.display='none'; document.getElementById('adminUsersTab').style.display='none'; document.getElementById('adminMusicTab').style.display='none'; document.getElementById('adminBannedTab').style.display='none'; if(t==='channels'){document.querySelectorAll('.admin-tab')[0].classList.add('active');document.getElementById('adminChannelsTab').style.display='block';renderAdminChannels();}else if(t==='videos'){document.querySelectorAll('.admin-tab')[1].classList.add('active');document.getElementById('adminVideosTab').style.display='block';renderAdminVideos();}else if(t==='users'){document.querySelectorAll('.admin-tab')[2].classList.add('active');document.getElementById('adminUsersTab').style.display='block';renderAdminUsers();}else if(t==='music'){document.querySelectorAll('.admin-tab')[3].classList.add('active');document.getElementById('adminMusicTab').style.display='block';renderAdminMusic();}else{document.querySelectorAll('.admin-tab')[4].classList.add('active');document.getElementById('adminBannedTab').style.display='block';renderAdminBanned();} }
+        function switchAdminTab(t) { 
+            document.querySelectorAll('.admin-tab').forEach(x=>x.classList.remove('active')); 
+            document.getElementById('adminChannelsTab').style.display='none'; 
+            document.getElementById('adminVideosTab').style.display='none'; 
+            document.getElementById('adminUsersTab').style.display='none'; 
+            document.getElementById('adminMusicTab').style.display='none'; 
+            document.getElementById('adminBannedTab').style.display='none'; 
+            if(t==='channels'){
+                document.querySelectorAll('.admin-tab')[0].classList.add('active');
+                document.getElementById('adminChannelsTab').style.display='block';
+                renderAdminChannels();
+            }else if(t==='videos'){
+                document.querySelectorAll('.admin-tab')[1].classList.add('active');
+                document.getElementById('adminVideosTab').style.display='block';
+                renderAdminVideos();
+            }else if(t==='users'){
+                document.querySelectorAll('.admin-tab')[2].classList.add('active');
+                document.getElementById('adminUsersTab').style.display='block';
+                renderAdminUsers();
+            }else if(t==='music'){
+                document.querySelectorAll('.admin-tab')[3].classList.add('active');
+                document.getElementById('adminMusicTab').style.display='block';
+                renderAdminMusic();
+            }else{
+                document.querySelectorAll('.admin-tab')[4].classList.add('active');
+                document.getElementById('adminBannedTab').style.display='block';
+                renderAdminBanned();
+            } 
+        }
         function renderAdminChannels() { document.getElementById('adminChannelsTab').innerHTML=channels.length?channels.map(c=>`<div class="admin-item"><div class="admin-item-left"><div class="channel-avatar">${getAvatar(c)}</div><div><div style="font-weight:500">${c.name}</div></div></div><div><button class="btn btn-sm btn-ghost" onclick="closeModal('adminModal');editChannel('${c.id}')">✏️</button><button class="btn btn-sm btn-danger" onclick="deleteChannel('${c.id}');renderAdminChannels()">🗑️</button></div></div>`).join(''):'<div class="empty-state"><div class="empty-title">Empty</div></div>'; }
         function renderAdminVideos() { const all=[...videos.map(v=>({...v,_type:'video'})),...shorts.map(v=>({...v,_type:'short'})),...lives.map(v=>({...v,_type:'live'}))]; document.getElementById('adminVideosTab').innerHTML=all.length?all.map(v=>`<div class="admin-item"><div class="admin-item-left"><div style="width:40px;height:22px;background:var(--bg-tertiary);border-radius:4px;overflow:hidden"><img src="${v.thumbnail||DEFAULT_THUMB}" style="width:100%;height:100%;object-fit:cover"></div><div><div style="font-weight:500;font-size:12px">${v.title.substring(0,25)}...</div><div style="font-size:10px;color:var(--text-secondary)">${v._type}</div></div></div><div><button class="btn btn-sm btn-ghost" onclick="closeModal('adminModal');editContent('${v.id}','${v._type}')">✏️</button><button class="btn btn-sm btn-danger" onclick="deleteContent('${v.id}','${v._type}');renderAdminVideos()">🗑️</button></div></div>`).join(''):'<div class="empty-state"><div class="empty-title">Empty</div></div>'; }
         function renderAdminUsers() { document.getElementById('adminUsersTab').innerHTML=users.map(u=>`<div class="admin-item"><div class="admin-item-left"><div class="user-avatar" style="background:${u.avatar?'transparent':u.color}">${u.avatar?`<img src="${u.avatar}">`:u.username[0].toUpperCase()}</div><div><div style="font-weight:500">${u.username} ${u.isAdmin?'<span class="badge badge-admin">Admin</span>':''}</div></div></div>${!u.isAdmin?`<button class="btn btn-sm ${u.isBanned?'btn-primary':'btn-danger'}" onclick="toggleBan('${u.id}')">${u.isBanned?'Unban':'Ban'}</button>`:''}</div>`).join(''); }
@@ -956,7 +1025,7 @@
         function renderAdminBanned() { document.getElementById('adminBannedTab').innerHTML=bannedUsers.length?bannedUsers.map(b=>`<div class="admin-item"><div class="admin-item-left"><div>🚫</div><div><div style="font-weight:500">${b.username}</div><div style="font-size:10px">Banned by: ${b.bannedBy} - ${new Date(b.date).toLocaleDateString()}</div></div></div><div><button class="btn btn-sm btn-primary" onclick="unbanUser('${b.id}')">Unban</button></div></div>`).join(''):'<div class="empty-state"><div class="empty-title">No banned users</div></div>'; }
         function toggleBan(id) { const u=users.find(x=>x.id===id); if(u){u.isBanned=!u.isBanned;if(u.isBanned){bannedUsers.push({id:u.id,username:u.username,reason:'Admin ban',bannedBy:currentUser?.username,date:Date.now()});}else{bannedUsers=bannedUsers.filter(b=>b.id!==id);}saveData();renderAdminUsers();renderAdminBanned();showToast(u.isBanned?'Banned':'Unbanned');} }
         function unbanUser(id) { const u=users.find(x=>x.id===id); if(u){u.isBanned=false;bannedUsers=bannedUsers.filter(b=>b.id!==id);saveData();renderAdminUsers();renderAdminBanned();showToast('Unbanned');} }
-        function deleteMusic(id) { if(confirm('Delete music?')){musicList=musicList.filter(m=>m.id!==id);saveData();renderAdminMusic();if(musicAudio){musicAudio.pause();musicAudio=null;musicPlaying=false;document.getElementById('musicTitle').textContent='No music playing';}} }
+        function deleteMusic(id) { if(confirm('Delete music?')){musicList=musicList.filter(m=>m.id!==id);saveData();renderAdminMusic();if(musicAudio && musicList.length===0){musicAudio.pause();musicAudio=null;musicPlaying=false;document.getElementById('musicTitle').textContent='No music playing';}} }
 
         // Modal helpers
         const openModal=id=>document.getElementById(id).classList.add('active');
@@ -987,14 +1056,16 @@
             const qrDiv = document.getElementById('qrcode');
             qrDiv.innerHTML = '';
             const url = window.location.href;
-            new QRCode(qrDiv, {
-                text: url,
-                width: 180,
-                height: 180,
-                colorDark: "#000000",
-                colorLight: "#ffffff",
-                correctLevel: QRCode.CorrectLevel.H
-            });
+            if(typeof QRCode !== 'undefined') {
+                new QRCode(qrDiv, {
+                    text: url,
+                    width: 180,
+                    height: 180,
+                    colorDark: "#000000",
+                    colorLight: "#ffffff",
+                    correctLevel: QRCode.CorrectLevel.H
+                });
+            }
         }
         function shareSocial(platform) {
             const url = encodeURIComponent(window.location.href);
@@ -1034,12 +1105,12 @@
                     const data = JSON.parse(e.target.result);
                     if(data.users) users = data.users;
                     if(data.channels) channels = data.channels;
-                    if(data.videos) videos = data.videos;
-                    if(data.shorts) shorts = data.shorts;
-                    if(data.lives) lives = data.lives;
-                    if(data.musicList) musicList = data.musicList;
-                    if(data.follows) follows = data.follows;
-                    if(data.bannedUsers) bannedUsers = data.bannedUsers;
+                    if(data.videos) videos = data.videos || [];
+                    if(data.shorts) shorts = data.shorts || [];
+                    if(data.lives) lives = data.lives || [];
+                    if(data.musicList) musicList = data.musicList || [];
+                    if(data.follows) follows = data.follows || [];
+                    if(data.bannedUsers) bannedUsers = data.bannedUsers || [];
                     saveData();
                     render();
                     showToast('Data imported');
