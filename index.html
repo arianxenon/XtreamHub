@@ -15,22 +15,17 @@
             --text-primary: #ffffff;
             --text-secondary: #aaaaaa;
             --text-muted: #717171;
-            --accent: #ff0000;
-            --accent-hover: #cc0000;
+            --accent: #00ff00;
+            --accent-hover: #00cc00;
             --danger: #ff4757;
             --success: #00b894;
+            --live: #ff0000;
             --purple: #9146ff;
         }
         body { font-family: 'Roboto', Arial, sans-serif; background: var(--bg-primary); color: var(--text-primary); min-height: 100vh; }
 
-        /* Top Share Bar */
-        .share-bar { position: fixed; top: 0; left: 0; right: 0; height: 40px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; gap: 10px; z-index: 2000; }
-        .share-bar-btn { padding: 6px 16px; background: rgba(255,255,255,0.2); border: none; border-radius: 20px; color: white; font-size: 12px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.2s; }
-        .share-bar-btn:hover { background: rgba(255,255,255,0.3); transform: scale(1.05); }
-        .share-bar-btn.primary { background: white; color: #764ba2; }
-
         /* Header */
-        .header { height: 56px; background: var(--bg-secondary); display: flex; align-items: center; justify-content: space-between; padding: 0 16px; position: fixed; top: 40px; left: 0; right: 0; z-index: 1000; }
+        .header { height: 56px; background: var(--bg-secondary); display: flex; align-items: center; justify-content: space-between; padding: 0 16px; position: fixed; top: 0; left: 0; right: 0; z-index: 1000; }
         .header-left { display: flex; align-items: center; gap: 16px; }
         .menu-btn { width: 40px; height: 40px; background: transparent; border: none; color: white; cursor: pointer; border-radius: 50%; font-size: 20px; }
         .menu-btn:hover { background: var(--bg-hover); }
@@ -50,18 +45,17 @@
 
         /* Buttons */
         .btn { padding: 10px 20px; border: none; border-radius: 20px; cursor: pointer; font-size: 14px; font-weight: 500; display: inline-flex; align-items: center; gap: 8px; transition: all 0.2s; }
-        .btn-primary { background: var(--accent); color: white; }
+        .btn-primary { background: var(--accent); color: black; }
         .btn-primary:hover { background: var(--accent-hover); }
         .btn-secondary { background: var(--bg-tertiary); color: white; }
         .btn-ghost { background: transparent; color: var(--text-secondary); }
         .btn-ghost:hover { background: var(--bg-hover); color: white; }
         .btn-danger { background: var(--danger); color: white; }
-        .btn-success { background: var(--success); color: white; }
         .btn-sm { padding: 6px 12px; font-size: 12px; }
         .btn-icon { width: 40px; height: 40px; padding: 0; border-radius: 50%; justify-content: center; }
 
         /* Sidebar */
-        .sidebar { position: fixed; top: 96px; left: 0; width: 240px; height: calc(100vh - 96px); background: var(--bg-secondary); overflow-y: auto; padding: 12px 0; z-index: 100; transition: width 0.3s; }
+        .sidebar { position: fixed; top: 56px; left: 0; width: 240px; height: calc(100vh - 56px); background: var(--bg-secondary); overflow-y: auto; padding: 12px 0; z-index: 100; transition: width 0.3s; }
         .sidebar.collapsed { width: 72px; }
         .sidebar-item { display: flex; align-items: center; gap: 20px; padding: 10px 16px; cursor: pointer; color: var(--text-primary); border-radius: 8px; margin: 0 8px; }
         .sidebar-item:hover { background: var(--bg-hover); }
@@ -72,20 +66,23 @@
         .sidebar.collapsed .sidebar-item { justify-content: center; gap: 0; }
         .sidebar-divider { height: 1px; background: var(--border-color); margin: 12px 16px; }
         .sidebar-section { padding: 8px 16px; font-size: 12px; font-weight: 500; color: var(--text-secondary); text-transform: uppercase; }
+        .sidebar.collapsed .sidebar-section { display: none; }
 
         /* Main Content */
-        .main-content { margin-top: 96px; margin-left: 240px; padding: 20px; min-height: calc(100vh - 96px); transition: margin-left 0.3s; padding-right: 80px; }
+        .main-content { margin-top: 56px; margin-left: 240px; padding: 20px; min-height: calc(100vh - 56px); transition: margin-left 0.3s; padding-right: 80px; }
         .main-content.expanded { margin-left: 72px; }
 
         /* Section Headers */
         .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
         .section-title { font-size: 20px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+        .see-all { color: var(--text-secondary); font-size: 14px; cursor: pointer; }
+        .see-all:hover { color: white; }
 
         /* Category Pills */
         .category-pills { display: flex; gap: 10px; padding: 12px 0; margin-bottom: 20px; overflow-x: auto; }
         .category-pill { padding: 8px 16px; background: var(--bg-tertiary); border: none; border-radius: 8px; color: white; font-size: 14px; cursor: pointer; white-space: nowrap; transition: all 0.2s; }
         .category-pill:hover { background: var(--bg-hover); }
-        .category-pill.active { background: white; color: black; }
+        .category-pill.active { background: var(--accent); color: black; }
 
         /* Stats */
         .stats-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 12px; margin-bottom: 24px; }
@@ -97,6 +94,8 @@
         .video-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; margin-bottom: 32px; }
         .video-card { cursor: pointer; transition: transform 0.2s; }
         .video-card:hover { transform: scale(1.02); }
+        .video-card .admin-controls { opacity: 0; transition: opacity 0.2s; }
+        .video-card:hover .admin-controls { opacity: 1; }
         .video-thumbnail { position: relative; width: 100%; padding-top: 56.25%; background: var(--bg-tertiary); border-radius: 12px; overflow: hidden; }
         .video-thumbnail img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; }
         .video-duration { position: absolute; bottom: 8px; right: 8px; background: rgba(0,0,0,0.9); padding: 2px 6px; border-radius: 4px; font-size: 12px; font-weight: 500; }
@@ -107,40 +106,63 @@
         .video-details { flex: 1; min-width: 0; }
         .video-title { font-size: 14px; font-weight: 500; margin-bottom: 4px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.4; }
         .video-meta { font-size: 12px; color: var(--text-secondary); }
-        .popup-btn-overlay { position: absolute; top: 8px; right: 8px; z-index: 10; opacity: 0; transition: opacity 0.2s; }
-        .video-card:hover .popup-btn-overlay { opacity: 1; }
-        .admin-controls { position: absolute; bottom: 8px; right: 8px; display: flex; gap: 4px; z-index: 10; opacity: 0; transition: opacity 0.2s; }
-        .video-card:hover .admin-controls { opacity: 1; }
 
-        /* Shorts */
+        /* Shorts Section */
         .shorts-section { margin-bottom: 32px; }
-        .shorts-grid { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 12px; flex-wrap: wrap; }
-        .short-card { min-width: 180px; max-width: 180px; cursor: pointer; transition: transform 0.2s; position: relative; }
+        .shorts-grid { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 12px; }
+        .short-card { min-width: 180px; max-width: 180px; cursor: pointer; transition: transform 0.2s; }
         .short-card:hover { transform: scale(1.05); }
         .short-thumbnail { position: relative; width: 100%; padding-top: 177%; background: var(--bg-tertiary); border-radius: 12px; overflow: hidden; }
         .short-thumbnail img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; }
         .short-overlay { position: absolute; bottom: 0; left: 0; right: 0; padding: 12px; background: linear-gradient(transparent, rgba(0,0,0,0.9)); }
         .short-title { font-size: 13px; font-weight: 500; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
         .short-views { font-size: 11px; color: var(--text-secondary); margin-top: 4px; }
-        .short-badge { position: absolute; top: 8px; left: 8px; background: var(--accent); padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 600; z-index: 5; }
+        .short-badge { position: absolute; top: 8px; left: 8px; background: var(--accent); padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 600; color: black; }
 
-        /* Live */
+        /* Live Section */
         .live-section { margin-bottom: 32px; }
         .live-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
         .live-card { cursor: pointer; transition: transform 0.2s; position: relative; }
         .live-card:hover { transform: scale(1.02); }
-        .live-badge { position: absolute; top: 8px; left: 8px; background: #ff0000; padding: 4px 10px; border-radius: 4px; font-size: 12px; font-weight: 600; display: flex; align-items: center; gap: 4px; animation: pulse 2s infinite; z-index: 5; }
+        .live-badge { position: absolute; top: 8px; left: 8px; background: var(--live); padding: 4px 10px; border-radius: 4px; font-size: 12px; font-weight: 600; display: flex; align-items: center; gap: 4px; animation: pulse 2s infinite; }
         @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
-        .live-viewers { position: absolute; bottom: 8px; left: 8px; background: rgba(0,0,0,0.8); padding: 4px 10px; border-radius: 4px; font-size: 12px; z-index: 5; }
+        .live-viewers { position: absolute; bottom: 8px; left: 8px; background: rgba(0,0,0,0.8); padding: 4px 10px; border-radius: 4px; font-size: 12px; display: flex; align-items: center; gap: 4px; }
         .live-info { display: flex; gap: 12px; padding: 12px 0; }
+        .live-title { font-size: 14px; font-weight: 500; margin-bottom: 4px; }
+        .live-streamer { font-size: 12px; color: var(--text-secondary); }
+        .live-game { font-size: 11px; color: var(--purple); margin-top: 2px; }
+
+        /* Add Card */
+        .add-card { background: var(--bg-secondary); border: 2px dashed var(--border-color); border-radius: 12px; min-height: 150px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; }
+        .add-card:hover { border-color: var(--accent); background: var(--bg-hover); }
+        .add-card-icon { font-size: 36px; margin-bottom: 8px; }
+        .add-card-text { color: var(--text-secondary); font-size: 13px; }
 
         /* Channel Page */
         .channel-banner { width: 100%; height: 160px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 12px; margin-bottom: 20px; overflow: hidden; }
+        .channel-banner img { width: 100%; height: 100%; object-fit: cover; }
+        .channel-header { display: flex; align-items: flex-start; gap: 20px; margin-bottom: 24px; }
         .channel-avatar-large { width: 120px; height: 120px; border-radius: 50%; background: var(--bg-tertiary); display: flex; align-items: center; justify-content: center; font-size: 48px; overflow: hidden; flex-shrink: 0; border: 4px solid var(--bg-primary); }
+        .channel-avatar-large img { width: 100%; height: 100%; object-fit: cover; }
+        .channel-info { flex: 1; }
+        .channel-name { font-size: 24px; font-weight: bold; margin-bottom: 6px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+        .channel-handle { color: var(--text-secondary); font-size: 14px; margin-bottom: 10px; }
+        .channel-stats { display: flex; gap: 16px; color: var(--text-secondary); font-size: 13px; margin-bottom: 10px; }
+        .channel-actions { display: flex; gap: 12px; margin-top: 10px; }
         .channel-tabs { display: flex; border-bottom: 1px solid var(--border-color); margin-bottom: 20px; }
-        .channel-tab { padding: 12px 24px; background: none; border: none; color: var(--text-secondary); font-size: 14px; cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; font-weight: 500; }
+        .channel-tab { padding: 12px 24px; background: none; border: none; color: var(--text-secondary); font-size: 14px; cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; transition: all 0.2s; font-weight: 500; }
         .channel-tab:hover { color: white; }
-        .channel-tab.active { color: white; border-bottom-color: white; }
+        .channel-tab.active { color: white; border-bottom-color: var(--accent); }
+
+        /* About Section */
+        .about-section { background: var(--bg-secondary); border-radius: 12px; padding: 20px; margin-bottom: 20px; }
+        .about-title { font-size: 18px; font-weight: 600; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+        .about-description { color: var(--text-secondary); line-height: 1.6; margin-bottom: 16px; }
+        .about-info-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 10px; }
+        .about-info-item { display: flex; align-items: center; gap: 10px; padding: 10px; background: var(--bg-tertiary); border-radius: 8px; }
+        .about-info-icon { font-size: 20px; }
+        .about-info-label { font-size: 11px; color: var(--text-muted); }
+        .about-info-value { font-size: 13px; font-weight: 500; }
 
         /* Empty State */
         .empty-state { text-align: center; padding: 50px 32px; color: var(--text-secondary); }
@@ -148,7 +170,7 @@
         .empty-title { font-size: 18px; font-weight: 600; margin-bottom: 6px; color: var(--text-primary); }
 
         /* Modal */
-        .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.9); display: none; align-items: center; justify-content: center; z-index: 3000; }
+        .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.9); display: none; align-items: center; justify-content: center; z-index: 2000; }
         .modal-overlay.active { display: flex; }
         .modal { background: var(--bg-secondary); border-radius: 12px; width: 90%; max-width: 480px; max-height: 90vh; overflow-y: auto; }
         .modal-lg { max-width: 900px; }
@@ -164,9 +186,8 @@
         .form-label { display: block; margin-bottom: 6px; color: var(--text-secondary); font-size: 13px; font-weight: 500; }
         .form-input { width: 100%; padding: 10px 14px; background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: 8px; color: white; font-size: 14px; outline: none; }
         .form-input:focus { border-color: var(--accent); }
-        .form-select { width: 100%; padding: 10px 14px; background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: 8px; color: white; font-size: 14px; cursor: pointer; }
+        .form-select { width: 100%; padding: 10px 14px; background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: 8px; color: white; font-size: 14px; outline: none; cursor: pointer; }
         .form-error { color: var(--danger); font-size: 13px; margin-top: 8px; text-align: center; }
-        textarea.form-input { resize: vertical; min-height: 80px; }
 
         /* Tabs */
         .tabs { display: flex; background: var(--bg-tertiary); border-radius: 8px; margin-bottom: 16px; padding: 4px; }
@@ -176,92 +197,94 @@
         /* Admin */
         .admin-tabs { display: flex; gap: 8px; margin-bottom: 16px; }
         .admin-tab { flex: 1; padding: 10px; background: var(--bg-tertiary); border: none; border-radius: 8px; color: var(--text-secondary); cursor: pointer; font-size: 13px; }
-        .admin-tab.active { background: var(--accent); color: white; }
-        .admin-list { max-height: 400px; overflow-y: auto; }
+        .admin-tab.active { background: var(--accent); color: black; }
+        .admin-list { max-height: 300px; overflow-y: auto; }
         .admin-item { display: flex; align-items: center; justify-content: space-between; padding: 10px; background: var(--bg-tertiary); border-radius: 8px; margin-bottom: 8px; }
         .admin-item-left { display: flex; align-items: center; gap: 10px; }
-        .badge { font-size: 10px; padding: 2px 8px; border-radius: 4px; font-weight: 500; margin-left: 6px; }
-        .badge-admin { background: var(--accent); }
+        .badge { font-size: 10px; padding: 2px 8px; border-radius: 4px; font-weight: 500; }
+        .badge-admin { background: var(--accent); color: black; }
         .badge-banned { background: var(--danger); }
 
         /* Toast */
-        .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: var(--bg-secondary); color: white; padding: 12px 20px; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.4); display: none; align-items: center; gap: 10px; z-index: 4000; }
+        .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: var(--bg-secondary); color: white; padding: 12px 20px; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.4); display: none; align-items: center; gap: 10px; z-index: 3000; }
         .toast.show { display: flex; }
         .toast.success { border-left: 4px solid var(--success); }
         .toast.error { border-left: 4px solid var(--danger); }
 
         /* Chat Panel */
-        .chat-panel { position: fixed; bottom: 0; right: 0; width: 300px; height: 400px; background: var(--bg-secondary); border-radius: 12px 0 0 0; z-index: 500; transform: translateY(360px); transition: transform 0.3s ease; box-shadow: -4px -4px 20px rgba(0,0,0,0.3); }
+        .chat-panel { position: fixed; bottom: 0; right: 0; width: 280px; height: 360px; background: var(--bg-secondary); border-radius: 12px 0 0 0; z-index: 500; transform: translateY(320px); transition: transform 0.3s ease; box-shadow: -4px -4px 20px rgba(0,0,0,0.3); }
         .chat-panel:hover, .chat-panel.expanded { transform: translateY(0); }
         .chat-header { padding: 10px 14px; background: var(--bg-tertiary); border-radius: 12px 0 0 0; display: flex; align-items: center; justify-content: space-between; cursor: pointer; }
         .chat-title { font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 6px; }
-        .chat-messages { height: 280px; overflow-y: auto; padding: 10px; display: flex; flex-direction: column; gap: 6px; }
+        .chat-online { font-size: 10px; color: var(--success); }
+        .chat-toggle { background: none; border: none; color: var(--text-secondary); cursor: pointer; font-size: 14px; }
+        .chat-messages { height: 240px; overflow-y: auto; padding: 10px; display: flex; flex-direction: column; gap: 6px; }
         .chat-msg { display: flex; gap: 6px; font-size: 12px; }
-        .chat-msg-avatar { width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 9px; flex-shrink: 0; }
+        .chat-msg-avatar { width: 20px; height: 20px; border-radius: 50%; background: var(--accent); display: flex; align-items: center; justify-content: center; font-size: 9px; flex-shrink: 0; color: black; }
         .chat-msg-content { flex: 1; }
-        .chat-msg-user { color: var(--text-secondary); font-size: 10px; display: flex; align-items: center; gap: 4px; }
+        .chat-msg-user { color: var(--text-secondary); font-size: 10px; }
         .chat-msg-text { color: white; word-break: break-word; }
         .chat-input-area { padding: 10px; border-top: 1px solid var(--border-color); display: flex; gap: 6px; }
         .chat-input { flex: 1; padding: 6px 10px; background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: 16px; color: white; font-size: 12px; outline: none; }
-        .chat-send { width: 30px; height: 30px; background: var(--accent); border: none; border-radius: 50%; color: white; cursor: pointer; font-size: 12px; }
-        .chat-admin-btn { padding: 2px 6px; font-size: 9px; border-radius: 4px; border: none; cursor: pointer; }
+        .chat-send { width: 30px; height: 30px; background: var(--accent); border: none; border-radius: 50%; color: black; cursor: pointer; font-size: 12px; }
+        .chat-tab { position: absolute; top: -26px; right: 0; background: var(--bg-tertiary); padding: 4px 10px; border-radius: 6px 6px 0 0; font-size: 11px; color: var(--text-secondary); display: flex; align-items: center; gap: 5px; cursor: pointer; }
+        .chat-indicator { width: 6px; height: 6px; background: var(--success); border-radius: 50%; animation: blink 2s infinite; }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
 
-        /* Mini Player */
-        .mini-player { position: fixed; bottom: 20px; left: 20px; width: 320px; background: var(--bg-secondary); border-radius: 12px; box-shadow: 0 8px 32px rgba(0,0,0,0.5); z-index: 9999; overflow: hidden; display: none; border: 1px solid var(--border-color); }
-        .mini-player.active { display: block; animation: slideUp 0.3s ease; }
-        @keyframes slideUp { from { transform: translateY(100px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-        .mini-player-header { padding: 8px 12px; background: linear-gradient(135deg, #181818 0%, #212121 100%); display: flex; align-items: center; justify-content: space-between; }
-        .mini-player-title { font-size: 12px; font-weight: 600; max-width: 180px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .mini-player-close { background: none; border: none; color: #aaa; font-size: 18px; cursor: pointer; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
-        .mini-player-close:hover { background: #333; color: white; }
-        .mini-player-video { width: 100%; aspect-ratio: 16/9; background: #000; }
-        .mini-player-video iframe { width: 100%; height: 100%; border: none; }
-        .mini-player-info { padding: 8px 12px; display: flex; align-items: center; gap: 8px; }
-        .mini-channel-avatar { width: 24px; height: 24px; border-radius: 50%; background: var(--accent); display: flex; align-items: center; justify-content: center; font-size: 12px; overflow: hidden; flex-shrink: 0; }
-        .mini-channel-avatar img { width: 100%; height: 100%; object-fit: cover; }
-        .mini-channel-name { font-size: 11px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .mini-player-actions { padding: 8px 12px; display: flex; gap: 6px; border-top: 1px solid var(--border-color); }
-        .mini-btn { flex: 1; padding: 6px 8px; border: none; border-radius: 6px; font-size: 10px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px; transition: all 0.2s; }
-        .mini-btn-yt { background: #ff0000; color: white; }
-        .mini-btn-yt:hover { background: #cc0000; }
-        .mini-btn-dl { background: #00b894; color: white; }
-        .mini-btn-dl:hover { background: #00a085; }
+        /* Loading */
+        .loading { display: flex; align-items: center; justify-content: center; height: 100vh; flex-direction: column; gap: 16px; }
+        .loading-spinner { width: 44px; height: 44px; border: 3px solid var(--bg-tertiary); border-top-color: var(--accent); border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
 
-        /* Share Modal */
-        .share-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px; }
-        .share-item { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 16px; background: var(--bg-tertiary); border-radius: 12px; cursor: pointer; transition: all 0.2s; }
-        .share-item:hover { transform: scale(1.05); background: var(--bg-hover); }
-        .share-icon { font-size: 32px; }
-        .share-label { font-size: 11px; font-weight: 500; }
-        .export-code { width: 100%; height: 200px; background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: 8px; padding: 12px; color: white; font-family: monospace; font-size: 11px; resize: vertical; }
+        /* Music Player Bar */
+        .music-bar { position: fixed; bottom: 0; left: 0; right: 0; height: 60px; background: var(--bg-secondary); border-top: 1px solid var(--border-color); display: flex; align-items: center; padding: 0 20px; gap: 20px; z-index: 1000; margin-left: 240px; transition: margin-left 0.3s; }
+        .main-content.expanded + .music-bar { margin-left: 72px; }
+        .music-controls { display: flex; align-items: center; gap: 10px; }
+        .music-play-btn { width: 36px; height: 36px; border-radius: 50%; background: var(--accent); border: none; color: black; cursor: pointer; font-size: 16px; }
+        .music-info { flex: 1; max-width: 300px; }
+        .music-title { font-size: 13px; font-weight: 500; }
+        .music-artist { font-size: 11px; color: var(--text-secondary); }
+        .music-progress { flex: 1; max-width: 400px; display: flex; align-items: center; gap: 10px; }
+        .music-progress-bar { flex: 1; height: 4px; background: var(--bg-tertiary); border-radius: 2px; overflow: hidden; }
+        .music-progress-fill { height: 100%; width: 0%; background: var(--accent); }
+        .music-time { font-size: 11px; color: var(--text-secondary); }
+
+        /* Share & QR */
+        .share-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 10px; margin-bottom: 20px; }
+        .share-btn { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 12px; background: var(--bg-tertiary); border: none; border-radius: 8px; color: white; cursor: pointer; font-size: 12px; }
+        .share-btn:hover { background: var(--bg-hover); }
+        .qr-container { display: flex; justify-content: center; margin: 20px 0; }
+        .qr-code { width: 200px; height: 200px; background: white; padding: 10px; border-radius: 8px; }
+        .export-import { display: flex; gap: 10px; margin-top: 20px; }
+
+        /* Follow Button */
+        .follow-btn { padding: 6px 16px; background: var(--accent); color: black; border: none; border-radius: 20px; font-size: 13px; cursor: pointer; }
+        .follow-btn.following { background: var(--bg-tertiary); color: white; }
 
         /* Responsive */
         @media (max-width: 1024px) {
             .sidebar { transform: translateX(-100%); }
             .sidebar.open { transform: translateX(0); }
             .main-content { margin-left: 0; padding-right: 20px; }
-            .mini-player { width: 280px; left: 10px; bottom: 10px; }
-            .share-bar { flex-wrap: wrap; height: auto; padding: 8px; }
-            .header { top: 60px; }
-            .sidebar { top: 116px; height: calc(100vh - 116px); }
-            .main-content { margin-top: 116px; }
+            .music-bar { margin-left: 0; }
         }
         @media (max-width: 768px) {
             .header-center { display: none; }
             .video-grid { grid-template-columns: 1fr; }
-            .mini-player { width: calc(100% - 20px); left: 10px; }
+            .shorts-grid { gap: 8px; }
+            .short-card { min-width: 130px; max-width: 130px; }
+            .channel-header { flex-direction: column; align-items: center; text-align: center; }
+            .channel-avatar-large { width: 80px; height: 80px; font-size: 32px; }
+            .chat-panel { width: 100%; height: 300px; border-radius: 12px 12px 0 0; }
         }
     </style>
 </head>
 <body>
-    <!-- Top Share Bar -->
-    <div class="share-bar">
-        <button class="share-bar-btn primary" onclick="openModal('shareModal')">📤 Share / Export</button>
-        <button class="share-bar-btn" onclick="openModal('importModal')">📥 Import</button>
-        <button class="share-bar-btn" onclick="copyAllData()">📋 Copy Data</button>
-    </div>
+    <!-- Loading -->
+    <div id="loading" class="loading"><div class="loading-spinner"></div><div>Loading XtreamHub...</div></div>
 
-    <div id="app">
+    <!-- App -->
+    <div id="app" style="display: none;">
         <!-- Header -->
         <header class="header">
             <div class="header-left">
@@ -270,7 +293,7 @@
             </div>
             <div class="header-center">
                 <div class="search-box">
-                    <input type="text" class="search-input" id="searchInput" placeholder="Search..." onkeypress="if(event.key==='Enter')handleSearch()">
+                    <input type="text" class="search-input" id="searchInput" placeholder="Search...">
                     <button class="search-btn" onclick="handleSearch()">🔍</button>
                 </div>
             </div>
@@ -289,6 +312,9 @@
             <div class="sidebar-item" onclick="showHistory()"><span class="sidebar-icon">🕐</span><span class="sidebar-text">History</span></div>
             <div class="sidebar-item" onclick="showLiked()"><span class="sidebar-icon">👍</span><span class="sidebar-text">Liked</span></div>
             <div class="sidebar-divider"></div>
+            <div class="sidebar-section">Following</div>
+            <div id="sidebarFollowing"></div>
+            <div class="sidebar-divider"></div>
             <div class="sidebar-section">Channels</div>
             <div id="sidebarChannels"></div>
         </aside>
@@ -296,82 +322,22 @@
         <!-- Main -->
         <main id="mainContent" class="main-content"><div id="pageContent"></div></main>
 
-        <!-- Mini Player -->
-        <div class="mini-player" id="miniPlayer">
-            <div class="mini-player-header">
-                <div class="mini-player-title" id="miniPlayerTitle">Video Title</div>
-                <button class="mini-player-close" onclick="closeMiniPlayer()">✕</button>
+        <!-- Music Player Bar -->
+        <div class="music-bar" id="musicBar">
+            <div class="music-controls">
+                <button class="music-play-btn" id="musicPlayPause" onclick="toggleMusic()">▶️</button>
+                <button class="music-play-btn" onclick="playNextMusic()">⏭️</button>
             </div>
-            <div class="mini-player-video" id="miniPlayerVideo"></div>
-            <div class="mini-player-info">
-                <div class="mini-channel-avatar" id="miniChannelAvatar">🎮</div>
-                <div class="mini-channel-name" id="miniChannelName">Channel Name</div>
+            <div class="music-info">
+                <div class="music-title" id="musicTitle">No music playing</div>
+                <div class="music-artist" id="musicArtist">Add music from admin panel</div>
             </div>
-            <div class="mini-player-actions">
-                <button class="mini-btn mini-btn-yt" onclick="openOnYouTube()">▶️ YouTube</button>
-                <button class="mini-btn mini-btn-dl" onclick="downloadVideo()">⬇️ Download</button>
-            </div>
-        </div>
-
-        <!-- Chat Panel -->
-        <div class="chat-panel" id="chatPanel">
-            <div class="chat-header" onclick="toggleChat()">
-                <div class="chat-title">💬 Live Chat <span style="font-size:10px;color:var(--success)" id="chatOnline">(online)</span></div>
-            </div>
-            <div class="chat-messages" id="chatMessages"></div>
-            <div class="chat-input-area">
-                <input type="text" class="chat-input" id="chatInput" placeholder="Type a message..." onkeypress="if(event.key==='Enter')sendChat()">
-                <button class="chat-send" onclick="sendChat()">➤</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Share Modal -->
-    <div id="shareModal" class="modal-overlay">
-        <div class="modal modal-lg">
-            <div class="modal-header"><span class="modal-title">📤 Share & Export</span><button class="modal-close" onclick="closeModal('shareModal')">×</button></div>
-            <div class="modal-body">
-                <div style="margin-bottom:20px">
-                    <div style="font-weight:600;margin-bottom:12px">Share on Social Media</div>
-                    <div class="share-grid">
-                        <div class="share-item" onclick="shareTwitter()"><span class="share-icon">🐦</span><span class="share-label">Twitter</span></div>
-                        <div class="share-item" onclick="shareFacebook()"><span class="share-icon">📘</span><span class="share-label">Facebook</span></div>
-                        <div class="share-item" onclick="shareTelegram()"><span class="share-icon">✈️</span><span class="share-label">Telegram</span></div>
-                        <div class="share-item" onclick="shareWhatsApp()"><span class="share-icon">💬</span><span class="share-label">WhatsApp</span></div>
-                        <div class="share-item" onclick="shareLinkedIn()"><span class="share-icon">💼</span><span class="share-label">LinkedIn</span></div>
-                        <div class="share-item" onclick="shareReddit()"><span class="share-icon">🔴</span><span class="share-label">Reddit</span></div>
-                        <div class="share-item" onclick="shareEmail()"><span class="share-icon">📧</span><span class="share-label">Email</span></div>
-                        <div class="share-item" onclick="copyLink()"><span class="share-icon">🔗</span><span class="share-label">Copy Link</span></div>
-                    </div>
+            <div class="music-progress">
+                <span class="music-time" id="musicCurrent">0:00</span>
+                <div class="music-progress-bar" onclick="seekMusic(event)">
+                    <div class="music-progress-fill" id="musicProgress" style="width: 0%"></div>
                 </div>
-                <div style="margin-bottom:16px">
-                    <div style="font-weight:600;margin-bottom:8px">Export All Data (JSON)</div>
-                    <textarea class="export-code" id="exportData" readonly></textarea>
-                </div>
-                <div style="display:flex;gap:10px">
-                    <button class="btn btn-primary" onclick="downloadJSON()">⬇️ Download JSON</button>
-                    <button class="btn btn-secondary" onclick="copyExportData()">📋 Copy to Clipboard</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Import Modal -->
-    <div id="importModal" class="modal-overlay">
-        <div class="modal">
-            <div class="modal-header"><span class="modal-title">📥 Import Data</span><button class="modal-close" onclick="closeModal('importModal')">×</button></div>
-            <div class="modal-body">
-                <div class="form-group">
-                    <label class="form-label">Paste JSON Data</label>
-                    <textarea class="form-input" id="importData" rows="8" placeholder="Paste your exported JSON data here..."></textarea>
-                </div>
-                <div style="display:flex;gap:10px">
-                    <button class="btn btn-primary" onclick="importData()">📥 Import</button>
-                    <label class="btn btn-secondary" style="cursor:pointer">
-                        📁 Load File
-                        <input type="file" accept=".json" onchange="loadFile(event)" style="display:none">
-                    </label>
-                </div>
+                <span class="music-time" id="musicDuration">0:00</span>
             </div>
         </div>
     </div>
@@ -409,26 +375,41 @@
                 <div class="form-group"><label class="form-label">Avatar URL</label><input type="text" id="channelAvatar" class="form-input" dir="ltr"></div>
                 <div class="form-group"><label class="form-label">Banner URL</label><input type="text" id="channelBanner" class="form-input" dir="ltr"></div>
             </div>
-            <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal('addChannelModal')">Cancel</button><button class="btn btn-primary" onclick="handleAddChannel()">Add Channel</button></div>
+            <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal('addChannelModal')">Cancel</button><button class="btn btn-primary" onclick="handleAddChannel()">Add</button></div>
         </div>
     </div>
 
-    <!-- Add Video Modal -->
+    <!-- Add Content Modal -->
     <div id="addVideoModal" class="modal-overlay">
         <div class="modal">
             <div class="modal-header"><span class="modal-title">➕ Add Content</span><button class="modal-close" onclick="closeModal('addVideoModal')">×</button></div>
             <div class="modal-body">
                 <div class="form-group"><label class="form-label">Type</label><select id="videoType" class="form-select"><option value="video">Video</option><option value="short">Short</option><option value="live">Live Stream</option></select></div>
-                <div class="form-group"><label class="form-label">Channel *</label><select id="videoChannel" class="form-select"><option value="">Select Channel...</option></select></div>
+                <div class="form-group"><label class="form-label">Channel *</label><select id="videoChannel" class="form-select"><option value="">Select...</option></select></div>
                 <div class="form-group"><label class="form-label">Title *</label><input type="text" id="videoTitle" class="form-input"></div>
-                <div class="form-group"><label class="form-label">URL *</label><input type="text" id="videoUrl" class="form-input" dir="ltr" placeholder="https://youtube.com/watch?v=..."></div>
-                <div class="form-group"><label class="form-label">Category</label><select id="videoCategory" class="form-select"><option value="all">All</option><option value="gaming">Gaming</option><option value="music">Music</option><option value="sports">Sports</option><option value="news">News</option><option value="entertainment">Entertainment</option></select></div>
+                <div class="form-group"><label class="form-label">URL *</label><input type="text" id="videoUrl" class="form-input" dir="ltr"></div>
+                <div class="form-group"><label class="form-label">Category</label><select id="videoCategory" class="form-select"><option value="All">All</option><option value="Gaming">Gaming</option><option value="Music">Music</option><option value="Sports">Sports</option><option value="News">News</option><option value="Entertainment">Entertainment</option></select></div>
                 <div class="form-group"><label class="form-label">Platform</label><select id="videoPlatform" class="form-select"><option value="youtube">🔴 YouTube</option><option value="twitch">🟣 Twitch</option><option value="aparat">🎬 Aparat</option><option value="kick">💚 Kick</option></select></div>
-                <div class="form-group"><label class="form-label">Thumbnail URL</label><input type="text" id="videoThumbnail" class="form-input" dir="ltr"></div>
+                <div class="form-group"><label class="form-label">Thumbnail</label><input type="text" id="videoThumbnail" class="form-input" dir="ltr"></div>
                 <div class="form-group"><label class="form-label">Duration</label><input type="text" id="videoDuration" class="form-input" placeholder="10:30" dir="ltr"></div>
                 <div class="form-group"><label class="form-label">Game (for Live)</label><input type="text" id="videoGame" class="form-input" placeholder="Valorant, Just Chatting..."></div>
+                <div class="form-group"><label class="form-label">Description</label><textarea id="videoDesc" class="form-input" rows="2"></textarea></div>
             </div>
-            <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal('addVideoModal')">Cancel</button><button class="btn btn-primary" onclick="handleAddVideo()">Add Content</button></div>
+            <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal('addVideoModal')">Cancel</button><button class="btn btn-primary" onclick="handleAddVideo()">Add</button></div>
+        </div>
+    </div>
+
+    <!-- Add Music Modal -->
+    <div id="addMusicModal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header"><span class="modal-title">🎵 Add Music</span><button class="modal-close" onclick="closeModal('addMusicModal')">×</button></div>
+            <div class="modal-body">
+                <div class="form-group"><label class="form-label">Title *</label><input type="text" id="musicTitle" class="form-input"></div>
+                <div class="form-group"><label class="form-label">Artist *</label><input type="text" id="musicArtist" class="form-input"></div>
+                <div class="form-group"><label class="form-label">Audio URL *</label><input type="text" id="musicUrl" class="form-input" dir="ltr" placeholder="https://example.com/song.mp3"></div>
+                <div class="form-group"><label class="form-label">Cover URL</label><input type="text" id="musicCover" class="form-input" dir="ltr"></div>
+            </div>
+            <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal('addMusicModal')">Cancel</button><button class="btn btn-primary" onclick="handleAddMusic()">Add</button></div>
         </div>
     </div>
 
@@ -437,14 +418,12 @@
         <div class="modal modal-lg">
             <div class="modal-header"><span class="modal-title">🛡️ Admin Panel</span><button class="modal-close" onclick="closeModal('adminModal')">×</button></div>
             <div class="modal-body">
-                <div class="admin-tabs">
-                    <button class="admin-tab active" onclick="switchAdminTab('channels')">📺 Channels</button>
-                    <button class="admin-tab" onclick="switchAdminTab('videos')">🎬 Content</button>
-                    <button class="admin-tab" onclick="switchAdminTab('users')">👥 Users</button>
-                </div>
+                <div class="admin-tabs"><button class="admin-tab active" onclick="switchAdminTab('channels')">📺 Channels</button><button class="admin-tab" onclick="switchAdminTab('videos')">🎬 Content</button><button class="admin-tab" onclick="switchAdminTab('users')">👥 Users</button><button class="admin-tab" onclick="switchAdminTab('music')">🎵 Music</button><button class="admin-tab" onclick="switchAdminTab('banned')">🚫 Banned</button></div>
                 <div id="adminChannelsTab" class="admin-list"></div>
                 <div id="adminVideosTab" class="admin-list" style="display:none"></div>
                 <div id="adminUsersTab" class="admin-list" style="display:none"></div>
+                <div id="adminMusicTab" class="admin-list" style="display:none"></div>
+                <div id="adminBannedTab" class="admin-list" style="display:none"></div>
             </div>
         </div>
     </div>
@@ -454,10 +433,35 @@
         <div class="modal">
             <div class="modal-header"><span class="modal-title" id="editTitle">Edit</span><button class="modal-close" onclick="closeModal('editModal')">×</button></div>
             <div class="modal-body" id="editBody"></div>
-            <div class="modal-footer">
-                <button class="btn btn-ghost" onclick="closeModal('editModal')">Cancel</button>
-                <button class="btn btn-danger" id="editDeleteBtn" onclick="deleteFromEdit()">🗑️ Delete</button>
-                <button class="btn btn-primary" onclick="saveEdit()">💾 Save</button>
+            <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal('editModal')">Cancel</button><button class="btn btn-danger" id="editDeleteBtn" onclick="deleteFromEdit()">Delete</button><button class="btn btn-primary" onclick="saveEdit()">Save</button></div>
+        </div>
+    </div>
+
+    <!-- Share Modal -->
+    <div id="shareModal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header"><span class="modal-title">🔗 Share XtreamHub</span><button class="modal-close" onclick="closeModal('shareModal')">×</button></div>
+            <div class="modal-body">
+                <div class="share-grid">
+                    <button class="share-btn" onclick="shareSocial('twitter')"><span>🐦</span> Twitter</button>
+                    <button class="share-btn" onclick="shareSocial('facebook')"><span>📘</span> Facebook</button>
+                    <button class="share-btn" onclick="shareSocial('whatsapp')"><span>📱</span> WhatsApp</button>
+                    <button class="share-btn" onclick="shareSocial('telegram')"><span>✈️</span> Telegram</button>
+                    <button class="share-btn" onclick="shareSocial('linkedin')"><span>🔗</span> LinkedIn</button>
+                    <button class="share-btn" onclick="copyShareLink()"><span>📋</span> Copy Link</button>
+                </div>
+                <div class="qr-container">
+                    <div id="qrcode" class="qr-code"></div>
+                </div>
+                <div class="export-import">
+                    <button class="btn btn-primary" onclick="exportData()">📤 Export Data</button>
+                    <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(event)">
+                    <button class="btn btn-secondary" onclick="document.getElementById('importFile').click()">📥 Import Data</button>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Share Link</label>
+                    <input type="text" id="shareLink" class="form-input" value="https://xtreamhub.app" readonly>
+                </div>
             </div>
         </div>
     </div>
@@ -466,444 +470,591 @@
     <div id="toast" class="toast"><span id="toastIcon"></span><span id="toastMsg"></span></div>
 
     <script>
-        // ========== CONSTANTS ==========
-        const ADMIN_USER = 'arianxenon';
-        const ADMIN_PASS = '2981354361max';
+        // Constants
+        const ADMIN_USER = 'arianxenon', ADMIN_PASS = '2981354361max';
         const COLORS = ['#ff6b6b','#4ecdc4','#45b7d1','#96ceb4','#ffeaa7','#fd79a8','#a29bfe','#00b894','#e17055','#74b9ff'];
-        const DEFAULT_THUMB = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIwIiBoZWlnaHQ9IjE4MCIgdmlld0JveD0iMCAwIDMyMCAxODAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMjAiIGhlaWdodD0iMTgwIiBmaWxsPSIjMjEyMTIxIi8+CjxwYXRoIGQ9Ik0xMjggNzBMMTkyIDkwTDEyOCAxMTBWNzBaIiBmaWxsPSIjZmYwMDAwIi8+Cjwvc3ZnPg==';
+        const DEFAULT_THUMB = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIwIiBoZWlnaHQ9IjE4MCIgdmlld0JveD0iMCAwIDMyMCAxODAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMjAiIGhlaWdodD0iMTgwIiBmaWxsPSIjMjEyMTIxIi8+CjxwYXRoIGQ9Ik0xMjggNzBMMTkyIDkwTDEyOCAxMTBWNzBaIiBmaWxsPSIjMDBmZjAwIi8+Cjwvc3ZnPg==';
         const GAMING_EMOJIS = ['🎮','🕹️','👾','🚀','⚡','🔥','💎','🎯','🏆','🎲','🎪','🌟','💥','🦂','🦾','🎰','🎱','🎖️','🏅','👑'];
         const CATEGORIES = ['All','Gaming','Music','Sports','News','Entertainment'];
 
-        // ========== STATE ==========
-        let currentUser = null;
-        let users = [];
-        let channels = [];
-        let videos = [];
-        let shorts = [];
-        let lives = [];
-        let currentPage = 'home';
-        let currentChannel = null;
-        let activeCategory = 'All';
-        let channelTab = 'videos';
-        let sidebarCollapsed = false;
-        let editingItem = null;
-        let editingType = null;
-        let currentMiniPlayerItem = null;
-        let chatMessages = [];
-        let chatExpanded = false;
+        // State
+        let currentUser = null, users = [], channels = [], videos = [], shorts = [], lives = [], musicList = [], follows = [], bannedUsers = [];
+        let currentPage = 'home', currentChannel = null, activeCategory = 'All', channelTab = 'videos';
+        let editingItem = null, editingType = null, currentPlayerItem = null;
+        let chatExpanded = false, chatMessages = [];
+        let musicAudio = null, musicPlaying = false, currentMusicIndex = 0;
+        let popupWindow = null;
 
-        // ========== HELPERS ==========
-        const getEmoji = name => {
-            let h = 0;
-            for (let i = 0; i < name.length; i++) h = name.charCodeAt(i) + ((h << 5) - h);
-            return GAMING_EMOJIS[Math.abs(h) % GAMING_EMOJIS.length];
-        };
-        
-        const getAvatar = c => !c ? '🎮' : c.avatar ? `<img src="${c.avatar}" alt="">` : getEmoji(c.name);
-        
-        const formatNum = n => n >= 1000000 ? (n / 1000000).toFixed(1) + 'M' : n >= 1000 ? (n / 1000).toFixed(1) + 'K' : n;
-        
-        const formatDate = t => t ? new Date(t).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Unknown';
-        
-        const getPlatformIcon = p => ({ youtube: '🔴', twitch: '🟣', aparat: '🎬', kick: '💚' }[p] || '📺');
-        
-        const getPlatformName = p => ({ youtube: 'YouTube', twitch: 'Twitch', aparat: 'Aparat', kick: 'Kick' }[p] || 'Platform');
+        // Helpers
+        const getEmoji = name => { let h=0; for(let i=0;i<name.length;i++) h=name.charCodeAt(i)+((h<<5)-h); return GAMING_EMOJIS[Math.abs(h)%GAMING_EMOJIS.length]; };
+        const getAvatar = c => !c?'🎮':c.avatar?`<img src="${c.avatar}">`:getEmoji(c.name);
+        const formatNum = n => n>=1000000?(n/1000000).toFixed(1)+'M':n>=1000?(n/1000).toFixed(1)+'K':n;
+        const formatDate = t => t?new Date(t).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'Unknown';
+        const getPlatformIcon = p => ({youtube:'🔴',twitch:'🟣',aparat:'🎬',kick:'💚'}[p]||'📺');
+        const getPlatformName = p => ({youtube:'YouTube',twitch:'Twitch',aparat:'Aparat',kick:'Kick'}[p]||'Platform');
 
-        const getYouTubeId = url => {
-            if (!url) return null;
-            const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
-            const match = url.match(regExp);
-            return (match && match[2].length === 11) ? match[2] : null;
-        };
-
-        function showToast(msg, type = 'success') {
-            const t = document.getElementById('toast');
-            const i = document.getElementById('toastIcon');
-            const m = document.getElementById('toastMsg');
-            t.className = 'toast ' + type;
-            i.textContent = type === 'success' ? '✅' : '❌';
-            m.textContent = msg;
-            t.classList.add('show');
-            setTimeout(() => t.classList.remove('show'), 3000);
+        function showToast(msg,type='success') {
+            const t=document.getElementById('toast'),i=document.getElementById('toastIcon'),m=document.getElementById('toastMsg');
+            t.className='toast '+type; i.textContent=type==='success'?'✅':'❌'; m.textContent=msg; t.classList.add('show');
+            setTimeout(()=>t.classList.remove('show'),3000);
         }
 
-        // ========== SHARE & EXPORT ==========
-        function getAllData() {
-            return {
-                users: users,
-                channels: channels,
-                videos: [...videos, ...shorts, ...lives],
-                chat: chatMessages,
-                exportedAt: new Date().toISOString(),
-                version: '1.0'
+        // Data
+        function loadData() {
+            users=JSON.parse(localStorage.getItem('xh-users')||'[]');
+            channels=JSON.parse(localStorage.getItem('xh-channels')||'[]');
+            const allContent=JSON.parse(localStorage.getItem('xh-videos')||'[]');
+            videos=allContent.filter(v=>v.type!=='short'&&v.type!=='live');
+            shorts=allContent.filter(v=>v.type==='short');
+            lives=allContent.filter(v=>v.type==='live');
+            musicList=JSON.parse(localStorage.getItem('xh-music')||'[]');
+            follows=JSON.parse(localStorage.getItem('xh-follows')||'[]');
+            bannedUsers=JSON.parse(localStorage.getItem('xh-banned')||'[]');
+            
+            // Add admin if not exists
+            if(!users.find(u=>u.username===ADMIN_USER)) users.push({id:'admin',username:ADMIN_USER,password:ADMIN_PASS,color:'#00ff00',isAdmin:true,isBanned:false,createdAt:Date.now(),social:{}});
+            const admin=users.find(u=>u.username===ADMIN_USER); if(admin){admin.password=ADMIN_PASS;admin.isAdmin=true;}
+            
+            const saved=localStorage.getItem('xh-current'); if(saved){const u=users.find(x=>x.id===saved&&!x.isBanned); if(u)currentUser=u;}
+            initChat(); saveData();
+        }
+        function saveData() {
+            localStorage.setItem('xh-users',JSON.stringify(users));
+            localStorage.setItem('xh-channels',JSON.stringify(channels));
+            localStorage.setItem('xh-videos',JSON.stringify([...videos,...shorts,...lives]));
+            localStorage.setItem('xh-music',JSON.stringify(musicList));
+            localStorage.setItem('xh-follows',JSON.stringify(follows));
+            localStorage.setItem('xh-banned',JSON.stringify(bannedUsers));
+            if(currentUser) localStorage.setItem('xh-current',currentUser.id);
+            else localStorage.removeItem('xh-current');
+        }
+
+        // Chat
+        function initChat() { 
+            chatMessages=JSON.parse(localStorage.getItem('xh-chat')||'[]');
+            if(chatMessages.length===0) {
+                chatMessages=[
+                    {user:'GamerPro',text:'Hey! 👋',color:'#ff6b6b'},
+                    {user:'StreamFan',text:'Nice content!',color:'#4ecdc4'},
+                    {user:'arianxenon',text:'Welcome to XtreamHub!',color:'#00ff00',isAdmin:true}
+                ];
+            }
+            renderChat(); 
+        }
+        function renderChat() { 
+            const onlineCount = Math.floor(Math.random() * 20) + 10;
+            document.getElementById('chatOnline').textContent = `(${onlineCount} online)`;
+            document.getElementById('chatMessages').innerHTML=chatMessages.map((m,i)=>`<div class="chat-msg" id="chatmsg-${i}"><div class="chat-msg-avatar" style="background:${m.color}">${m.user[0]}</div><div class="chat-msg-content"><div class="chat-msg-user">${m.user} ${currentUser?.isAdmin?`<button class="btn btn-sm" style="padding:2px 6px;font-size:9px;background:var(--danger)" onclick="deleteChatMsg(${i})">🗑️</button><button class="btn btn-sm" style="padding:2px 6px;font-size:9px;background:var(--accent)" onclick="banChatUser('${m.user}')">🚫</button>`:''}</div><div class="chat-msg-text">${m.text}</div></div></div>`).join(''); 
+            document.getElementById('chatMessages').scrollTop=document.getElementById('chatMessages').scrollHeight; 
+        }
+        function deleteChatMsg(idx) { 
+            if(confirm('Delete this message?')){ 
+                chatMessages.splice(idx,1); 
+                localStorage.setItem('xh-chat',JSON.stringify(chatMessages));
+                renderChat(); 
+                showToast('Deleted'); 
+            } 
+        }
+        function banChatUser(username) { 
+            if(confirm('Ban user "'+username+'" from chat?')){ 
+                const u=users.find(x=>x.username===username); 
+                if(u && !u.isAdmin){ 
+                    u.isBanned=true; 
+                    bannedUsers.push({id:u.id,username:u.username,reason:'Chat ban',bannedBy:currentUser?.username,date:Date.now()});
+                } 
+                chatMessages=chatMessages.filter(m=>m.user!==username); 
+                localStorage.setItem('xh-chat',JSON.stringify(chatMessages));
+                saveData();
+                renderChat(); 
+                showToast(username+' banned from chat'); 
+            } 
+        }
+        function sendChat() { 
+            const input=document.getElementById('chatInput'),text=input.value.trim(); 
+            if(!text)return; 
+            chatMessages.push({user:currentUser?.username||'Guest',text:text,color:currentUser?.color||'#888'}); 
+            input.value=''; 
+            localStorage.setItem('xh-chat',JSON.stringify(chatMessages));
+            renderChat(); 
+        }
+        function toggleChat() { 
+            chatExpanded=!chatExpanded; 
+            document.getElementById('chatPanel').classList.toggle('expanded',chatExpanded); 
+            document.getElementById('chatToggle').textContent=chatExpanded?'▼':'▲'; 
+        }
+
+        // Music Player
+        function initMusicPlayer() {
+            if(musicList.length>0 && !musicAudio) {
+                playMusic(0);
+            }
+        }
+        function playMusic(index) {
+            if(musicList.length===0) return;
+            currentMusicIndex = index;
+            const music = musicList[currentMusicIndex];
+            if(musicAudio) {
+                musicAudio.pause();
+                musicAudio = null;
+            }
+            musicAudio = new Audio(music.url);
+            musicAudio.addEventListener('timeupdate', updateMusicProgress);
+            musicAudio.addEventListener('ended', playNextMusic);
+            musicAudio.play();
+            musicPlaying = true;
+            document.getElementById('musicPlayPause').textContent = '⏸️';
+            document.getElementById('musicTitle').textContent = music.title;
+            document.getElementById('musicArtist').textContent = music.artist;
+            document.getElementById('musicDuration').textContent = formatTime(musicAudio.duration) || '0:00';
+        }
+        function toggleMusic() {
+            if(!musicAudio && musicList.length>0) {
+                playMusic(currentMusicIndex);
+            } else if(musicAudio) {
+                if(musicPlaying) {
+                    musicAudio.pause();
+                    document.getElementById('musicPlayPause').textContent = '▶️';
+                } else {
+                    musicAudio.play();
+                    document.getElementById('musicPlayPause').textContent = '⏸️';
+                }
+                musicPlaying = !musicPlaying;
+            }
+        }
+        function playNextMusic() {
+            if(musicList.length===0) return;
+            currentMusicIndex = (currentMusicIndex + 1) % musicList.length;
+            playMusic(currentMusicIndex);
+        }
+        function updateMusicProgress() {
+            if(musicAudio) {
+                const progress = (musicAudio.currentTime / musicAudio.duration) * 100;
+                document.getElementById('musicProgress').style.width = progress + '%';
+                document.getElementById('musicCurrent').textContent = formatTime(musicAudio.currentTime);
+            }
+        }
+        function seekMusic(e) {
+            if(musicAudio) {
+                const bar = e.currentTarget;
+                const rect = bar.getBoundingClientRect();
+                const pos = (e.clientX - rect.left) / rect.width;
+                musicAudio.currentTime = pos * musicAudio.duration;
+            }
+        }
+        function formatTime(seconds) {
+            if(!seconds || isNaN(seconds)) return '0:00';
+            const mins = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return `${mins}:${secs.toString().padStart(2,'0')}`;
+        }
+        function handleAddMusic() {
+            const title = document.getElementById('musicTitle').value.trim();
+            const artist = document.getElementById('musicArtist').value.trim();
+            const url = document.getElementById('musicUrl').value.trim();
+            const cover = document.getElementById('musicCover').value.trim();
+            if(!title||!artist||!url) return showToast('Required fields','error');
+            musicList.push({id:'m'+Date.now(),title,artist,url,cover,addedBy:currentUser?.id,addedAt:Date.now()});
+            saveData();
+            closeModal('addMusicModal');
+            showToast('Music added');
+        }
+
+        // Init
+        function init() { 
+            loadData(); 
+            render(); 
+            document.getElementById('loading').style.display='none'; 
+            document.getElementById('app').style.display='block';
+            initMusicPlayer();
+            generateQR();
+        }
+        function render() { 
+            renderHeader(); 
+            renderSidebar(); 
+            renderPage(); 
+        }
+
+        // Header
+        function renderHeader() {
+            const h=document.getElementById('headerRight');
+            if(currentUser) {
+                const av=currentUser.avatar?`<img src="${currentUser.avatar}">`:currentUser.username[0].toUpperCase();
+                h.innerHTML=`${currentUser.isAdmin?'<button class="btn btn-icon btn-ghost" onclick="openAdmin()">🛡️</button>':''}<button class="btn btn-icon btn-ghost" onclick="openShareModal()">🔗</button><button class="user-menu" onclick="showProfile()"><div class="user-avatar" style="background:${currentUser.avatar?'transparent':currentUser.color}">${av}</div><span>${currentUser.username}</span></button><button class="btn btn-icon btn-ghost" onclick="logout()">🚪</button>`;
+            } else h.innerHTML='<button class="btn btn-icon btn-ghost" onclick="openShareModal()">🔗</button><button class="btn btn-primary" onclick="openModal(\'authModal\')">🔑 Sign in</button>';
+        }
+
+        // Sidebar
+        function renderSidebar() { 
+            document.getElementById('sidebarChannels').innerHTML=channels.slice(0,5).map(c=>`<div class="sidebar-item" onclick="showChannel('${c.id}')"><div class="channel-avatar" style="width:24px;height:24px;font-size:12px">${getAvatar(c)}</div><span class="sidebar-text">${c.name}</span></div>`).join(''); 
+            if(currentUser) {
+                const following = follows.filter(f => f.followerId === currentUser.id).map(f => channels.find(c => c.id === f.channelId)).filter(c=>c);
+                document.getElementById('sidebarFollowing').innerHTML = following.length ? following.slice(0,5).map(c=>`<div class="sidebar-item" onclick="showChannel('${c.id}')"><div class="channel-avatar" style="width:24px;height:24px;font-size:12px">${getAvatar(c)}</div><span class="sidebar-text">${c.name}</span></div>`).join('') : '<div class="sidebar-item"><span class="sidebar-text" style="color:var(--text-muted)">No following</span></div>';
+            } else {
+                document.getElementById('sidebarFollowing').innerHTML = '<div class="sidebar-item"><span class="sidebar-text" style="color:var(--text-muted)">Login to follow</span></div>';
+            }
+        }
+        function toggleSidebar() { 
+            document.getElementById('sidebar').classList.toggle('collapsed'); 
+            document.getElementById('mainContent').classList.toggle('expanded'); 
+        }
+
+        // Pages
+        function renderPage() {
+            const c=document.getElementById('pageContent');
+            if(currentPage==='home') renderHome(c);
+            else if(currentPage==='shorts') renderShorts(c);
+            else if(currentPage==='live') renderLive(c);
+            else if(currentPage==='channel') renderChannel(c);
+            else if(currentPage==='channels') renderChannels(c);
+            else if(currentPage==='explore') renderExplore(c);
+            else if(currentPage==='history') renderHistory(c);
+            else if(currentPage==='liked') renderLiked(c);
+            else if(currentPage==='profile') renderProfile(c);
+        }
+
+        function renderHome(c) {
+            let html='';
+            if(lives.length) html+=`<div class="live-section"><div class="section-header"><div class="section-title">🔴 Live Now</div><span class="see-all" onclick="showLive()">See all</span></div><div class="live-grid">${lives.slice(0,4).map(v=>liveCard(v)).join('')}</div></div>`;
+            if(shorts.length) html+=`<div class="shorts-section"><div class="section-header"><div class="section-title">⚡ Shorts</div><span class="see-all" onclick="showShorts()">See all</span></div><div class="shorts-grid">${shorts.slice(0,6).map(v=>shortCard(v)).join('')}</div></div>`;
+            html+=`<div class="category-pills">${CATEGORIES.map(cat=>`<button class="category-pill ${activeCategory===cat?'active':''}" onclick="setCategory('${cat}')">${cat}</button>`).join('')}</div>`;
+            if(currentUser?.isAdmin) html+=`<div class="video-grid" style="margin-bottom:16px"><div class="add-card" onclick="openModal('addVideoModal')"><div class="add-card-icon">➕</div><div class="add-card-text">Add Content</div></div><div class="add-card" onclick="openModal('addChannelModal')"><div class="add-card-icon">📺</div><div class="add-card-text">Add Channel</div></div><div class="add-card" onclick="openModal('addMusicModal')"><div class="add-card-icon">🎵</div><div class="add-card-text">Add Music</div></div></div>`;
+            html+=`<div class="stats-grid"><div class="stat-card"><div class="stat-value">${videos.length}</div><div class="stat-label">Videos</div></div><div class="stat-card"><div class="stat-value">${shorts.length}</div><div class="stat-label">Shorts</div></div><div class="stat-card"><div class="stat-value">${lives.length}</div><div class="stat-label">Live</div></div><div class="stat-card"><div class="stat-value">${channels.length}</div><div class="stat-label">Channels</div></div></div>`;
+            html+=`<div class="section-header"><div class="section-title">🎬 Videos</div></div>`;
+            let filtered=activeCategory==='All'?videos:videos.filter(v=>(v.category||'All').toLowerCase()===activeCategory.toLowerCase());
+            html+=filtered.length?`<div class="video-grid">${filtered.map(v=>videoCard(v)).join('')}</div>`:`<div class="empty-state"><div class="empty-icon">🎬</div><div class="empty-title">No videos</div></div>`;
+            c.innerHTML=html;
+        }
+
+        function shortCard(v) { const ch=channels.find(x=>x.id===v.channelId); return `<div class="short-card" onclick="openPlayer('${v.id}','short')"><div class="short-thumbnail"><img src="${v.thumbnail||DEFAULT_THUMB}" onerror="this.src='${DEFAULT_THUMB}'"><div class="short-badge">SHORT</div>${currentUser?.isAdmin?`<div class="admin-controls" style="position:absolute;top:8px;right:8px;display:flex;gap:4px"><button class="btn btn-sm" style="background:rgba(0,0,0,0.8)" onclick="event.stopPropagation();editContent('${v.id}','short')">✏️</button><button class="btn btn-sm btn-danger" onclick="event.stopPropagation();deleteContent('${v.id}','short')">🗑️</button></div>`:''}<div class="short-overlay"><div class="short-title">${v.title}</div><div class="short-views">${formatNum(v.views||0)} views</div></div></div></div>`; }
+        function liveCard(v) { const ch=channels.find(x=>x.id===v.channelId); return `<div class="live-card" onclick="openPlayer('${v.id}','live')"><div class="video-thumbnail"><img src="${v.thumbnail||DEFAULT_THUMB}" onerror="this.src='${DEFAULT_THUMB}'"><div class="live-badge">🔴 LIVE</div><div class="live-viewers">👁️ ${formatNum(v.viewers||Math.floor(Math.random()*10000))}</div>${currentUser?.isAdmin?`<div class="admin-controls" style="position:absolute;top:8px;right:8px;display:flex;gap:4px"><button class="btn btn-sm" style="background:rgba(0,0,0,0.8)" onclick="event.stopPropagation();editContent('${v.id}','live')">✏️</button><button class="btn btn-sm btn-danger" onclick="event.stopPropagation();deleteContent('${v.id}','live')">🗑️</button></div>`:''}</div><div class="live-info"><div class="channel-avatar">${getAvatar(ch)}</div><div><div class="live-title">${v.title}</div><div class="live-streamer">${ch?.name||'Unknown'}</div>${v.game?`<div class="live-game">🎮 ${v.game}</div>`:''}</div></div></div>`; }
+        function videoCard(v) { const ch=channels.find(x=>x.id===v.channelId); return `<div class="video-card" onclick="openPlayer('${v.id}','video')"><div class="video-thumbnail"><img src="${v.thumbnail||DEFAULT_THUMB}" onerror="this.src='${DEFAULT_THUMB}'">${v.duration?`<span class="video-duration">${v.duration}</span>`:''}<span class="video-platform">${getPlatformIcon(v.platform)} ${getPlatformName(v.platform)}</span>${currentUser?.isAdmin?`<div class="admin-controls" style="position:absolute;top:8px;right:8px;display:flex;gap:4px"><button class="btn btn-sm" style="background:rgba(0,0,0,0.8)" onclick="event.stopPropagation();editContent('${v.id}','video')">✏️</button><button class="btn btn-sm btn-danger" onclick="event.stopPropagation();deleteContent('${v.id}','video')">🗑️</button></div>`:''}</div><div class="video-info"><div class="channel-avatar" onclick="event.stopPropagation();showChannel('${v.channelId}')">${getAvatar(ch)}</div><div class="video-details"><div class="video-title">${v.title}</div><div class="video-meta">${ch?.name||'Unknown'} • ${formatNum(v.views||0)} views</div></div></div></div>`; }
+
+        // Player Modal - Popup Window
+        function openPlayer(id, type) {
+            let item;
+            if(type==='short')item=shorts.find(x=>x.id===id);
+            else if(type==='live')item=lives.find(x=>x.id===id);
+            else item=videos.find(x=>x.id===id);
+            if(!item)return;
+            
+            currentPlayerItem=item;
+            const ch=channels.find(x=>x.id===item.channelId);
+            const isShort=type==='short';
+            const isLive=type==='live';
+            
+            // Popup dimensions based on content type
+            const width = isShort ? 360 : 720;
+            const height = isShort ? 640 : 480;
+            const left = (screen.width - width) / 2;
+            const top = (screen.height - height) / 2;
+            
+            // Generate popup HTML
+            const popupHTML = `
+<!DOCTYPE html>
+<html>
+<head>
+    <title>${item.title}</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: #0f0f0f; color: white; font-family: Arial, sans-serif; min-height: 100vh; display: flex; flex-direction: column; }
+        .player-header { padding: 10px 12px; background: #181818; border-bottom: 1px solid #303030; display: flex; align-items: center; justify-content: space-between; }
+        .player-title { font-size: 13px; font-weight: 600; max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .close-btn { background: none; border: none; color: #aaa; font-size: 20px; cursor: pointer; }
+        .close-btn:hover { color: white; }
+        .player-area { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #000; position: relative; }
+        .player-area.short { padding: 10px; }
+        .thumbnail { width: 100%; height: 100%; object-fit: contain; max-height: 70vh; }
+        .play-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(0,0,0,0.5); }
+        .play-btn { width: 70px; height: 70px; background: #00ff00; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 28px; cursor: pointer; margin-bottom: 15px; transition: transform 0.2s; color: black; }
+        .play-btn:hover { transform: scale(1.1); }
+        .watch-btn { padding: 10px 24px; background: #00ff00; color: black; border: none; border-radius: 20px; font-size: 14px; font-weight: 600; cursor: pointer; }
+        .watch-btn:hover { background: #00cc00; }
+        .player-info { padding: 10px 12px; background: #181818; }
+        .channel-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+        .channel-avatar { width: 28px; height: 28px; border-radius: 50%; background: #333; display: flex; align-items: center; justify-content: center; font-size: 14px; }
+        .channel-name { font-size: 12px; font-weight: 500; }
+        .meta-row { display: flex; gap: 12px; font-size: 11px; color: #aaa; }
+        .badge { padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 500; background: #333; }
+        .badge-live { background: #ff0000; }
+        .badge-short { background: #9146ff; }
+        .fullscreen-btn { background: none; border: none; color: white; font-size: 20px; cursor: pointer; margin-left: auto; }
+    </style>
+</head>
+<body>
+    <div class="player-header">
+        <div class="player-title">${item.title}</div>
+        <div style="display:flex; gap:8px;">
+            <button class="fullscreen-btn" onclick="toggleFullscreen()">⛶</button>
+            <button class="close-btn" onclick="window.close()">✕</button>
+        </div>
+    </div>
+    <div class="player-area ${isShort?'short':''}">
+        <img class="thumbnail" src="${item.thumbnail||'${DEFAULT_THUMB}'}" onerror="this.src='${DEFAULT_THUMB}'">
+        <div class="play-overlay">
+            <div class="play-btn" onclick="window.open('${item.url}','_blank')">▶</div>
+            <button class="watch-btn" onclick="window.open('${item.url}','_blank')">🚀 Watch on ${getPlatformName(item.platform)}</button>
+        </div>
+    </div>
+    <div class="player-info">
+        <div class="channel-row">
+            <div class="channel-avatar">${getEmoji(ch?.name||'?')}</div>
+            <div class="channel-name">${ch?.name||'Unknown'}</div>
+            ${isLive?'<span class="badge badge-live">🔴 LIVE</span>':''}
+            ${isShort?'<span class="badge badge-short">⚡ SHORT</span>':''}
+        </div>
+        <div class="meta-row">
+            <span>👁️ ${formatNum(item.views||0)}</span>
+            ${item.duration?`<span>⏱️ ${item.duration}</span>`:''}
+            ${isLive?`<span>👥 ${formatNum(item.viewers||0)}</span>`:''}
+        </div>
+    </div>
+    <script>
+        function toggleFullscreen() {
+            if(document.fullscreenElement) {
+                document.exitFullscreen();
+            } else {
+                document.body.requestFullscreen();
+            }
+        }
+    <\/script>
+</body>
+</html>`;
+            
+            // Close existing popup if open
+            if(popupWindow && !popupWindow.closed) popupWindow.close();
+            
+            // Open new popup window
+            popupWindow = window.open('', 'XtreamPlayer', 
+                `width=${width},height=${height},left=${left},top=${top},resizable=yes,scrollbars=no,status=no,menubar=no,toolbar=no,location=no`);
+            
+            if(popupWindow) {
+                popupWindow.document.write(popupHTML);
+                popupWindow.document.close();
+                popupWindow.focus();
+            }
+            
+            // Add to history
+            let h=JSON.parse(localStorage.getItem('xh-history')||'[]');
+            h=h.filter(x=>x!==id); h.unshift(id); localStorage.setItem('xh-history',JSON.stringify(h.slice(0,50)));
+        }
+
+        function renderShorts(c) { c.innerHTML=`<div class="section-header"><div class="section-title">⚡ Shorts</div></div>`+(shorts.length?`<div class="shorts-grid" style="flex-wrap:wrap">${shorts.map(v=>shortCard(v)).join('')}</div>`:'<div class="empty-state"><div class="empty-icon">⚡</div><div class="empty-title">No shorts</div></div>'); }
+        function renderLive(c) { c.innerHTML=`<div class="section-header"><div class="section-title">🔴 Live Streams</div></div>`+(lives.length?`<div class="live-grid">${lives.map(v=>liveCard(v)).join('')}</div>`:'<div class="empty-state"><div class="empty-icon">🔴</div><div class="empty-title">No live streams</div></div>'); }
+        function renderChannel(c) {
+            if(!currentChannel){c.innerHTML='<div class="empty-state"><div class="empty-icon">📺</div><div class="empty-title">Not found</div></div>';return;}
+            const cv=videos.filter(x=>x.channelId===currentChannel.id), cs=shorts.filter(x=>x.channelId===currentChannel.id), cl=lives.filter(x=>x.channelId===currentChannel.id);
+            const views=[...cv,...cs,...cl].reduce((s,v)=>s+(v.views||0),0);
+            const isFollowing = currentUser ? follows.some(f => f.followerId === currentUser.id && f.channelId === currentChannel.id) : false;
+            let html=`<div class="channel-banner">${currentChannel.banner?`<img src="${currentChannel.banner}">`:''}</div>
+            <div class="channel-header"><div class="channel-avatar-large">${getAvatar(currentChannel)}</div><div class="channel-info">
+                <div class="channel-name">${currentChannel.name}${currentUser?.isAdmin?`<button class="btn btn-sm btn-ghost" onclick="editChannel('${currentChannel.id}')">✏️</button><button class="btn btn-sm btn-danger" onclick="deleteChannel('${currentChannel.id}')">🗑️</button>`:''}</div>
+                <div class="channel-handle">${currentChannel.handle}</div>
+                <div class="channel-stats"><span>📺 ${cv.length+cs.length} videos</span><span>🔴 ${cl.length} live</span><span>👁️ ${formatNum(views)} views</span></div>
+                ${currentUser ? `<button class="follow-btn ${isFollowing?'following':''}" onclick="toggleFollow('${currentChannel.id}')">${isFollowing?'Following':'Follow'}</button>` : ''}
+            </div>${currentUser?.isAdmin?`<div class="channel-actions"><button class="btn btn-primary" onclick="openAddVideoFor('${currentChannel.id}')">➕ Add</button></div>`:''}</div>
+            <div class="channel-tabs"><button class="channel-tab ${channelTab==='videos'?'active':''}" onclick="channelTab='videos';render()">🎬 Videos</button><button class="channel-tab ${channelTab==='shorts'?'active':''}" onclick="channelTab='shorts';render()">⚡ Shorts</button><button class="channel-tab ${channelTab==='live'?'active':''}" onclick="channelTab='live';render()">🔴 Live</button><button class="channel-tab ${channelTab==='about'?'active':''}" onclick="channelTab='about';render()">ℹ️ About</button></div>`;
+            if(channelTab==='videos')html+=cv.length?`<div class="video-grid">${cv.map(v=>videoCard(v)).join('')}</div>`:'<div class="empty-state"><div class="empty-icon">🎬</div><div class="empty-title">No videos</div></div>';
+            else if(channelTab==='shorts')html+=cs.length?`<div class="shorts-grid" style="flex-wrap:wrap">${cs.map(v=>shortCard(v)).join('')}</div>`:'<div class="empty-state"><div class="empty-icon">⚡</div><div class="empty-title">No shorts</div></div>';
+            else if(channelTab==='live')html+=cl.length?`<div class="live-grid">${cl.map(v=>liveCard(v)).join('')}</div>`:'<div class="empty-state"><div class="empty-icon">🔴</div><div class="empty-title">No live</div></div>';
+            else html+=`<div class="about-section"><div class="about-title">ℹ️ About</div><p class="about-description">${currentChannel.description||'No description.'}</p><div class="about-info-grid"><div class="about-info-item"><span class="about-info-icon">📺</span><div><div class="about-info-label">Videos</div><div class="about-info-value">${cv.length+cs.length}</div></div></div><div class="about-info-item"><span class="about-info-icon">🔴</span><div><div class="about-info-label">Live</div><div class="about-info-value">${cl.length}</div></div></div><div class="about-info-item"><span class="about-info-icon">👁️</span><div><div class="about-info-label">Views</div><div class="about-info-value">${formatNum(views)}</div></div></div><div class="about-info-item"><span class="about-info-icon">📅</span><div><div class="about-info-label">Joined</div><div class="about-info-value">${formatDate(currentChannel.createdAt)}</div></div></div></div></div>`;
+            c.innerHTML=html;
+        }
+        function renderChannels(c) {
+            let html=`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px"><h1 style="font-size:22px">📺 Channels</h1>${currentUser?.isAdmin?`<button class="btn btn-primary" onclick="openModal('addChannelModal')">➕</button>`:''}</div>`;
+            if(!channels.length) html+='<div class="empty-state"><div class="empty-icon">📺</div><div class="empty-title">No channels</div></div>';
+            else html+=`<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:14px">${channels.map(ch=>{const cv=[...videos,...shorts,...lives].filter(v=>v.channelId===ch.id);return`<div style="text-align:center;padding:14px;background:var(--bg-secondary);border-radius:12px;cursor:pointer;position:relative"onclick="showChannel('${ch.id}')">${currentUser?.isAdmin?`<div style="position:absolute;top:6px;right:6px;display:flex;gap:4px"><button class="btn btn-sm"style="background:var(--bg-hover)"onclick="event.stopPropagation();editChannel('${ch.id}')">✏️</button><button class="btn btn-sm btn-danger"onclick="event.stopPropagation();deleteChannel('${ch.id}')">🗑️</button></div>`:''}<div style="width:70px;height:70px;border-radius:50%;margin:0 auto 10px;background:var(--bg-hover);display:flex;align-items:center;justify-content:center;font-size:32px">${getAvatar(ch)}</div><div style="font-weight:600;font-size:14px">${ch.name}</div><div style="font-size:11px;color:var(--text-secondary)">${cv.length} content</div></div>`}).join('')}</div>`;
+            c.innerHTML=html;
+        }
+        function renderExplore(c) { const all=[...videos,...shorts,...lives]; c.innerHTML=`<h1 style="font-size:22px;margin-bottom:16px">🧭 Explore</h1>`+(all.length?`<div class="video-grid">${all.sort(()=>Math.random()-0.5).slice(0,12).map(v=>v.type==='short'?shortCard(v):v.type==='live'?liveCard(v):videoCard(v)).join('')}</div>`:'<div class="empty-state"><div class="empty-icon">🧭</div><div class="empty-title">No content</div></div>'); }
+        function renderHistory(c) { const h=JSON.parse(localStorage.getItem('xh-history')||'[]').map(id=>[...videos,...shorts,...lives].find(v=>v.id===id)).filter(v=>v); c.innerHTML=`<h1 style="font-size:22px;margin-bottom:16px">🕐 History</h1>`+(h.length?`<div class="video-grid">${h.map(v=>v.type==='short'?shortCard(v):v.type==='live'?liveCard(v):videoCard(v)).join('')}</div>`:'<div class="empty-state"><div class="empty-icon">🕐</div><div class="empty-title">No history</div></div>'); }
+        function renderLiked(c) { const l=JSON.parse(localStorage.getItem('xh-liked')||'[]').map(id=>[...videos,...shorts,...lives].find(v=>v.id===id)).filter(v=>v); c.innerHTML=`<h1 style="font-size:22px;margin-bottom:16px">👍 Liked</h1>`+(l.length?`<div class="video-grid">${l.map(v=>v.type==='short'?shortCard(v):v.type==='live'?liveCard(v):videoCard(v)).join('')}</div>`:'<div class="empty-state"><div class="empty-icon">👍</div><div class="empty-title">No liked</div></div>'); }
+        function renderProfile(c) {
+            if(!currentUser) return showHome();
+            const userVideos = [...videos,...shorts,...lives].filter(v => v.channelId && channels.find(ch => ch.id === v.channelId)?.createdBy === currentUser.id);
+            const following = follows.filter(f => f.followerId === currentUser.id).length;
+            const followers = follows.filter(f => f.channelId && channels.find(ch => ch.id === f.channelId)?.createdBy === currentUser.id).length;
+            c.innerHTML = `
+                <div class="channel-header">
+                    <div class="channel-avatar-large">${currentUser.avatar?`<img src="${currentUser.avatar}">`:currentUser.username[0].toUpperCase()}</div>
+                    <div class="channel-info">
+                        <div class="channel-name">${currentUser.username} ${currentUser.isAdmin?'<span class="badge badge-admin">Admin</span>':''}</div>
+                        <div class="channel-stats">
+                            <span>📺 ${userVideos.length} videos</span>
+                            <span>👥 ${following} following</span>
+                            <span>👁️ ${followers} followers</span>
+                        </div>
+                        <div class="channel-actions">
+                            <button class="btn btn-primary" onclick="editProfile()">✏️ Edit Profile</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="about-section">
+                    <div class="about-title">ℹ️ About</div>
+                    <div class="about-info-grid">
+                        <div class="about-info-item"><span class="about-info-icon">📅</span><div><div class="about-info-label">Joined</div><div class="about-info-value">${formatDate(currentUser.createdAt)}</div></div></div>
+                        ${currentUser.social?.twitter?`<div class="about-info-item"><span class="about-info-icon">🐦</span><div><div class="about-info-label">Twitter</div><div class="about-info-value"><a href="${currentUser.social.twitter}" target="_blank">@${currentUser.social.twitter.split('/').pop()}</a></div></div></div>`:''}
+                        ${currentUser.social?.instagram?`<div class="about-info-item"><span class="about-info-icon">📷</span><div><div class="about-info-label">Instagram</div><div class="about-info-value"><a href="${currentUser.social.instagram}" target="_blank">@${currentUser.social.instagram.split('/').pop()}</a></div></div></div>`:''}
+                        ${currentUser.social?.github?`<div class="about-info-item"><span class="about-info-icon">🐙</span><div><div class="about-info-label">GitHub</div><div class="about-info-value"><a href="${currentUser.social.github}" target="_blank">${currentUser.social.github.split('/').pop()}</a></div></div></div>`:''}
+                    </div>
+                </div>
+            `;
+        }
+
+        // Navigation
+        const showHome=()=>{currentPage='home';currentChannel=null;activeCategory='All';render();};
+        const showShorts=()=>{currentPage='shorts';render();};
+        const showLive=()=>{currentPage='live';render();};
+        const showExplore=()=>{currentPage='explore';render();};
+        const showChannels=()=>{currentPage='channels';render();};
+        const showHistory=()=>{currentPage='history';render();};
+        const showLiked=()=>{currentPage='liked';render();};
+        const showProfile=()=>{currentPage='profile';render();};
+        const showChannel=id=>{currentChannel=channels.find(c=>c.id===id);channelTab='videos';currentPage='channel';render();};
+        const setCategory=cat=>{activeCategory=cat;render();};
+
+        // Follow
+        function toggleFollow(channelId) {
+            if(!currentUser) return openModal('authModal');
+            const existing = follows.findIndex(f => f.followerId === currentUser.id && f.channelId === channelId);
+            if(existing >= 0) {
+                follows.splice(existing, 1);
+                showToast('Unfollowed');
+            } else {
+                follows.push({followerId: currentUser.id, channelId, date: Date.now()});
+                showToast('Followed');
+            }
+            saveData();
+            render();
+        }
+
+        // Auth
+        function switchAuthTab(t) { document.querySelectorAll('#authModal .tab').forEach(x=>x.classList.remove('active')); document.getElementById('loginForm').style.display=t==='login'?'block':'none'; document.getElementById('registerForm').style.display=t==='register'?'block':'none'; document.querySelectorAll('#authModal .tab')[t==='login'?0:1].classList.add('active'); }
+        function handleLogin() { const u=document.getElementById('loginUsername').value.trim(),p=document.getElementById('loginPassword').value; const user=users.find(x=>x.username===u&&x.password===p); if(!user)return document.getElementById('loginError').textContent='Invalid'; if(user.isBanned)return document.getElementById('loginError').textContent='Banned'; currentUser=user;saveData();closeModal('authModal');render();showToast('Welcome, '+u); }
+        function handleRegister() { const u=document.getElementById('registerUsername').value.trim(),p=document.getElementById('registerPassword').value; if(u.length<3)return document.getElementById('registerError').textContent='Min 3 chars'; if(p.length<4)return document.getElementById('registerError').textContent='Min 4 chars'; if(users.find(x=>x.username===u))return document.getElementById('registerError').textContent='Taken'; users.push({id:'u'+Date.now(),username:u,password:p,color:COLORS[Math.floor(Math.random()*COLORS.length)],isAdmin:false,isBanned:false,createdAt:Date.now(),social:{}}); currentUser=users[users.length-1];saveData();closeModal('authModal');render();showToast('Created!'); }
+        const logout=()=>{currentUser=null;localStorage.removeItem('xh-current');showHome();render();showToast('Logged out');};
+
+        // Channels
+        function handleAddChannel() { const n=document.getElementById('channelName').value.trim(),h=document.getElementById('channelHandle').value.trim(); if(!n||!h)return showToast('Required','error'); channels.push({id:'c'+Date.now(),name:n,handle:h,description:document.getElementById('channelDesc').value.trim(),avatar:document.getElementById('channelAvatar').value.trim(),banner:document.getElementById('channelBanner').value.trim(),createdAt:Date.now(),createdBy:currentUser?.id}); saveData();closeModal('addChannelModal');render();showToast('Created!'); }
+        function editChannel(id) { editingItem=channels.find(c=>c.id===id);editingType='channel'; document.getElementById('editTitle').textContent='✏️ Edit Channel'; document.getElementById('editDeleteBtn').style.display='inline-flex'; document.getElementById('editBody').innerHTML=`<div class="form-group"><label class="form-label">Name</label><input type="text" id="editName" class="form-input" value="${editingItem.name}"></div><div class="form-group"><label class="form-label">Handle</label><input type="text" id="editHandle" class="form-input" value="${editingItem.handle}"></div><div class="form-group"><label class="form-label">Description</label><textarea id="editDesc" class="form-input" rows="2">${editingItem.description||''}</textarea></div><div class="form-group"><label class="form-label">Avatar</label><input type="text" id="editAvatar" class="form-input" value="${editingItem.avatar||''}" dir="ltr"></div><div class="form-group"><label class="form-label">Banner</label><input type="text" id="editBanner" class="form-input" value="${editingItem.banner||''}" dir="ltr"></div>`; openModal('editModal'); }
+        function deleteChannel(id) { if(confirm('Delete?')){channels=channels.filter(c=>c.id!==id);videos=videos.filter(v=>v.channelId!==id);shorts=shorts.filter(v=>v.channelId!==id);lives=lives.filter(v=>v.channelId!==id);saveData();showHome();showToast('Deleted');} }
+
+        // Content
+        function handleAddVideo() { const type=document.getElementById('videoType').value,ch=document.getElementById('videoChannel').value,t=document.getElementById('videoTitle').value.trim(),u=document.getElementById('videoUrl').value.trim(); if(!ch||!t||!u)return showToast('Required','error'); const item={id:'v'+Date.now(),channelId:ch,title:t,url:u,category:document.getElementById('videoCategory').value,platform:document.getElementById('videoPlatform').value,thumbnail:document.getElementById('videoThumbnail').value.trim(),duration:document.getElementById('videoDuration').value.trim(),game:document.getElementById('videoGame').value.trim(),description:document.getElementById('videoDesc').value.trim(),type:type,views:Math.floor(Math.random()*10000),viewers:Math.floor(Math.random()*5000),createdAt:Date.now()}; if(type==='short')shorts.push(item);else if(type==='live')lives.push(item);else videos.push(item); saveData();closeModal('addVideoModal');render();showToast('Added!'); }
+        function editContent(id,type) { const arr=type==='short'?shorts:type==='live'?lives:videos; editingItem=arr.find(v=>v.id===id);editingType=type; document.getElementById('editTitle').textContent='✏️ Edit'; document.getElementById('editDeleteBtn').style.display='inline-flex'; document.getElementById('editBody').innerHTML=`<div class="form-group"><label class="form-label">Channel</label><select id="editChannel" class="form-select">${channels.map(c=>`<option value="${c.id}"${c.id===editingItem.channelId?' selected':''}>${c.name}</option>`).join('')}</select></div><div class="form-group"><label class="form-label">Title</label><input type="text" id="editTitle" class="form-input" value="${editingItem.title}"></div><div class="form-group"><label class="form-label">URL</label><input type="text" id="editUrl" class="form-input" value="${editingItem.url}" dir="ltr"></div><div class="form-group"><label class="form-label">Thumbnail</label><input type="text" id="editThumbnail" class="form-input" value="${editingItem.thumbnail||''}" dir="ltr"></div><div class="form-group"><label class="form-label">Duration</label><input type="text" id="editDuration" class="form-input" value="${editingItem.duration||''}" dir="ltr"></div>`; openModal('editModal'); }
+        function deleteContent(id,type) { if(confirm('Delete?')){if(type==='short')shorts=shorts.filter(v=>v.id!==id);else if(type==='live')lives=lives.filter(v=>v.id!==id);else videos=videos.filter(v=>v.id!==id);saveData();render();showToast('Deleted');} }
+
+        // Edit Save
+        function saveEdit() { if(editingType==='channel'){editingItem.name=document.getElementById('editName').value;editingItem.handle=document.getElementById('editHandle').value;editingItem.description=document.getElementById('editDesc').value;editingItem.avatar=document.getElementById('editAvatar').value;editingItem.banner=document.getElementById('editBanner').value;}else{editingItem.channelId=document.getElementById('editChannel').value;editingItem.title=document.getElementById('editTitle').value;editingItem.url=document.getElementById('editUrl').value;editingItem.thumbnail=document.getElementById('editThumbnail').value;editingItem.duration=document.getElementById('editDuration').value;} saveData();closeModal('editModal');render();showToast('Saved!'); }
+        function deleteFromEdit() { if(editingType==='channel')deleteChannel(editingItem.id);else deleteContent(editingItem.id,editingType);closeModal('editModal'); }
+
+        // Admin
+        function openAdmin() { openModal('adminModal'); renderAdminChannels(); }
+        function switchAdminTab(t) { document.querySelectorAll('.admin-tab').forEach(x=>x.classList.remove('active')); document.getElementById('adminChannelsTab').style.display='none'; document.getElementById('adminVideosTab').style.display='none'; document.getElementById('adminUsersTab').style.display='none'; document.getElementById('adminMusicTab').style.display='none'; document.getElementById('adminBannedTab').style.display='none'; if(t==='channels'){document.querySelectorAll('.admin-tab')[0].classList.add('active');document.getElementById('adminChannelsTab').style.display='block';renderAdminChannels();}else if(t==='videos'){document.querySelectorAll('.admin-tab')[1].classList.add('active');document.getElementById('adminVideosTab').style.display='block';renderAdminVideos();}else if(t==='users'){document.querySelectorAll('.admin-tab')[2].classList.add('active');document.getElementById('adminUsersTab').style.display='block';renderAdminUsers();}else if(t==='music'){document.querySelectorAll('.admin-tab')[3].classList.add('active');document.getElementById('adminMusicTab').style.display='block';renderAdminMusic();}else{document.querySelectorAll('.admin-tab')[4].classList.add('active');document.getElementById('adminBannedTab').style.display='block';renderAdminBanned();} }
+        function renderAdminChannels() { document.getElementById('adminChannelsTab').innerHTML=channels.length?channels.map(c=>`<div class="admin-item"><div class="admin-item-left"><div class="channel-avatar">${getAvatar(c)}</div><div><div style="font-weight:500">${c.name}</div></div></div><div><button class="btn btn-sm btn-ghost" onclick="closeModal('adminModal');editChannel('${c.id}')">✏️</button><button class="btn btn-sm btn-danger" onclick="deleteChannel('${c.id}');renderAdminChannels()">🗑️</button></div></div>`).join(''):'<div class="empty-state"><div class="empty-title">Empty</div></div>'; }
+        function renderAdminVideos() { const all=[...videos.map(v=>({...v,_type:'video'})),...shorts.map(v=>({...v,_type:'short'})),...lives.map(v=>({...v,_type:'live'}))]; document.getElementById('adminVideosTab').innerHTML=all.length?all.map(v=>`<div class="admin-item"><div class="admin-item-left"><div style="width:40px;height:22px;background:var(--bg-tertiary);border-radius:4px;overflow:hidden"><img src="${v.thumbnail||DEFAULT_THUMB}" style="width:100%;height:100%;object-fit:cover"></div><div><div style="font-weight:500;font-size:12px">${v.title.substring(0,25)}...</div><div style="font-size:10px;color:var(--text-secondary)">${v._type}</div></div></div><div><button class="btn btn-sm btn-ghost" onclick="closeModal('adminModal');editContent('${v.id}','${v._type}')">✏️</button><button class="btn btn-sm btn-danger" onclick="deleteContent('${v.id}','${v._type}');renderAdminVideos()">🗑️</button></div></div>`).join(''):'<div class="empty-state"><div class="empty-title">Empty</div></div>'; }
+        function renderAdminUsers() { document.getElementById('adminUsersTab').innerHTML=users.map(u=>`<div class="admin-item"><div class="admin-item-left"><div class="user-avatar" style="background:${u.avatar?'transparent':u.color}">${u.avatar?`<img src="${u.avatar}">`:u.username[0].toUpperCase()}</div><div><div style="font-weight:500">${u.username} ${u.isAdmin?'<span class="badge badge-admin">Admin</span>':''}</div></div></div>${!u.isAdmin?`<button class="btn btn-sm ${u.isBanned?'btn-primary':'btn-danger'}" onclick="toggleBan('${u.id}')">${u.isBanned?'Unban':'Ban'}</button>`:''}</div>`).join(''); }
+        function renderAdminMusic() { document.getElementById('adminMusicTab').innerHTML=musicList.length?musicList.map(m=>`<div class="admin-item"><div class="admin-item-left"><div>🎵</div><div><div style="font-weight:500">${m.title}</div><div style="font-size:10px">${m.artist}</div></div></div><div><button class="btn btn-sm btn-danger" onclick="deleteMusic('${m.id}')">🗑️</button></div></div>`).join(''):'<div class="empty-state"><div class="empty-title">No music</div></div>'; }
+        function renderAdminBanned() { document.getElementById('adminBannedTab').innerHTML=bannedUsers.length?bannedUsers.map(b=>`<div class="admin-item"><div class="admin-item-left"><div>🚫</div><div><div style="font-weight:500">${b.username}</div><div style="font-size:10px">Banned by: ${b.bannedBy} - ${new Date(b.date).toLocaleDateString()}</div></div></div><div><button class="btn btn-sm btn-primary" onclick="unbanUser('${b.id}')">Unban</button></div></div>`).join(''):'<div class="empty-state"><div class="empty-title">No banned users</div></div>'; }
+        function toggleBan(id) { const u=users.find(x=>x.id===id); if(u){u.isBanned=!u.isBanned;if(u.isBanned){bannedUsers.push({id:u.id,username:u.username,reason:'Admin ban',bannedBy:currentUser?.username,date:Date.now()});}else{bannedUsers=bannedUsers.filter(b=>b.id!==id);}saveData();renderAdminUsers();renderAdminBanned();showToast(u.isBanned?'Banned':'Unbanned');} }
+        function unbanUser(id) { const u=users.find(x=>x.id===id); if(u){u.isBanned=false;bannedUsers=bannedUsers.filter(b=>b.id!==id);saveData();renderAdminUsers();renderAdminBanned();showToast('Unbanned');} }
+        function deleteMusic(id) { if(confirm('Delete music?')){musicList=musicList.filter(m=>m.id!==id);saveData();renderAdminMusic();if(musicAudio){musicAudio.pause();musicAudio=null;musicPlaying=false;document.getElementById('musicTitle').textContent='No music playing';}} }
+
+        // Modal helpers
+        const openModal=id=>document.getElementById(id).classList.add('active');
+        const closeModal=id=>{document.getElementById(id).classList.remove('active');if(id==='editModal'){editingItem=null;editingType=null;}};
+        const openAddVideoFor=chId=>{document.getElementById('videoChannel').innerHTML='<option value="">Select...</option>'+channels.map(c=>`<option value="${c.id}"${c.id===chId?' selected':''}>${c.name}</option>`).join('');openModal('addVideoModal');};
+        const openShareModal=()=>{generateQR();openModal('shareModal');};
+
+        // Search
+        function handleSearch() { const q=document.getElementById('searchInput').value.trim().toLowerCase(); if(!q)return; const all=[...videos,...shorts,...lives]; const r=all.filter(v=>v.title.toLowerCase().includes(q)); document.getElementById('pageContent').innerHTML=`<h1 style="font-size:22px;margin-bottom:16px">🔍 "${q}"</h1>`+(r.length?`<div class="video-grid">${r.map(v=>v.type==='short'?shortCard(v):v.type==='live'?liveCard(v):videoCard(v)).join('')}</div>`:'<div class="empty-state"><div class="empty-icon">🔍</div><div class="empty-title">No results</div></div>'); }
+
+        // Profile Edit
+        function editProfile() {
+            editingItem = currentUser;
+            editingType = 'user';
+            document.getElementById('editTitle').textContent = '✏️ Edit Profile';
+            document.getElementById('editDeleteBtn').style.display = 'none';
+            document.getElementById('editBody').innerHTML = `
+                <div class="form-group"><label class="form-label">Avatar URL</label><input type="text" id="editAvatar" class="form-input" value="${currentUser.avatar||''}"></div>
+                <div class="form-group"><label class="form-label">Twitter</label><input type="text" id="editTwitter" class="form-input" value="${currentUser.social?.twitter||''}"></div>
+                <div class="form-group"><label class="form-label">Instagram</label><input type="text" id="editInstagram" class="form-input" value="${currentUser.social?.instagram||''}"></div>
+                <div class="form-group"><label class="form-label">GitHub</label><input type="text" id="editGithub" class="form-input" value="${currentUser.social?.github||''}"></div>
+            `;
+            openModal('editModal');
+        }
+
+        // Share & QR
+        function generateQR() {
+            const qrDiv = document.getElementById('qrcode');
+            qrDiv.innerHTML = '';
+            const url = window.location.href;
+            new QRCode(qrDiv, {
+                text: url,
+                width: 180,
+                height: 180,
+                colorDark: "#000000",
+                colorLight: "#ffffff",
+                correctLevel: QRCode.CorrectLevel.H
+            });
+        }
+        function shareSocial(platform) {
+            const url = encodeURIComponent(window.location.href);
+            const text = encodeURIComponent('Check out XtreamHub!');
+            let shareUrl = '';
+            if(platform === 'twitter') shareUrl = `https://twitter.com/intent/tweet?url=${url}&text=${text}`;
+            else if(platform === 'facebook') shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${url}`;
+            else if(platform === 'whatsapp') shareUrl = `https://api.whatsapp.com/send?text=${text} ${url}`;
+            else if(platform === 'telegram') shareUrl = `https://t.me/share/url?url=${url}&text=${text}`;
+            else if(platform === 'linkedin') shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${url}`;
+            if(shareUrl) window.open(shareUrl, '_blank');
+        }
+        function copyShareLink() {
+            navigator.clipboard.writeText(window.location.href);
+            showToast('Link copied!');
+        }
+        function exportData() {
+            const data = {
+                users, channels, videos, shorts, lives, musicList, follows, bannedUsers,
+                version: '1.0', exportDate: new Date().toISOString()
             };
-        }
-
-        function updateExportData() {
-            const data = getAllData();
-            document.getElementById('exportData').value = JSON.stringify(data, null, 2);
-        }
-
-        function copyExportData() {
-            updateExportData();
-            const data = document.getElementById('exportData').value;
-            navigator.clipboard.writeText(data).then(() => {
-                showToast('Data copied to clipboard!');
-            }).catch(() => {
-                showToast('Failed to copy', 'error');
-            });
-        }
-
-        function copyAllData() {
-            const data = JSON.stringify(getAllData(), null, 2);
-            navigator.clipboard.writeText(data).then(() => {
-                showToast('All data copied!');
-            }).catch(() => {
-                showToast('Failed to copy', 'error');
-            });
-        }
-
-        function downloadJSON() {
-            updateExportData();
-            const data = getAllData();
-            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = 'xtreamhub_data_' + new Date().toISOString().slice(0,10) + '.json';
-            document.body.appendChild(a);
+            a.download = `xtreamhub-backup-${new Date().toISOString().slice(0,10)}.json`;
             a.click();
-            document.body.removeChild(a);
             URL.revokeObjectURL(url);
-            showToast('JSON file downloaded!');
+            showToast('Data exported');
         }
-
-        function importData() {
-            const input = document.getElementById('importData').value.trim();
-            if (!input) {
-                showToast('Please paste data first', 'error');
-                return;
-            }
-            try {
-                const data = JSON.parse(input);
-                if (data.users) users = data.users;
-                if (data.channels) channels = data.channels;
-                if (data.videos) {
-                    videos = data.videos.filter(v => v.type !== 'short' && v.type !== 'live');
-                    shorts = data.videos.filter(v => v.type === 'short');
-                    lives = data.videos.filter(v => v.type === 'live');
-                }
-                if (data.chat) chatMessages = data.chat;
-                saveData();
-                closeModal('importModal');
-                render();
-                showToast('Data imported successfully!');
-            } catch (e) {
-                showToast('Invalid JSON data', 'error');
-            }
-        }
-
-        function loadFile(event) {
+        function importData(event) {
             const file = event.target.files[0];
-            if (!file) return;
+            if(!file) return;
             const reader = new FileReader();
-            reader.onload = function(e) {
-                document.getElementById('importData').value = e.target.result;
-                showToast('File loaded! Click Import to apply.');
+            reader.onload = (e) => {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    if(data.users) users = data.users;
+                    if(data.channels) channels = data.channels;
+                    if(data.videos) videos = data.videos;
+                    if(data.shorts) shorts = data.shorts;
+                    if(data.lives) lives = data.lives;
+                    if(data.musicList) musicList = data.musicList;
+                    if(data.follows) follows = data.follows;
+                    if(data.bannedUsers) bannedUsers = data.bannedUsers;
+                    saveData();
+                    render();
+                    showToast('Data imported');
+                } catch(err) {
+                    showToast('Invalid file', 'error');
+                }
             };
             reader.readAsText(file);
         }
 
-        // ========== SOCIAL SHARE ==========
-        const SITE_URL = window.location.href;
-        const SITE_TITLE = 'XtreamHub - Video Platform';
-
-        function shareTwitter() {
-            window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(SITE_TITLE)}&url=${encodeURIComponent(SITE_URL)}`, '_blank');
-        }
-
-        function shareFacebook() {
-            window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(SITE_URL)}`, '_blank');
-        }
-
-        function shareTelegram() {
-            window.open(`https://t.me/share/url?url=${encodeURIComponent(SITE_URL)}&text=${encodeURIComponent(SITE_TITLE)}`, '_blank');
-        }
-
-        function shareWhatsApp() {
-            window.open(`https://wa.me/?text=${encodeURIComponent(SITE_TITLE + ' ' + SITE_URL)}`, '_blank');
-        }
-
-        function shareLinkedIn() {
-            window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(SITE_URL)}`, '_blank');
-        }
-
-        function shareReddit() {
-            window.open(`https://reddit.com/submit?url=${encodeURIComponent(SITE_URL)}&title=${encodeURIComponent(SITE_TITLE)}`, '_blank');
-        }
-
-        function shareEmail() {
-            window.location.href = `mailto:?subject=${encodeURIComponent(SITE_TITLE)}&body=${encodeURIComponent('Check out: ' + SITE_URL)}`;
-        }
-
-        function copyLink() {
-            navigator.clipboard.writeText(SITE_URL).then(() => {
-                showToast('Link copied!');
-            });
-        }
-
-        // ========== DATA ==========
-        function loadData() {
-            users = JSON.parse(localStorage.getItem('xh-users') || '[]');
-            channels = JSON.parse(localStorage.getItem('xh-channels') || '[]');
-            const allContent = JSON.parse(localStorage.getItem('xh-videos') || '[]');
-            videos = allContent.filter(v => v.type !== 'short' && v.type !== 'live');
-            shorts = allContent.filter(v => v.type === 'short');
-            lives = allContent.filter(v => v.type === 'live');
-            
-            if (!users.find(u => u.username === ADMIN_USER)) {
-                users.push({ id: 'admin', username: ADMIN_USER, password: ADMIN_PASS, color: '#ff0000', isAdmin: true, isBanned: false, createdAt: Date.now() });
-            }
-            
-            const admin = users.find(u => u.username === ADMIN_USER);
-            if (admin) { admin.password = ADMIN_PASS; admin.isAdmin = true; }
-            
-            const saved = localStorage.getItem('xh-current');
-            if (saved) {
-                const u = users.find(x => x.id === saved && !x.isBanned);
-                if (u) currentUser = u;
-            }
-            
-            chatMessages = JSON.parse(localStorage.getItem('xh-chat') || '[]');
-            if (chatMessages.length === 0) {
-                chatMessages = [
-                    { user: 'GamerPro', text: 'Hey everyone! 👋', color: '#ff6b6b', time: Date.now() },
-                    { user: 'StreamFan', text: 'Nice content!', color: '#4ecdc4', time: Date.now() }
-                ];
-            }
-            
-            saveData();
-        }
-
-        function saveData() {
-            localStorage.setItem('xh-users', JSON.stringify(users));
-            localStorage.setItem('xh-channels', JSON.stringify(channels));
-            localStorage.setItem('xh-videos', JSON.stringify([...videos, ...shorts, ...lives]));
-            localStorage.setItem('xh-chat', JSON.stringify(chatMessages));
-            if (currentUser) localStorage.setItem('xh-current', currentUser.id);
-            else localStorage.removeItem('xh-current');
-        }
-
-        // ========== RENDER ==========
-        function render() { renderHeader(); renderSidebar(); renderPage(); renderChat(); }
-
-        function renderHeader() {
-            const h = document.getElementById('headerRight');
-            if (currentUser) {
-                const avatarHtml = currentUser.avatar ? `<img src="${currentUser.avatar}" alt="">` : currentUser.username[0].toUpperCase();
-                h.innerHTML = `
-                    ${currentUser.isAdmin ? '<button class="btn btn-icon btn-ghost" onclick="openAdmin()" title="Admin">🛡️</button>' : ''}
-                    ${currentUser.isAdmin ? '<button class="btn btn-primary btn-sm" onclick="openModal(\'addChannelModal\')">➕ Channel</button>' : ''}
-                    ${currentUser.isAdmin && channels.length > 0 ? '<button class="btn btn-secondary btn-sm" onclick="openModal(\'addVideoModal\');populateChannelSelect()">➕ Content</button>' : ''}
-                    <button class="user-menu"><div class="user-avatar" style="background:${currentUser.avatar ? 'transparent' : currentUser.color}">${avatarHtml}</div><span>${currentUser.username}</span></button>
-                    <button class="btn btn-icon btn-ghost" onclick="logout()" title="Logout">🚪</button>
-                `;
-            } else {
-                h.innerHTML = '<button class="btn btn-primary" onclick="openModal(\'authModal\')">🔑 Login</button>';
-            }
-        }
-
-        function renderSidebar() {
-            document.getElementById('sidebarChannels').innerHTML = channels.slice(0, 5).map(c => 
-                `<div class="sidebar-item" onclick="showChannel('${c.id}')"><span class="sidebar-icon">${getAvatar(c)}</span><span class="sidebar-text">${c.name}</span></div>`
-            ).join('');
-        }
-
-        function renderPage() {
-            const c = document.getElementById('pageContent');
-            document.querySelectorAll('.sidebar-item').forEach((el, idx) => {
-                el.classList.remove('active');
-                if (idx === 0 && currentPage === 'home') el.classList.add('active');
-                if (idx === 1 && currentPage === 'shorts') el.classList.add('active');
-                if (idx === 2 && currentPage === 'live') el.classList.add('active');
-                if (idx === 3 && currentPage === 'explore') el.classList.add('active');
-                if (idx === 4 && currentPage === 'channels') el.classList.add('active');
-                if (idx === 6 && currentPage === 'history') el.classList.add('active');
-                if (idx === 7 && currentPage === 'liked') el.classList.add('active');
-            });
-            switch (currentPage) {
-                case 'home': renderHome(c); break;
-                case 'shorts': renderShorts(c); break;
-                case 'live': renderLive(c); break;
-                case 'explore': renderExplore(c); break;
-                case 'channels': renderChannels(c); break;
-                case 'channel': renderChannel(c); break;
-                case 'history': renderHistory(c); break;
-                case 'liked': renderLiked(c); break;
-                default: renderHome(c);
-            }
-        }
-
-        function renderHome(c) {
-            const filteredVideos = activeCategory === 'All' ? videos : videos.filter(v => v.category === activeCategory.toLowerCase());
-            const totalViews = [...videos, ...shorts, ...lives].reduce((s, v) => s + (v.views || 0), 0);
-            let html = `<div class="category-pills">${CATEGORIES.map(cat => `<button class="category-pill ${activeCategory === cat ? 'active' : ''}" onclick="setCategory('${cat}')">${cat}</button>`).join('')}</div>
-                <div class="stats-grid"><div class="stat-card"><div class="stat-value">${channels.length}</div><div class="stat-label">Channels</div></div><div class="stat-card"><div class="stat-value">${videos.length}</div><div class="stat-label">Videos</div></div><div class="stat-card"><div class="stat-value">${shorts.length}</div><div class="stat-label">Shorts</div></div><div class="stat-card"><div class="stat-value">${lives.length}</div><div class="stat-label">Live</div></div><div class="stat-card"><div class="stat-value">${formatNum(totalViews)}</div><div class="stat-label">Views</div></div></div>`;
-            if (shorts.length > 0) html += `<div class="shorts-section"><div class="section-header"><div class="section-title">⚡ Shorts</div></div><div class="shorts-grid">${shorts.map(s => renderShortCard(s)).join('')}</div></div>`;
-            if (lives.length > 0) html += `<div class="live-section"><div class="section-header"><div class="section-title">🔴 Live</div></div><div class="live-grid">${lives.map(l => renderLiveCard(l)).join('')}</div></div>`;
-            html += `<div class="section-header"><div class="section-title">🎬 Videos</div></div>${filteredVideos.length > 0 ? `<div class="video-grid">${filteredVideos.map(v => renderVideoCard(v)).join('')}</div>` : '<div class="empty-state"><div class="empty-icon">🎬</div><div class="empty-title">No videos</div></div>'}`;
-            c.innerHTML = html;
-        }
-
-        function renderVideoCard(v) {
-            const ch = channels.find(c => c.id === v.channelId);
-            const adminBtns = currentUser?.isAdmin ? `<div class="admin-controls"><button class="btn btn-sm" style="background:var(--bg-hover)" onclick="event.stopPropagation();editContent('${v.id}','video')">✏️</button><button class="btn btn-sm btn-danger" onclick="event.stopPropagation();deleteContent('${v.id}','video')">🗑️</button></div>` : '';
-            return `<div class="video-card" onclick="openMiniPlayer('${v.id}','video')"><div class="video-thumbnail"><img src="${v.thumbnail || DEFAULT_THUMB}" onerror="this.src='${DEFAULT_THUMB}'">${v.duration ? `<span class="video-duration">${v.duration}</span>` : ''}<span class="video-platform">${getPlatformIcon(v.platform)} ${getPlatformName(v.platform)}</span><button class="btn btn-sm btn-popup popup-btn-overlay" onclick="event.stopPropagation();openMiniPlayer('${v.id}','video')">🎬</button>${adminBtns}</div><div class="video-info"><div class="channel-avatar" onclick="event.stopPropagation();showChannel('${v.channelId}')">${getAvatar(ch)}</div><div class="video-details"><div class="video-title">${v.title}</div><div class="video-meta">${ch?.name || 'Unknown'} • ${formatNum(v.views || 0)} views</div></div></div></div>`;
-        }
-
-        function renderShortCard(v) {
-            const ch = channels.find(c => c.id === v.channelId);
-            const adminBtns = currentUser?.isAdmin ? `<div style="position:absolute;top:8px;right:8px;z-index:10;display:flex;gap:4px"><button class="btn btn-sm" style="background:rgba(0,0,0,0.8)" onclick="event.stopPropagation();editContent('${v.id}','short')">✏️</button><button class="btn btn-sm btn-danger" onclick="event.stopPropagation();deleteContent('${v.id}','short')">🗑️</button></div>` : '';
-            return `<div class="short-card" onclick="openMiniPlayer('${v.id}','short')"><div class="short-thumbnail"><img src="${v.thumbnail || DEFAULT_THUMB}" onerror="this.src='${DEFAULT_THUMB}'"><div class="short-badge">SHORT</div>${adminBtns}<div class="short-overlay"><div class="short-title">${v.title}</div><div class="short-views">${formatNum(v.views || 0)} views</div></div></div></div>`;
-        }
-
-        function renderLiveCard(v) {
-            const ch = channels.find(c => c.id === v.channelId);
-            const adminBtns = currentUser?.isAdmin ? `<div class="admin-controls"><button class="btn btn-sm" style="background:rgba(0,0,0,0.8)" onclick="event.stopPropagation();editContent('${v.id}','live')">✏️</button><button class="btn btn-sm btn-danger" onclick="event.stopPropagation();deleteContent('${v.id}','live')">🗑️</button></div>` : '';
-            return `<div class="live-card" onclick="openMiniPlayer('${v.id}','live')"><div class="video-thumbnail"><img src="${v.thumbnail || DEFAULT_THUMB}" onerror="this.src='${DEFAULT_THUMB}'"><div class="live-badge">🔴 LIVE</div><div class="live-viewers">👁️ ${formatNum(v.viewers || Math.floor(Math.random()*10000))}</div><button class="btn btn-sm btn-popup popup-btn-overlay" onclick="event.stopPropagation();openMiniPlayer('${v.id}','live')">🎬</button>${adminBtns}</div><div class="live-info"><div class="channel-avatar">${getAvatar(ch)}</div><div><div style="font-size:14px;font-weight:500">${v.title}</div><div style="font-size:12px;color:var(--text-secondary)">${ch?.name || 'Unknown'}</div>${v.game ? `<div style="font-size:11px;color:var(--purple);margin-top:2px">🎮 ${v.game}</div>` : ''}</div></div></div>`;
-        }
-
-        function renderShorts(c) { c.innerHTML = `<div class="section-header"><div class="section-title">⚡ Shorts</div></div>${shorts.length > 0 ? `<div class="shorts-grid">${shorts.map(s => renderShortCard(s)).join('')}</div>` : '<div class="empty-state"><div class="empty-icon">⚡</div><div class="empty-title">No shorts</div></div>'}'; }
-        function renderLive(c) { c.innerHTML = `<div class="section-header"><div class="section-title">🔴 Live</div></div>${lives.length > 0 ? `<div class="live-grid">${lives.map(l => renderLiveCard(l)).join('')}</div>` : '<div class="empty-state"><div class="empty-icon">🔴</div><div class="empty-title">No live</div></div>'}'; }
-        function renderExplore(c) { const all = [...videos, ...shorts, ...lives].sort(() => Math.random() - 0.5).slice(0, 12); c.innerHTML = `<div class="section-header"><div class="section-title">🧭 Explore</div></div>${all.length > 0 ? `<div class="video-grid">${all.map(v => v.type === 'short' ? renderShortCard(v) : v.type === 'live' ? renderLiveCard(v) : renderVideoCard(v)).join('')}</div>` : '<div class="empty-state"><div class="empty-icon">🧭</div><div class="empty-title">No content</div></div>'}'; }
-        
-        function renderChannels(c) {
-            c.innerHTML = `<div class="section-header"><div class="section-title">📺 Channels</div>${currentUser?.isAdmin ? '<button class="btn btn-primary" onclick="openModal(\'addChannelModal\')">➕</button>' : ''}</div>${channels.length === 0 ? '<div class="empty-state"><div class="empty-icon">📺</div><div class="empty-title">No channels</div></div>' : `<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:16px">${channels.map(ch => { const count = [...videos, ...shorts, ...lives].filter(v => v.channelId === ch.id).length; const views = [...videos, ...shorts, ...lives].filter(v => v.channelId === ch.id).reduce((s, v) => s + (v.views || 0), 0); const adminBtns = currentUser?.isAdmin ? `<div style="position:absolute;top:8px;right:8px;display:flex;gap:4px"><button class="btn btn-sm" style="background:var(--bg-hover)" onclick="event.stopPropagation();editChannel('${ch.id}')">✏️</button><button class="btn btn-sm btn-danger" onclick="event.stopPropagation();deleteChannel('${ch.id}')">🗑️</button></div>` : ''; return `<div style="text-align:center;padding:20px;background:var(--bg-secondary);border-radius:12px;cursor:pointer;position:relative" onclick="showChannel('${ch.id}')">${adminBtns}<div style="width:80px;height:80px;border-radius:50%;margin:0 auto 12px;background:var(--bg-hover);display:flex;align-items:center;justify-content:center;font-size:36px">${getAvatar(ch)}</div><div style="font-weight:600;font-size:15px">${ch.name}</div><div style="font-size:12px;color:var(--text-secondary);margin-top:4px">${count} • ${formatNum(views)} views</div></div>`; }).join('')}</div>`}`;
-        }
-
-        function renderChannel(c) {
-            if (!currentChannel) { c.innerHTML = '<div class="empty-state"><div class="empty-icon">📺</div><div class="empty-title">Not found</div></div>'; return; }
-            const chVideos = videos.filter(v => v.channelId === currentChannel.id);
-            const chShorts = shorts.filter(v => v.channelId === currentChannel.id);
-            const chLives = lives.filter(v => v.channelId === currentChannel.id);
-            const chViews = [...chVideos, ...chShorts, ...chLives].reduce((s, v) => s + (v.views || 0), 0);
-            const adminBtns = currentUser?.isAdmin ? `<button class="btn btn-sm btn-ghost" onclick="editChannel('${currentChannel.id}')">✏️</button><button class="btn btn-sm btn-danger" onclick="deleteChannel('${currentChannel.id}')">🗑️</button>` : '';
-            let html = `<div class="channel-banner">${currentChannel.banner ? `<img src="${currentChannel.banner}" style="width:100%;height:100%;object-fit:cover">` : ''}</div><div style="display:flex;align-items:flex-start;gap:20px;margin-bottom:24px"><div class="channel-avatar-large">${getAvatar(currentChannel)}</div><div style="flex:1"><div style="font-size:24px;font-weight:bold;margin-bottom:6px;display:flex;align-items:center;gap:12px">${currentChannel.name}${adminBtns}</div><div style="color:var(--text-secondary);font-size:14px;margin-bottom:10px">${currentChannel.handle}</div><div style="display:flex;gap:16px;color:var(--text-secondary);font-size:13px"><span>📺 ${chVideos.length + chShorts.length} videos</span><span>🔴 ${chLives.length} live</span><span>👁️ ${formatNum(chViews)} views</span></div></div>${currentUser?.isAdmin ? `<button class="btn btn-primary" onclick="openModal('addVideoModal');populateChannelSelect('${currentChannel.id}')">➕</button>` : ''}</div><div class="channel-tabs"><button class="channel-tab ${channelTab === 'videos' ? 'active' : ''}" onclick="channelTab='videos';render()">🎬 Videos</button><button class="channel-tab ${channelTab === 'shorts' ? 'active' : ''}" onclick="channelTab='shorts';render()">⚡ Shorts</button><button class="channel-tab ${channelTab === 'live' ? 'active' : ''}" onclick="channelTab='live';render()">🔴 Live</button><button class="channel-tab ${channelTab === 'about' ? 'active' : ''}" onclick="channelTab='about';render()">ℹ️ About</button></div>`;
-            if (channelTab === 'videos') html += chVideos.length > 0 ? `<div class="video-grid">${chVideos.map(v => renderVideoCard(v)).join('')}</div>` : '<div class="empty-state"><div class="empty-icon">🎬</div><div class="empty-title">No videos</div></div>';
-            else if (channelTab === 'shorts') html += chShorts.length > 0 ? `<div class="shorts-grid">${chShorts.map(s => renderShortCard(s)).join('')}</div>` : '<div class="empty-state"><div class="empty-icon">⚡</div><div class="empty-title">No shorts</div></div>';
-            else if (channelTab === 'live') html += chLives.length > 0 ? `<div class="live-grid">${chLives.map(l => renderLiveCard(l)).join('')}</div>` : '<div class="empty-state"><div class="empty-icon">🔴</div><div class="empty-title">No live</div></div>';
-            else html += `<div style="background:var(--bg-secondary);border-radius:12px;padding:20px"><div style="font-size:18px;font-weight:600;margin-bottom:16px">ℹ️ About</div><p style="color:var(--text-secondary);line-height:1.6">${currentChannel.description || 'No description.'}</p></div>`;
-            c.innerHTML = html;
-        }
-
-        function renderHistory(c) { const h = JSON.parse(localStorage.getItem('xh-history') || '[]').map(id => [...videos, ...shorts, ...lives].find(v => v.id === id)).filter(Boolean); c.innerHTML = `<div class="section-header"><div class="section-title">🕐 History</div></div>${h.length > 0 ? `<div class="video-grid">${h.map(v => v.type === 'short' ? renderShortCard(v) : v.type === 'live' ? renderLiveCard(v) : renderVideoCard(v)).join('')}</div>` : '<div class="empty-state"><div class="empty-icon">🕐</div><div class="empty-title">No history</div></div>'}'; }
-        function renderLiked(c) { const l = JSON.parse(localStorage.getItem('xh-liked') || '[]').map(id => [...videos, ...shorts, ...lives].find(v => v.id === id)).filter(Boolean); c.innerHTML = `<div class="section-header"><div class="section-title">👍 Liked</div></div>${l.length > 0 ? `<div class="video-grid">${l.map(v => v.type === 'short' ? renderShortCard(v) : v.type === 'live' ? renderLiveCard(v) : renderVideoCard(v)).join('')}</div>` : '<div class="empty-state"><div class="empty-icon">👍</div><div class="empty-title">No liked</div></div>'}'; }
-
-        // ========== CHAT ==========
-        function renderChat() {
-            document.getElementById('chatMessages').innerHTML = chatMessages.map((m, i) => `<div class="chat-msg"><div class="chat-msg-avatar" style="background:${m.color}">${m.user[0]}</div><div class="chat-msg-content"><div class="chat-msg-user">${m.user}${currentUser?.isAdmin ? `<button class="chat-admin-btn" style="background:var(--danger);color:white" onclick="deleteChatMsg(${i})">🗑️</button><button class="chat-admin-btn" style="background:var(--accent);color:white" onclick="banChatUser('${m.user}')">🚫</button>` : ''}</div><div class="chat-msg-text">${m.text}</div></div></div>`).join('');
-        }
-
-        function sendChat() {
-            const input = document.getElementById('chatInput');
-            const text = input.value.trim();
-            if (!text) return;
-            const bannedUsers = JSON.parse(localStorage.getItem('xh-banned-chat') || '[]');
-            const username = currentUser?.username || 'Guest';
-            if (bannedUsers.includes(username)) { showToast('You are banned from chat', 'error'); input.value = ''; return; }
-            chatMessages.push({ user: username, text: text, color: currentUser?.color || '#888', time: Date.now() });
-            input.value = '';
-            saveData();
-            renderChat();
-        }
-
-        function deleteChatMsg(idx) { if (confirm('Delete this message?')) { chatMessages.splice(idx, 1); saveData(); renderChat(); showToast('Deleted'); } }
-        function banChatUser(username) { if (!confirm(`Ban "${username}" from chat?`)) return; const bannedUsers = JSON.parse(localStorage.getItem('xh-banned-chat') || '[]'); if (!bannedUsers.includes(username)) { bannedUsers.push(username); localStorage.setItem('xh-banned-chat', JSON.stringify(bannedUsers)); } chatMessages = chatMessages.filter(m => m.user !== username); saveData(); renderChat(); showToast(`${username} banned`); }
-        function toggleChat() { chatExpanded = !chatExpanded; document.getElementById('chatPanel').classList.toggle('expanded', chatExpanded); }
-
-        // ========== MINI PLAYER ==========
-        function openMiniPlayer(id, type) {
-            let item = type === 'short' ? shorts.find(x => x.id === id) : type === 'live' ? lives.find(x => x.id === id) : videos.find(x => x.id === id);
-            if (!item) return;
-            item.views = (item.views || 0) + 1;
-            saveData();
-            currentMiniPlayerItem = item;
-            const ch = channels.find(x => x.id === item.channelId);
-            const ytId = getYouTubeId(item.url);
-            document.getElementById('miniPlayerTitle').textContent = item.title;
-            document.getElementById('miniChannelName').textContent = ch?.name || 'Unknown';
-            const avatarEl = document.getElementById('miniChannelAvatar');
-            avatarEl.innerHTML = ch?.avatar ? `<img src="${ch.avatar}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">` : getEmoji(ch?.name || '?');
-            const videoContainer = document.getElementById('miniPlayerVideo');
-            if (ytId && item.platform === 'youtube') {
-                videoContainer.innerHTML = `<iframe src="https://www.youtube.com/embed/${ytId}?autoplay=1&rel=0" allowfullscreen allow="autoplay; encrypted-media"></iframe>`;
-            } else {
-                videoContainer.innerHTML = `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:#000;cursor:pointer;position:relative" onclick="openOnYouTube()"><img src="${item.thumbnail || DEFAULT_THUMB}" style="width:100%;height:100%;object-fit:cover" onerror="this.src='${DEFAULT_THUMB}'"><div style="position:absolute;width:60px;height:60px;background:rgba(255,0,0,0.9);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:28px">▶</div></div>`;
-            }
-            document.getElementById('miniPlayer').classList.add('active');
-            showToast('Mini player opened');
-            let h = JSON.parse(localStorage.getItem('xh-history') || '[]');
-            h = h.filter(x => x !== id);
-            h.unshift(id);
-            localStorage.setItem('xh-history', JSON.stringify(h.slice(0, 50)));
-            render();
-        }
-
-        function closeMiniPlayer() { document.getElementById('miniPlayer').classList.remove('active'); document.getElementById('miniPlayerVideo').innerHTML = ''; currentMiniPlayerItem = null; }
-        function openOnYouTube() { if (currentMiniPlayerItem?.url) window.open(currentMiniPlayerItem.url, '_blank'); }
-        function downloadVideo() { if (currentMiniPlayerItem) { window.open(currentMiniPlayerItem.url, '_blank'); showToast('Opening...'); } }
-
-        // ========== AUTH ==========
-        function switchAuthTab(t) { document.querySelectorAll('#authModal .tab').forEach((el, i) => { el.classList.toggle('active', (t === 'login' && i === 0) || (t === 'register' && i === 1)); }); document.getElementById('loginForm').style.display = t === 'login' ? 'block' : 'none'; document.getElementById('registerForm').style.display = t === 'register' ? 'block' : 'none'; }
-        function handleLogin() { const u = document.getElementById('loginUsername').value.trim(); const p = document.getElementById('loginPassword').value; const user = users.find(x => x.username === u && x.password === p); if (!user) { document.getElementById('loginError').textContent = 'Invalid'; return; } if (user.isBanned) { document.getElementById('loginError').textContent = 'Banned'; return; } currentUser = user; saveData(); closeModal('authModal'); render(); showToast(`Welcome, ${u}!`); }
-        function handleRegister() { const u = document.getElementById('registerUsername').value.trim(); const p = document.getElementById('registerPassword').value; if (u.length < 3) { document.getElementById('registerError').textContent = 'Min 3 chars'; return; } if (p.length < 4) { document.getElementById('registerError').textContent = 'Min 4 chars'; return; } if (users.find(x => x.username === u)) { document.getElementById('registerError').textContent = 'Taken'; return; } const newUser = { id: 'u' + Date.now(), username: u, password: p, color: COLORS[Math.floor(Math.random() * COLORS.length)], isAdmin: false, isBanned: false, createdAt: Date.now() }; users.push(newUser); currentUser = newUser; saveData(); closeModal('authModal'); render(); showToast(`Welcome, ${u}!`); }
-        function logout() { currentUser = null; localStorage.removeItem('xh-current'); render(); showToast('Logged out'); }
-
-        // ========== CHANNELS ==========
-        function handleAddChannel() { const name = document.getElementById('channelName').value.trim(); const handle = document.getElementById('channelHandle').value.trim(); if (!name || !handle) { showToast('Required', 'error'); return; } channels.push({ id: 'c' + Date.now(), name: name, handle: handle, description: document.getElementById('channelDesc').value.trim(), avatar: document.getElementById('channelAvatar').value.trim(), banner: document.getElementById('channelBanner').value.trim(), createdAt: Date.now() }); saveData(); closeModal('addChannelModal'); render(); showToast('Channel created!'); ['channelName','channelHandle','channelDesc','channelAvatar','channelBanner'].forEach(id => document.getElementById(id).value = ''); }
-        function editChannel(id) { const ch = channels.find(c => c.id === id); if (!ch) return; editingItem = ch; editingType = 'channel'; document.getElementById('editTitle').textContent = '✏️ Edit Channel'; document.getElementById('editDeleteBtn').style.display = 'inline-flex'; document.getElementById('editBody').innerHTML = `<div class="form-group"><label class="form-label">Name</label><input type="text" id="editName" class="form-input" value="${ch.name}"></div><div class="form-group"><label class="form-label">Handle</label><input type="text" id="editHandle" class="form-input" value="${ch.handle}"></div><div class="form-group"><label class="form-label">Description</label><textarea id="editDesc" class="form-input" rows="2">${ch.description || ''}</textarea></div><div class="form-group"><label class="form-label">Avatar</label><input type="text" id="editAvatar" class="form-input" value="${ch.avatar || ''}" dir="ltr"></div><div class="form-group"><label class="form-label">Banner</label><input type="text" id="editBanner" class="form-input" value="${ch.banner || ''}" dir="ltr"></div>`; openModal('editModal'); }
-        function deleteChannel(id) { if (!confirm('Delete channel?')) return; channels = channels.filter(c => c.id !== id); videos = videos.filter(v => v.channelId !== id); shorts = shorts.filter(v => v.channelId !== id); lives = lives.filter(v => v.channelId !== id); saveData(); if (currentChannel?.id === id) { currentChannel = null; showHome(); } else render(); showToast('Deleted'); }
-
-        // ========== CONTENT ==========
-        function populateChannelSelect(selectedId) { document.getElementById('videoChannel').innerHTML = '<option value="">Select...</option>' + channels.map(c => `<option value="${c.id}" ${c.id === selectedId ? 'selected' : ''}>${c.name}</option>`).join(''); }
-        function handleAddVideo() { const type = document.getElementById('videoType').value; const channelId = document.getElementById('videoChannel').value; const title = document.getElementById('videoTitle').value.trim(); const url = document.getElementById('videoUrl').value.trim(); if (!channelId || !title || !url) { showToast('Required', 'error'); return; } const item = { id: 'v' + Date.now(), channelId: channelId, title: title, url: url, category: document.getElementById('videoCategory').value, platform: document.getElementById('videoPlatform').value, thumbnail: document.getElementById('videoThumbnail').value.trim(), duration: document.getElementById('videoDuration').value.trim(), game: document.getElementById('videoGame').value.trim(), type: type, views: 0, viewers: Math.floor(Math.random() * 5000), createdAt: Date.now() }; if (type === 'short') shorts.push(item); else if (type === 'live') lives.push(item); else videos.push(item); saveData(); closeModal('addVideoModal'); render(); showToast('Added!'); ['videoTitle','videoUrl','videoThumbnail','videoDuration','videoGame'].forEach(id => document.getElementById(id).value = ''); }
-        function editContent(id, type) { let arr = type === 'short' ? shorts : type === 'live' ? lives : videos; const item = arr.find(v => v.id === id); if (!item) return; editingItem = item; editingType = type; document.getElementById('editTitle').textContent = '✏️ Edit'; document.getElementById('editDeleteBtn').style.display = 'inline-flex'; document.getElementById('editBody').innerHTML = `<div class="form-group"><label class="form-label">Title</label><input type="text" id="editTitle2" class="form-input" value="${item.title}"></div><div class="form-group"><label class="form-label">URL</label><input type="text" id="editUrl" class="form-input" value="${item.url}" dir="ltr"></div><div class="form-group"><label class="form-label">Thumbnail</label><input type="text" id="editThumbnail" class="form-input" value="${item.thumbnail || ''}" dir="ltr"></div><div class="form-group"><label class="form-label">Duration</label><input type="text" id="editDuration" class="form-input" value="${item.duration || ''}" dir="ltr"></div><div class="form-group"><label class="form-label">Views</label><input type="number" id="editViews" class="form-input" value="${item.views || 0}"></div>`; openModal('editModal'); }
-        function deleteContent(id, type) { if (!confirm('Delete?')) return; if (type === 'short') shorts = shorts.filter(v => v.id !== id); else if (type === 'live') lives = lives.filter(v => v.id !== id); else videos = videos.filter(v => v.id !== id); saveData(); render(); showToast('Deleted'); }
-        function saveEdit() { if (editingType === 'channel') { editingItem.name = document.getElementById('editName').value; editingItem.handle = document.getElementById('editHandle').value; editingItem.description = document.getElementById('editDesc').value; editingItem.avatar = document.getElementById('editAvatar').value; editingItem.banner = document.getElementById('editBanner').value; } else { editingItem.title = document.getElementById('editTitle2').value; editingItem.url = document.getElementById('editUrl').value; editingItem.thumbnail = document.getElementById('editThumbnail').value; editingItem.duration = document.getElementById('editDuration').value; editingItem.views = parseInt(document.getElementById('editViews').value) || 0; } saveData(); closeModal('editModal'); render(); showToast('Saved!'); }
-        function deleteFromEdit() { if (editingType === 'channel') deleteChannel(editingItem.id); else deleteContent(editingItem.id, editingType); closeModal('editModal'); }
-
-        // ========== ADMIN ==========
-        function openAdmin() { openModal('adminModal'); renderAdminChannels(); }
-        function switchAdminTab(t) { document.querySelectorAll('.admin-tab').forEach((el, i) => { el.classList.toggle('active', (t === 'channels' && i === 0) || (t === 'videos' && i === 1) || (t === 'users' && i === 2)); }); document.getElementById('adminChannelsTab').style.display = t === 'channels' ? 'block' : 'none'; document.getElementById('adminVideosTab').style.display = t === 'videos' ? 'block' : 'none'; document.getElementById('adminUsersTab').style.display = t === 'users' ? 'block' : 'none'; if (t === 'channels') renderAdminChannels(); if (t === 'videos') renderAdminVideos(); if (t === 'users') renderAdminUsers(); }
-        function renderAdminChannels() { document.getElementById('adminChannelsTab').innerHTML = channels.length === 0 ? '<div class="empty-state"><div class="empty-title">No channels</div></div>' : channels.map(ch => `<div class="admin-item"><div class="admin-item-left"><div class="channel-avatar">${getAvatar(ch)}</div><div><div style="font-weight:500">${ch.name}</div><div style="font-size:11px;color:var(--text-secondary)">${ch.handle}</div></div></div><div style="display:flex;gap:6px"><button class="btn btn-sm" style="background:var(--bg-hover)" onclick="closeModal('adminModal');editChannel('${ch.id}')">✏️</button><button class="btn btn-sm btn-danger" onclick="deleteChannel('${ch.id}');renderAdminChannels()">🗑️</button></div></div>`).join(''); }
-        function renderAdminVideos() { const all = [...videos.map(v => ({...v, _type: 'video'})), ...shorts.map(v => ({...v, _type: 'short'})), ...lives.map(v => ({...v, _type: 'live'}))]; document.getElementById('adminVideosTab').innerHTML = all.length === 0 ? '<div class="empty-state"><div class="empty-title">No content</div></div>' : all.map(v => { const ch = channels.find(c => c.id === v.channelId); return `<div class="admin-item"><div class="admin-item-left"><div style="width:60px;height:34px;background:var(--bg-primary);border-radius:4px;overflow:hidden"><img src="${v.thumbnail || DEFAULT_THUMB}" style="width:100%;height:100%;object-fit:cover" onerror="this.src='${DEFAULT_THUMB}'"></div><div><div style="font-weight:500;font-size:12px">${v.title.substring(0, 30)}${v.title.length > 30 ? '...' : ''}</div><div style="font-size:10px;color:var(--text-secondary)">${v._type.toUpperCase()} • ${ch?.name || 'Unknown'}</div></div></div><div style="display:flex;gap:6px"><button class="btn btn-sm" style="background:var(--bg-hover)" onclick="closeModal('adminModal');editContent('${v.id}','${v._type}')">✏️</button><button class="btn btn-sm btn-danger" onclick="deleteContent('${v.id}','${v._type}');renderAdminVideos()">🗑️</button></div></div>`; }).join(''); }
-        function renderAdminUsers() { document.getElementById('adminUsersTab').innerHTML = users.map(u => `<div class="admin-item"><div class="admin-item-left"><div class="user-avatar" style="background:${u.avatar ? 'transparent' : u.color}">${u.avatar ? `<img src="${u.avatar}" alt="">` : u.username[0].toUpperCase()}</div><div><div style="font-weight:500">${u.username}${u.isAdmin ? '<span class="badge badge-admin">Admin</span>' : ''}${u.isBanned ? '<span class="badge badge-banned">Banned</span>' : ''}</div></div></div>${!u.isAdmin ? `<button class="btn btn-sm ${u.isBanned ? 'btn-success' : 'btn-danger'}" onclick="toggleBan('${u.id}')">${u.isBanned ? '✅ Unban' : '🚫 Ban'}</button>` : ''}</div>`).join(''); }
-        function toggleBan(id) { const u = users.find(x => x.id === id); if (!u || u.isAdmin) return; u.isBanned = !u.isBanned; if (u.isBanned && currentUser?.id === id) { currentUser = null; localStorage.removeItem('xh-current'); } saveData(); renderAdminUsers(); renderHeader(); showToast(u.isBanned ? `${u.username} banned` : `${u.username} unbanned`); }
-
-        // ========== NAVIGATION ==========
-        const showHome = () => { currentPage = 'home'; currentChannel = null; activeCategory = 'All'; render(); };
-        const showShorts = () => { currentPage = 'shorts'; currentChannel = null; render(); };
-        const showLive = () => { currentPage = 'live'; currentChannel = null; render(); };
-        const showExplore = () => { currentPage = 'explore'; currentChannel = null; render(); };
-        const showChannels = () => { currentPage = 'channels'; currentChannel = null; render(); };
-        const showHistory = () => { currentPage = 'history'; currentChannel = null; render(); };
-        const showLiked = () => { currentPage = 'liked'; currentChannel = null; render(); };
-        const showChannel = id => { currentChannel = channels.find(c => c.id === id); channelTab = 'videos'; currentPage = 'channel'; render(); };
-        const setCategory = cat => { activeCategory = cat; render(); };
-        function toggleSidebar() { sidebarCollapsed = !sidebarCollapsed; document.getElementById('sidebar').classList.toggle('collapsed', sidebarCollapsed); document.getElementById('mainContent').classList.toggle('expanded', sidebarCollapsed); }
-
-        // ========== SEARCH ==========
-        function handleSearch() { const q = document.getElementById('searchInput').value.trim().toLowerCase(); if (!q) return; const all = [...videos, ...shorts, ...lives]; const results = all.filter(v => v.title.toLowerCase().includes(q)); const c = document.getElementById('pageContent'); c.innerHTML = `<div class="section-header"><div class="section-title">🔍 "${q}"</div></div>${results.length > 0 ? `<div class="video-grid">${results.map(v => v.type === 'short' ? renderShortCard(v) : v.type === 'live' ? renderLiveCard(v) : renderVideoCard(v)).join('')}</div>` : '<div class="empty-state"><div class="empty-icon">🔍</div><div class="empty-title">No results</div></div>'}'; }
-
-        // ========== MODAL ==========
-        const openModal = id => { document.getElementById(id).classList.add('active'); if (id === 'shareModal') updateExportData(); };
-        const closeModal = id => { document.getElementById(id).classList.remove('active'); if (id === 'editModal') { editingItem = null; editingType = null; } };
-
-        // ========== KEYBOARD ==========
-        document.addEventListener('keydown', e => { if (e.key === 'Escape') ['authModal', 'addChannelModal', 'addVideoModal', 'adminModal', 'editModal', 'shareModal', 'importModal'].forEach(closeModal); });
-
-        // ========== INIT ==========
-        document.addEventListener('DOMContentLoaded', () => { loadData(); render(); });
+        // Events
+        document.addEventListener('DOMContentLoaded',init);
+        document.addEventListener('keydown',e=>{if(e.key==='Escape'){['authModal','addChannelModal','addVideoModal','addMusicModal','adminModal','editModal','shareModal'].forEach(closeModal);}});
     </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 </body>
 </html>
