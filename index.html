@@ -1179,6 +1179,13 @@
             } else if (editingType === 'music') {
                 editingItem.title = document.getElementById('editTitle').value;
                 editingItem.url = document.getElementById('editUrl').value;
+            } else if (editingType === 'chat') {
+                const idx = editingItem.idx;
+                chatMessages[idx].user = document.getElementById('editChatUser').value;
+                chatMessages[idx].text = document.getElementById('editChatText').value;
+                chatMessages[idx].color = document.getElementById('editChatColor').value;
+                renderChat();
+                renderAdminChat();
             } else {
                 editingItem.title = document.getElementById('editTitle').value;
                 editingItem.url = document.getElementById('editUrl').value;
@@ -1196,6 +1203,7 @@
         function deleteEdit() {
             if (editingType === 'channel') deleteChannel(editingItem.id);
             else if (editingType === 'music') deleteMusic(editingItem.id);
+            else if (editingType === 'chat') deleteChatMsgAdmin(editingItem.idx);
             else deleteContent(editingItem.id, editingType);
             closeModal('editModal');
         }
