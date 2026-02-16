@@ -1497,25 +1497,28 @@
                             <option value="youtube">🔴 YouTube Live</option>
                             <option value="twitch">🟣 Twitch</option>
                             <option value="kick">💚 Kick</option>
-                            <option value="aparat">🎬 Aparat</option>
+                            <option value="aparat" selected>🎬 Aparat</option>
                         </select>
                     </div>
                     
                     <div id="streamSettingsContainer">
                         <div style="background:var(--bg-primary);padding:14px;border-radius:10px;margin-bottom:12px;border:1px solid var(--border-color)">
-                            <div style="font-size:10px;color:var(--text-secondary);margin-bottom:8px">📡 RTMP Server URL:</div>
+                            <div style="font-size:10px;color:var(--text-secondary);margin-bottom:8px">📡 RTMP Server URL (Click to edit):</div>
                             <div style="display:flex;gap:8px;align-items:center">
-                                <code id="rtmpUrlBox" style="flex:1;font-size:11px;color:var(--accent);word-break:break-all;background:var(--bg-tertiary);padding:10px;border-radius:6px;font-family:monospace">rtmp://a.rtmp.youtube.com/live2</code>
-                                <button class="btn btn-sm btn-ghost" onclick="navigator.clipboard.writeText(document.getElementById('rtmpUrlBox').textContent);showToast('URL Copied!','success')">📋</button>
+                                <input type="text" id="rtmpUrlBox" value="rtmp://rtmp.cdn.asset.aparat.com:443/event" style="flex:1;font-size:11px;color:var(--accent);background:var(--bg-tertiary);padding:10px;border-radius:6px;font-family:monospace;border:1px solid var(--border-color);outline:none">
+                                <button class="btn btn-sm btn-ghost" onclick="navigator.clipboard.writeText(document.getElementById('rtmpUrlBox').value);showToast('URL Copied!','success')">📋</button>
                             </div>
                         </div>
                         
                         <div style="background:var(--bg-primary);padding:14px;border-radius:10px;margin-bottom:12px;border:1px solid var(--border-color)">
-                            <div style="font-size:10px;color:var(--text-secondary);margin-bottom:8px">🔑 Stream Key (Get from your platform dashboard):</div>
-                            <input type="text" id="userStreamKey" placeholder="Paste your stream key here..." style="width:100%;padding:10px;background:var(--bg-tertiary);border:1px solid var(--border-color);border-radius:6px;color:var(--accent);font-size:11px;font-family:monospace">
-                            <div style="font-size:9px;color:var(--text-secondary);margin-top:6px">
-                                <strong>How to get:</strong> 
-                                <span id="keyInstructions">YouTube Studio → Create → Go Live → Copy stream key</span>
+                            <div style="font-size:10px;color:var(--text-secondary);margin-bottom:8px">🔑 Stream Key (Paste your key here):</div>
+                            <input type="text" id="userStreamKey" placeholder="ec9f75918c4713fd9821db51abcf91aff?s=..." value="ec9f75918c4713fd9821db51abcf91aff?s=e6e32dce15bad218" style="width:100%;padding:10px;background:var(--bg-tertiary);border:1px solid var(--border-color);border-radius:6px;color:var(--accent);font-size:11px;font-family:monospace">
+                            <div style="display:flex;gap:6px;margin-top:8px">
+                                <button class="btn btn-sm btn-primary" onclick="saveStreamSettings()">💾 Save</button>
+                                <button class="btn btn-sm btn-ghost" onclick="navigator.clipboard.writeText(document.getElementById('userStreamKey').value);showToast('Key Copied!','success')">📋 Copy Key</button>
+                            </div>
+                            <div style="font-size:9px;color:var(--text-secondary);margin-top:6px" id="keyInstructions">
+                                Your Aparat stream key is auto-filled. Click Save to keep it.
                             </div>
                         </div>
                     </div>
@@ -1570,7 +1573,6 @@
         
         function updateStreamSettings() {
             const platform = document.getElementById('streamPlatformSelect').value;
-            const rtmpBox = document.getElementById('rtmpUrlBox');
             const keyInstructions = document.getElementById('keyInstructions');
             
             const settings = {
@@ -1587,13 +1589,41 @@
                     instructions: 'Kick → Creator Dashboard → Settings → Stream → Copy Stream Key'
                 },
                 aparat: {
-                    url: 'rtmp://live.aparat.com/live',
-                    instructions: 'Aparat → Live → Settings → Copy Stream Key'
+                    url: 'rtmp://rtmp.cdn.asset.aparat.com:443/event',
+                    instructions: 'Aparat → Live → Copy your Stream Key (ec9f75918c4713fd9821db51abcf91aff?s=...)'
                 }
             };
             
-            rtmpBox.textContent = settings[platform].url;
+            document.getElementById('rtmpUrlBox').value = settings[platform].url;
             keyInstructions.textContent = settings[platform].instructions;
+            
+            // Load saved URL and key
+            const savedUrl = localStorage.getItem('xh_stream_url_' + platform);
+            const savedKey = localStorage.getItem('xh_stream_key_' + platform);
+            
+            if (savedUrl) {
+                document.getElementById('rtmpUrlBox').value = savedUrl;
+            } else {
+                document.getElementById('rtmpUrlBox').value = settings[platform].url;
+            }
+            
+            if (savedKey) {
+                document.getElementById('userStreamKey').value = savedKey;
+            }
+        }
+        
+        function saveStreamKey(platform) {
+            const key = document.getElementById('userStreamKey').value;
+            localStorage.setItem('xh_stream_key_' + platform, key);
+        }
+        
+        function saveStreamSettings() {
+            const url = document.getElementById('rtmpUrlBox').value;
+            const key = document.getElementById('userStreamKey').value;
+            const platform = document.getElementById('streamPlatformSelect').value;
+            localStorage.setItem('xh_stream_url_' + platform, url);
+            localStorage.setItem('xh_stream_key_' + platform, key);
+            showToast('Stream settings saved!', 'success');
         }
         
         function goLiveWithStream() {
