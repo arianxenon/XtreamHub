@@ -82,6 +82,8 @@
         .sidebar-item:hover { background: var(--bg-hover); color: var(--accent); }
         .sidebar-item.active { background: var(--bg-hover); color: var(--accent); border-left: 3px solid var(--accent); }
         .sidebar-icon { font-size: 16px; width: 20px; text-align: center; }
+        .sidebar-avatar { width: 28px; height: 28px; border-radius: 50%; background: var(--bg-tertiary); display: flex; align-items: center; justify-content: center; font-size: 12px; overflow: hidden; flex-shrink: 0; border: 2px solid var(--border-color); }
+        .sidebar-avatar img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
         .sidebar-text { font-size: 12px; white-space: nowrap; }
         .sidebar-divider { height: 1px; background: var(--border-color); margin: 8px 12px; }
         .sidebar-section { padding: 6px 14px; font-size: 10px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; }
@@ -245,20 +247,20 @@
         .chat-admin-btn:hover { opacity: 0.8; }
 
         /* Mini Player */
-        .mini-player { position: fixed; bottom: 20px; left: 20px; width: 480px; background: var(--bg-secondary); border-radius: 12px; box-shadow: 0 8px 40px rgba(0,255,102,0.2); z-index: 8000; overflow: hidden; display: none; border: 1px solid var(--border-color); }
-        .mini-player.active { display: block; animation: slideUp 0.3s ease; }
-        @keyframes slideUp { from { transform: translateY(100px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-        .mini-player.large { width: 700px; }
-        .mini-player.fullscreen { position: fixed; inset: 0; width: 100%; height: 100%; border-radius: 0; z-index: 99999; }
-        .mini-player.vertical { width: 380px; }
-        .mini-player.vertical.large { width: 450px; }
-        .mini-player.vertical .mini-player-video { aspect-ratio: 9/16; }
-        .mini-player-header { padding: 8px 12px; background: linear-gradient(90deg, var(--bg-tertiary) 0%, var(--bg-secondary) 100%); display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border-color); }
-        .mini-player-title { font-size: 11px; font-weight: 600; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-right: 10px; color: var(--accent); }
-        .mini-player-controls { display: flex; gap: 5px; }
-        .mini-player-btn { width: 24px; height: 24px; background: var(--bg-tertiary); border: 1px solid var(--border-color); border-radius: 6px; color: var(--text-primary); cursor: pointer; font-size: 11px; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+        .mini-player { position: fixed; bottom: 50%; left: 50%; transform: translate(-50%, 50%); width: 960px; max-width: 95vw; background: var(--bg-secondary); border-radius: 12px; box-shadow: 0 8px 40px rgba(0,255,102,0.2); z-index: 8000; overflow: hidden; display: none; border: 1px solid var(--border-color); }
+        .mini-player.active { display: block; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translate(-50%, 50%) scale(0.9); } to { opacity: 1; transform: translate(-50%, 50%) scale(1); } }
+        .mini-player.large { width: 1200px; max-width: 98vw; }
+        .mini-player.fullscreen { position: fixed; inset: 0; width: 100%; height: 100%; border-radius: 0; z-index: 99999; transform: none; }
+        .mini-player.vertical { width: 450px; bottom: 50%; }
+        .mini-player.vertical.large { width: 600px; }
+        .mini-player.vertical .mini-player-video { aspect-ratio: 9/16; max-height: 70vh; }
+        .mini-player-header { padding: 10px 14px; background: linear-gradient(90deg, var(--bg-tertiary) 0%, var(--bg-secondary) 100%); display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border-color); }
+        .mini-player-title { font-size: 13px; font-weight: 600; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-right: 10px; color: var(--accent); }
+        .mini-player-controls { display: flex; gap: 6px; }
+        .mini-player-btn { width: 28px; height: 28px; background: var(--bg-tertiary); border: 1px solid var(--border-color); border-radius: 6px; color: var(--text-primary); cursor: pointer; font-size: 12px; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
         .mini-player-btn:hover { background: var(--accent); color: var(--bg-primary); border-color: var(--accent); }
-        .mini-player-video { width: 100%; aspect-ratio: 16/9; background: #000; position: relative; }
+        .mini-player-video { width: 100%; aspect-ratio: 16/9; background: #000; position: relative; overflow: hidden; }
         .mini-player-video iframe { width: 100%; height: 100%; border: none; position: absolute; top: 0; left: 0; }
         .mini-player-info { padding: 8px 12px; display: flex; align-items: center; gap: 10px; border-top: 1px solid var(--border-color); }
         .mini-channel-avatar { width: 26px; height: 26px; border-radius: 50%; background: var(--accent); display: flex; align-items: center; justify-content: center; font-size: 12px; overflow: hidden; flex-shrink: 0; color: var(--bg-primary); }
@@ -493,7 +495,7 @@
             <div class="modal-header"><span class="modal-title">➕ Add Content</span><button class="modal-close" onclick="closeModal('addContentModal')">×</button></div>
             <div class="modal-body">
                 <div class="form-row">
-                    <div class="form-group"><label class="form-label">Type *</label><select class="form-select" id="contentType"><option value="video">Video</option><option value="short">Short</option><option value="live">Live</option></select></div>
+                    <div class="form-group"><label class="form-label">Type *</label><select class="form-select" id="contentType" onchange="toggleLiveOptions()"><option value="video">Video</option><option value="short">Short</option><option value="live">Live Stream</option></select></div>
                     <div class="form-group"><label class="form-label">Platform</label><select class="form-select" id="contentPlatform"><option value="youtube">YouTube</option><option value="twitch">Twitch</option><option value="aparat">Aparat</option><option value="kick">Kick</option></select></div>
                 </div>
                 <div class="form-group"><label class="form-label">Channel *</label><select class="form-select" id="contentChannel"><option value="">Select...</option></select></div>
@@ -504,6 +506,40 @@
                     <div class="form-group"><label class="form-label">Duration</label><input type="text" id="contentDuration" class="form-input" placeholder="10:30"></div>
                 </div>
                 <div class="form-group"><label class="form-label">Thumbnail URL</label><input type="text" id="contentThumb" class="form-input" dir="ltr" placeholder="https://..."></div>
+                
+                <!-- Live Stream Options -->
+                <div id="liveOptions" style="display:none; margin-top:12px; padding:12px; background:var(--bg-tertiary); border-radius:8px; border:1px solid var(--accent)">
+                    <div style="font-size:12px; font-weight:600; color:var(--accent); margin-bottom:10px">🔴 Live Stream Settings</div>
+                    <div class="form-row">
+                        <div class="form-group"><label class="form-label">Stream Key</label><input type="text" id="streamKey" class="form-input" dir="ltr" placeholder="Enter stream key..."></div>
+                        <div class="form-group"><label class="form-label">Initial Viewers</label><input type="number" id="initialViewers" class="form-input" placeholder="0" value="0"></div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Stream Type</label>
+                            <select class="form-select" id="streamType">
+                                <option value="normal">Normal Stream</option>
+                                <option value="vr180">VR 180°</option>
+                                <option value="vr360">VR 360°</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Stream Quality</label>
+                            <select class="form-select" id="streamQuality">
+                                <option value="1080p">1080p Full HD</option>
+                                <option value="720p">720p HD</option>
+                                <option value="480p">480p SD</option>
+                                <option value="4k">4K Ultra HD</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label style="display:flex; align-items:center; gap:8px; cursor:pointer">
+                            <input type="checkbox" id="streamChat">
+                            <span class="form-label" style="margin:0">Enable Live Chat</span>
+                        </label>
+                    </div>
+                </div>
             </div>
             <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal('addContentModal')">Cancel</button><button class="btn btn-primary" onclick="addContent()">Add</button></div>
         </div>
@@ -811,7 +847,7 @@
             document.getElementById('sidebarChannels').innerHTML = followedChannels.slice(0, 5).map(cid => {
                 const ch = channels.find(c => c.id === cid);
                 if (!ch) return '';
-                return `<div class="sidebar-item" onclick="viewChannel('${ch.id}');closeMobileSidebar()"><span class="sidebar-icon">${getAvatar(ch)}</span><span class="sidebar-text">${ch.name}</span></div>`;
+                return `<div class="sidebar-item" onclick="viewChannel('${ch.id}');closeMobileSidebar()"><div class="sidebar-avatar">${getAvatar(ch)}</div><span class="sidebar-text">${ch.name}</span></div>`;
             }).join('') || '<div style="padding:10px 14px;font-size:11px;color:var(--text-secondary)">No followed channels</div>';
         }
 
@@ -893,23 +929,37 @@
 
         function renderLiveCard(v) {
             const ch = channels.find(c => c.id === v.channelId);
+            const platform = v.platform || 'youtube';
+            const liveThumbnail = getLiveThumbnail(v.url, platform) || v.thumbnail || DEFAULT_THUMB;
             return `
                 <div class="live-card" onclick="openPlayer('${v.id}','live')">
                     <div class="video-thumbnail">
-                        <img src="${v.thumbnail || DEFAULT_THUMB}" onerror="this.src='${DEFAULT_THUMB}'">
+                        <img src="${liveThumbnail}" onerror="this.src='${v.thumbnail || DEFAULT_THUMB}'">
                         <div class="live-badge">🔴 LIVE</div>
-                        <div class="live-viewers">👁️ ${formatNum(v.viewers || Math.floor(Math.random()*10000))}</div>
+                        <div class="live-viewers">👁️ ${formatNum(v.viewers || 0)}</div>
                         <div class="play-overlay"><div class="play-btn">▶</div></div>
                     </div>
                     <div class="video-info">
                         <div class="channel-avatar">${getAvatar(ch)}</div>
                         <div class="video-details">
                             <div class="video-title">${v.title}</div>
-                            <div class="video-meta">${ch?.name || 'Unknown'}</div>
+                            <div class="video-meta">${ch?.name || 'Unknown'} • ${getPlatformName(platform)}</div>
                         </div>
                     </div>
                 </div>
             `;
+        }
+        
+        function getLiveThumbnail(url, platform) {
+            if (!url) return null;
+            // YouTube live thumbnail
+            if (platform === 'youtube') {
+                const ytId = getYouTubeId(url);
+                if (ytId) return `https://img.youtube.com/vi/${ytId}/maxresdefault.jpg`;
+            }
+            // Twitch thumbnail (needs API, fallback to default)
+            // Kick thumbnail (needs API, fallback to default)
+            return null;
         }
 
         function renderShorts(c) { c.innerHTML = `<div class="section-header"><div class="section-title">⚡ Shorts</div></div>${shorts.length ? `<div class="shorts-grid">${shorts.map(s => renderShortCard(s)).join('')}</div>` : '<div class="empty-state"><div class="empty-icon">⚡</div><div class="empty-title">No shorts</div></div>'}`; }
@@ -1037,20 +1087,64 @@
             let item = type === 'short' ? shorts.find(v => v.id === id) : type === 'live' ? lives.find(v => v.id === id) : videos.find(v => v.id === id);
             if (!item) return;
             item.views = (item.views || 0) + 1;
+            if (type === 'live') {
+                item.viewers = (item.viewers || 0) + 1;
+            }
             saveData();
             currentMiniItem = item;
             const ch = channels.find(c => c.id === item.channelId);
-            const ytId = getYouTubeId(item.url);
             document.getElementById('miniPlayerTitle').textContent = item.title;
             document.getElementById('miniChannelName').textContent = ch?.name || 'Unknown';
             const av = document.getElementById('miniChannelAvatar');
             av.innerHTML = ch?.avatar ? `<img src="${ch.avatar}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">` : getEmoji(ch?.name || '?');
             const vid = document.getElementById('miniPlayerVideo');
-            if (ytId && item.platform === 'youtube') {
-                vid.innerHTML = `<iframe src="https://www.youtube.com/embed/${ytId}?autoplay=1&rel=0" allowfullscreen allow="autoplay"></iframe>`;
-            } else {
-                vid.innerHTML = `<img src="${item.thumbnail || DEFAULT_THUMB}" onerror="this.src='${DEFAULT_THUMB}'" style="cursor:pointer"><div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.4);cursor:pointer" onclick="openYouTube()"><div style="width:60px;height:60px;background:var(--accent);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:28px">▶</div></div>`;
+            const platform = item.platform || 'youtube';
+            let embedUrl = '';
+            
+            // YouTube
+            const ytId = getYouTubeId(item.url);
+            if (platform === 'youtube' && ytId) {
+                embedUrl = `https://www.youtube.com/embed/${ytId}?autoplay=1&rel=0`;
+                vid.innerHTML = `<iframe src="${embedUrl}" allowfullscreen allow="autoplay; encrypted-media"></iframe>`;
             }
+            // Twitch
+            else if (platform === 'twitch') {
+                const twitchMatch = item.url.match(/twitch\.tv\/([^\/\?]+)/);
+                const twitchChannel = twitchMatch ? twitchMatch[1] : null;
+                if (twitchChannel) {
+                    embedUrl = `https://player.twitch.tv/?channel=${twitchChannel}&parent=${window.location.hostname}&autoplay=true`;
+                    vid.innerHTML = `<iframe src="${embedUrl}" allowfullscreen allow="autoplay"></iframe>`;
+                } else {
+                    vid.innerHTML = getFallbackPlayer(item);
+                }
+            }
+            // Kick
+            else if (platform === 'kick') {
+                const kickMatch = item.url.match(/kick\.com\/([^\/\?]+)/);
+                const kickChannel = kickMatch ? kickMatch[1] : null;
+                if (kickChannel) {
+                    embedUrl = `https://player.kick.com/${kickChannel}`;
+                    vid.innerHTML = `<iframe src="${embedUrl}" allowfullscreen></iframe>`;
+                } else {
+                    vid.innerHTML = getFallbackPlayer(item);
+                }
+            }
+            // Aparat
+            else if (platform === 'aparat') {
+                const aparatMatch = item.url.match(/aparat\.com\/v\/([^\/\?]+)/);
+                const aparatId = aparatMatch ? aparatMatch[1] : null;
+                if (aparatId) {
+                    embedUrl = `https://www.aparat.com/video/video/embed/videohash/${aparatId}/vt/frame`;
+                    vid.innerHTML = `<iframe src="${embedUrl}" allowfullscreen></iframe>`;
+                } else {
+                    vid.innerHTML = getFallbackPlayer(item);
+                }
+            }
+            // Fallback
+            else {
+                vid.innerHTML = getFallbackPlayer(item);
+            }
+            
             playerSize = 'normal';
             const player = document.getElementById('miniPlayer');
             player.classList.remove('large', 'fullscreen', 'vertical');
@@ -1062,6 +1156,10 @@
             h = h.filter(x => x !== id); h.unshift(id);
             localStorage.setItem('xh_history', JSON.stringify(h.slice(0, 50)));
             render();
+        }
+        
+        function getFallbackPlayer(item) {
+            return `<img src="${item.thumbnail || DEFAULT_THUMB}" onerror="this.src='${DEFAULT_THUMB}'" style="width:100%;height:100%;object-fit:contain;cursor:pointer"><div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.4);cursor:pointer" onclick="openYouTube()"><div style="width:70px;height:70px;background:var(--accent);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:32px">▶</div></div>`;
         }
 
         function closeMiniPlayer() { document.getElementById('miniPlayer').classList.remove('active', 'large', 'fullscreen', 'vertical'); document.getElementById('miniPlayerVideo').innerHTML = ''; currentMiniItem = null; }
@@ -1150,13 +1248,42 @@
             const title = document.getElementById('contentTitle').value.trim();
             const url = document.getElementById('contentUrl').value.trim();
             if (!channelId || !title || !url) { showToast('Channel, title and URL required', 'error'); return; }
-            const item = { id: 'v' + Date.now(), channelId, title, url, platform: document.getElementById('contentPlatform').value, category: document.getElementById('contentCategory').value, thumbnail: document.getElementById('contentThumb').value.trim(), duration: document.getElementById('contentDuration').value.trim(), type, views: 0, viewers: Math.floor(Math.random() * 5000), createdAt: Date.now() };
+            const item = { 
+                id: 'v' + Date.now(), 
+                channelId, 
+                title, 
+                url, 
+                platform: document.getElementById('contentPlatform').value, 
+                category: document.getElementById('contentCategory').value, 
+                thumbnail: document.getElementById('contentThumb').value.trim(), 
+                duration: document.getElementById('contentDuration').value.trim(), 
+                type, 
+                views: 0, 
+                createdAt: Date.now() 
+            };
+            
+            // Live stream settings
+            if (type === 'live') {
+                item.viewers = parseInt(document.getElementById('initialViewers').value) || 0;
+                item.streamKey = document.getElementById('streamKey').value.trim() || '';
+                item.streamType = document.getElementById('streamType').value;
+                item.streamQuality = document.getElementById('streamQuality').value;
+                item.streamChat = document.getElementById('streamChat').checked;
+                item.isLive = true;
+            }
+            
             if (type === 'short') shorts.push(item); else if (type === 'live') lives.push(item); else videos.push(item);
             saveData();
             closeModal('addContentModal');
             render();
             showToast('Content added!');
             ['contentTitle','contentUrl','contentThumb','contentDuration'].forEach(id => document.getElementById(id).value = '');
+        }
+        
+        function toggleLiveOptions() {
+            const type = document.getElementById('contentType').value;
+            const liveOptions = document.getElementById('liveOptions');
+            liveOptions.style.display = type === 'live' ? 'block' : 'none';
         }
 
         function editContent(id, type) {
@@ -1297,10 +1424,54 @@
         }
 
         function renderAdminLive() {
+            const serverUrl = window.location.origin || 'https://your-server.com';
             document.getElementById('adminLive').innerHTML = `
-                <div style="margin-bottom:10px"><button class="btn btn-primary btn-sm" onclick="closeModal('adminModal');openAddContent()">➕ Add Live</button></div>
-                ${lives.length ? lives.sort((a,b) => (b.createdAt||0) - (a.createdAt||0)).map(v => { const ch = channels.find(c => c.id === v.channelId); return `<div class="admin-item"><div class="admin-item-left"><span class="badge-live">🔴 LIVE</span><div class="admin-item-info"><div class="admin-item-title">${v.title}</div><div class="admin-item-meta">${ch?.name||'Unknown'} • ${formatNum(v.viewers||0)} viewers • ${formatDateTime(v.createdAt)}</div></div></div><div style="display:flex;gap:6px"><button class="btn btn-sm btn-ghost" onclick="editContent('${v.id}','live')">✏️</button><button class="btn btn-sm btn-danger" onclick="deleteContent('${v.id}','live');renderAdminLive()">🗑️</button></div></div>`; }).join('') : '<div class="empty-state"><div class="empty-title">No live streams</div></div>'}
+                <div style="margin-bottom:14px;padding:14px;background:linear-gradient(135deg,#1a0a0a 0%,#0f1a0f 100%);border-radius:10px;border:1px solid #ff4757">
+                    <div style="font-weight:700;margin-bottom:12px;font-size:14px;color:#ff4757">🎬 Stream Manager (Admin Only)</div>
+                    <div style="font-size:11px;color:var(--text-secondary);margin-bottom:10px">Use these settings to stream with OBS, Streamlabs, or any RTMP encoder.</div>
+                    <div style="background:var(--bg-primary);padding:10px;border-radius:6px;margin-bottom:8px;border:1px solid var(--border-color)">
+                        <div style="font-size:10px;color:var(--text-secondary);margin-bottom:4px">📡 RTMP Server URL:</div>
+                        <div style="display:flex;gap:8px;align-items:center">
+                            <code style="flex:1;font-size:11px;color:var(--accent);word-break:break-all">rtmp://live.youtube.com/live</code>
+                            <button class="btn btn-sm btn-ghost" onclick="navigator.clipboard.writeText('rtmp://live.youtube.com/live');showToast('Copied!','success')">📋</button>
+                        </div>
+                    </div>
+                    <div style="background:var(--bg-primary);padding:10px;border-radius:6px;margin-bottom:8px;border:1px solid var(--border-color)">
+                        <div style="font-size:10px;color:var(--text-secondary);margin-bottom:4px">🔑 Stream Key (Generate new for each stream):</div>
+                        <div style="display:flex;gap:8px;align-items:center">
+                            <code style="flex:1;font-size:11px;color:var(--accent);word-break:break-all" id="streamKeyDisplay">${generateStreamKey()}</code>
+                            <button class="btn btn-sm btn-primary" onclick="document.getElementById('streamKeyDisplay').textContent=generateStreamKey()">🔄 New</button>
+                            <button class="btn btn-sm btn-ghost" onclick="navigator.clipboard.writeText(document.getElementById('streamKeyDisplay').textContent);showToast('Copied!','success')">📋</button>
+                        </div>
+                    </div>
+                    <div style="font-size:10px;color:var(--text-secondary);background:var(--bg-tertiary);padding:8px;border-radius:6px">
+                        <strong>💡 Tips:</strong> Go to YouTube Studio → Go Live to get your actual stream key. For Twitch: Settings → Stream. For Kick: Creator Dashboard.
+                    </div>
+                </div>
+                <div style="margin-bottom:10px"><button class="btn btn-primary btn-sm" onclick="closeModal('adminModal');openAddContent()">➕ Add Live Stream</button></div>
+                ${lives.length ? lives.sort((a,b) => (b.createdAt||0) - (a.createdAt||0)).map(v => { 
+                    const ch = channels.find(c => c.id === v.channelId);
+                    const streamInfo = [];
+                    if (v.streamType && v.streamType !== 'normal') streamInfo.push(v.streamType.toUpperCase());
+                    if (v.streamQuality) streamInfo.push(v.streamQuality);
+                    return `<div class="admin-item" style="flex-direction:column;align-items:stretch">
+                        <div style="display:flex;align-items:center;justify-content:space-between">
+                            <div class="admin-item-left"><span class="badge-live">🔴 LIVE</span><div class="admin-item-info"><div class="admin-item-title">${v.title}</div><div class="admin-item-meta">${ch?.name||'Unknown'} • ${getPlatformName(v.platform)} • 👁️ ${formatNum(v.viewers||0)} viewers</div></div></div>
+                            <div style="display:flex;gap:6px"><button class="btn btn-sm btn-ghost" onclick="editContent('${v.id}','live')">✏️</button><button class="btn btn-sm btn-danger" onclick="deleteContent('${v.id}','live');renderAdminLive()">🗑️</button></div>
+                        </div>
+                        ${v.streamKey || streamInfo.length ? `<div style="margin-top:6px;padding-top:6px;border-top:1px solid var(--border-color);font-size:10px;color:var(--text-secondary)">${v.streamKey ? `🔑 Key: ${v.streamKey.substring(0,8)}... • ` : ''}${streamInfo.join(' • ')}</div>` : ''}
+                    </div>`; 
+                }).join('') : '<div class="empty-state"><div class="empty-title">No live streams</div></div>'}
             `;
+        }
+        
+        function generateStreamKey() {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+            let key = '';
+            for (let i = 0; i < 20; i++) {
+                key += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return 'sk-' + key;
         }
 
         function renderAdminMusic() {
