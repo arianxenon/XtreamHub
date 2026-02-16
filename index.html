@@ -53,6 +53,7 @@
         .btn-danger { background: var(--danger); color: white; }
         .btn-sm { padding: 6px 12px; font-size: 12px; }
         .btn-icon { width: 40px; height: 40px; padding: 0; border-radius: 50%; justify-content: center; }
+        .btn-warning { background: #ffa500; color: black; }
 
         /* Sidebar */
         .sidebar { position: fixed; top: 56px; left: 0; width: 240px; height: calc(100vh - 56px); background: var(--bg-secondary); overflow-y: auto; padding: 12px 0; z-index: 100; transition: width 0.3s; }
@@ -204,12 +205,15 @@
         .badge { font-size: 10px; padding: 2px 8px; border-radius: 4px; font-weight: 500; }
         .badge-admin { background: var(--accent); color: black; }
         .badge-banned { background: var(--danger); }
+        .danger-zone { margin-top: 20px; padding: 20px; border: 2px solid var(--danger); border-radius: 12px; background: rgba(255,71,87,0.1); }
+        .danger-zone-title { color: var(--danger); font-size: 16px; font-weight: 600; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
 
         /* Toast */
         .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: var(--bg-secondary); color: white; padding: 12px 20px; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.4); display: none; align-items: center; gap: 10px; z-index: 3000; }
         .toast.show { display: flex; }
         .toast.success { border-left: 4px solid var(--success); }
         .toast.error { border-left: 4px solid var(--danger); }
+        .toast.warning { border-left: 4px solid #ffa500; }
 
         /* Chat Panel - سمت راست و هاید شدنی */
         .chat-panel { position: fixed; top: 56px; right: 0; width: 280px; height: calc(100vh - 56px); background: var(--bg-secondary); border-left: 1px solid var(--border-color); z-index: 900; transform: translateX(0); transition: transform 0.3s ease; box-shadow: -4px 0 20px rgba(0,0,0,0.3); display: flex; flex-direction: column; }
@@ -420,6 +424,21 @@
         </div>
     </div>
 
+    <!-- Edit Music Modal -->
+    <div id="editMusicModal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header"><span class="modal-title">✏️ Edit Music</span><button class="modal-close" onclick="closeModal('editMusicModal')">×</button></div>
+            <div class="modal-body">
+                <div class="form-group"><label class="form-label">Title *</label><input type="text" id="editMusicTitle" class="form-input"></div>
+                <div class="form-group"><label class="form-label">Artist *</label><input type="text" id="editMusicArtist" class="form-input"></div>
+                <div class="form-group"><label class="form-label">Audio URL *</label><input type="text" id="editMusicUrl" class="form-input" dir="ltr"></div>
+                <div class="form-group"><label class="form-label">Cover URL</label><input type="text" id="editMusicCover" class="form-input" dir="ltr"></div>
+                <input type="hidden" id="editMusicId">
+            </div>
+            <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal('editMusicModal')">Cancel</button><button class="btn btn-primary" onclick="saveMusicEdit()">Save</button></div>
+        </div>
+    </div>
+
     <!-- Admin Modal -->
     <div id="adminModal" class="modal-overlay">
         <div class="modal modal-lg">
@@ -431,6 +450,20 @@
                 <div id="adminUsersTab" class="admin-list" style="display:none"></div>
                 <div id="adminMusicTab" class="admin-list" style="display:none"></div>
                 <div id="adminBannedTab" class="admin-list" style="display:none"></div>
+                
+                <!-- Danger Zone برای ادمین -->
+                <div class="danger-zone">
+                    <div class="danger-zone-title">⚠️ Danger Zone</div>
+                    <p style="color: var(--text-secondary); margin-bottom: 15px; font-size: 13px;">These actions cannot be undone. Please be careful.</p>
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                        <button class="btn btn-danger" onclick="clearAllVideos()">🗑️ Delete All Videos</button>
+                        <button class="btn btn-danger" onclick="clearAllShorts()">🗑️ Delete All Shorts</button>
+                        <button class="btn btn-danger" onclick="clearAllLives()">🗑️ Delete All Live Streams</button>
+                        <button class="btn btn-danger" onclick="clearAllChannels()">🗑️ Delete All Channels</button>
+                        <button class="btn btn-danger" onclick="clearAllMusic()">🗑️ Delete All Music</button>
+                        <button class="btn btn-warning" onclick="clearAllData()">💀 Delete ALL Data</button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -491,6 +524,7 @@
         let chatHidden = true, chatMessages = [];
         let musicAudio = null, musicPlaying = false, currentMusicIndex = 0;
         let popupWindow = null;
+        let currentEditMusicId = null;
 
         // Helpers
         const getEmoji = name => { let h=0; for(let i=0;i<name.length;i++) h=name.charCodeAt(i)+((h<<5)-h); return GAMING_EMOJIS[Math.abs(h)%GAMING_EMOJIS.length]; };
@@ -515,7 +549,7 @@
 
         function showToast(msg,type='success') {
             const t=document.getElementById('toast'),i=document.getElementById('toastIcon'),m=document.getElementById('toastMsg');
-            t.className='toast '+type; i.textContent=type==='success'?'✅':'❌'; m.textContent=msg; t.classList.add('show');
+            t.className='toast '+type; i.textContent=type==='success'?'✅':type==='error'?'❌':'⚠️'; m.textContent=msg; t.classList.add('show');
             setTimeout(()=>t.classList.remove('show'),3000);
         }
 
@@ -708,6 +742,129 @@
                 saveData();
                 renderAdminMusic();
                 showToast('Music deleted');
+            }
+        }
+        function editMusic(id) {
+            const music = musicList.find(m => m.id === id);
+            if(!music) return;
+            currentEditMusicId = id;
+            document.getElementById('editMusicTitle').value = music.title;
+            document.getElementById('editMusicArtist').value = music.artist;
+            document.getElementById('editMusicUrl').value = music.url;
+            document.getElementById('editMusicCover').value = music.cover || '';
+            document.getElementById('editMusicId').value = id;
+            openModal('editMusicModal');
+        }
+        function saveMusicEdit() {
+            const id = document.getElementById('editMusicId').value;
+            const music = musicList.find(m => m.id === id);
+            if(!music) return;
+            
+            music.title = document.getElementById('editMusicTitle').value.trim();
+            music.artist = document.getElementById('editMusicArtist').value.trim();
+            music.url = document.getElementById('editMusicUrl').value.trim();
+            music.cover = document.getElementById('editMusicCover').value.trim();
+            
+            if(!music.title || !music.artist || !music.url) {
+                return showToast('Required fields','error');
+            }
+            
+            saveData();
+            closeModal('editMusicModal');
+            if(currentMusicIndex === musicList.findIndex(m => m.id === id)) {
+                playMusic(currentMusicIndex);
+            }
+            renderAdminMusic();
+            showToast('Music updated');
+        }
+
+        // Danger Zone Functions
+        function clearAllVideos() {
+            if(!currentUser?.isAdmin) return;
+            if(confirm('⚠️ Are you sure you want to delete ALL videos? This cannot be undone!')) {
+                videos = [];
+                saveData();
+                renderAdminVideos();
+                showToast('All videos deleted', 'warning');
+            }
+        }
+        function clearAllShorts() {
+            if(!currentUser?.isAdmin) return;
+            if(confirm('⚠️ Are you sure you want to delete ALL shorts? This cannot be undone!')) {
+                shorts = [];
+                saveData();
+                renderAdminVideos();
+                showToast('All shorts deleted', 'warning');
+            }
+        }
+        function clearAllLives() {
+            if(!currentUser?.isAdmin) return;
+            if(confirm('⚠️ Are you sure you want to delete ALL live streams? This cannot be undone!')) {
+                lives = [];
+                saveData();
+                renderAdminVideos();
+                showToast('All live streams deleted', 'warning');
+            }
+        }
+        function clearAllChannels() {
+            if(!currentUser?.isAdmin) return;
+            if(confirm('⚠️ Are you sure you want to delete ALL channels? This will also delete all their content!')) {
+                channels = [];
+                videos = [];
+                shorts = [];
+                lives = [];
+                saveData();
+                renderAdminChannels();
+                showToast('All channels deleted', 'warning');
+            }
+        }
+        function clearAllMusic() {
+            if(!currentUser?.isAdmin) return;
+            if(confirm('⚠️ Are you sure you want to delete ALL music? This cannot be undone!')) {
+                if(musicAudio) {
+                    musicAudio.pause();
+                    musicAudio = null;
+                }
+                musicList = [];
+                musicPlaying = false;
+                document.getElementById('musicPlayPause').textContent = '▶️';
+                document.getElementById('musicTitle').textContent = 'No music playing';
+                document.getElementById('musicArtist').textContent = 'Add music from admin panel';
+                document.getElementById('musicProgress').style.width = '0%';
+                document.getElementById('musicCurrent').textContent = '0:00';
+                document.getElementById('musicDuration').textContent = '0:00';
+                saveData();
+                renderAdminMusic();
+                showToast('All music deleted', 'warning');
+            }
+        }
+        function clearAllData() {
+            if(!currentUser?.isAdmin) return;
+            if(confirm('💀 ARE YOU ABSOLUTELY SURE? This will delete EVERYTHING including users, channels, videos, music, and all data! This cannot be undone!')) {
+                const adminUser = users.find(u => u.username === ADMIN_USER);
+                users = adminUser ? [adminUser] : [];
+                channels = [];
+                videos = [];
+                shorts = [];
+                lives = [];
+                musicList = [];
+                follows = [];
+                bannedUsers = [];
+                chatMessages = [];
+                
+                if(musicAudio) {
+                    musicAudio.pause();
+                    musicAudio = null;
+                }
+                
+                saveData();
+                localStorage.removeItem('xh-chat');
+                localStorage.removeItem('xh-history');
+                localStorage.removeItem('xh-liked');
+                
+                currentUser = adminUser || null;
+                showHome();
+                showToast('All data has been wiped', 'error');
             }
         }
 
@@ -1064,7 +1221,8 @@
                             <div style="font-size:10px">${m.artist}</div>
                         </div>
                     </div>
-                    <div>
+                    <div style="display:flex; gap:4px;">
+                        <button class="btn btn-sm btn-ghost" onclick="editMusic('${m.id}')">✏️</button>
                         <button class="btn btn-sm btn-danger" onclick="deleteMusic('${m.id}')">🗑️</button>
                     </div>
                 </div>
@@ -1168,7 +1326,7 @@
 
         // Events
         document.addEventListener('DOMContentLoaded',init);
-        document.addEventListener('keydown',e=>{if(e.key==='Escape'){['authModal','addChannelModal','addVideoModal','addMusicModal','adminModal','editModal','shareModal'].forEach(closeModal);}});
+        document.addEventListener('keydown',e=>{if(e.key==='Escape'){['authModal','addChannelModal','addVideoModal','addMusicModal','editMusicModal','adminModal','editModal','shareModal'].forEach(closeModal);}});
     </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 </body>
