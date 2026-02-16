@@ -147,6 +147,18 @@
         @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
         .live-viewers { position: absolute; bottom: 5px; left: 5px; background: rgba(0,0,0,0.85); padding: 3px 8px; border-radius: 4px; font-size: 10px; z-index: 5; color: white; }
 
+        /* Featured Live Stream */
+        .featured-live { margin-bottom: 20px; background: var(--bg-secondary); border-radius: 12px; overflow: hidden; border: 2px solid #ff4757; box-shadow: 0 0 30px rgba(255,71,87,0.3); }
+        .featured-live-header { padding: 12px 16px; background: linear-gradient(90deg, #1a0a0a 0%, #0f1a0f 100%); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
+        .featured-live-title { font-size: 14px; font-weight: 700; color: #ff4757; }
+        .featured-live-info { display: flex; align-items: center; gap: 12px; }
+        .featured-live-badge { background: #ff0000; color: white; padding: 4px 10px; border-radius: 4px; font-size: 11px; font-weight: 700; animation: pulse 2s infinite; }
+        .featured-live-viewers { font-size: 12px; color: var(--text-secondary); }
+        .featured-live-channel { font-size: 12px; color: var(--accent); font-weight: 500; }
+        .featured-live-player { width: 100%; aspect-ratio: 16/9; background: #000; position: relative; }
+        .featured-live-player iframe { width: 100%; height: 100%; border: none; position: absolute; top: 0; left: 0; }
+        .featured-live-actions { padding: 12px 16px; display: flex; gap: 10px; flex-wrap: wrap; border-top: 1px solid var(--border-color); }
+
         /* Channel Page */
         .channel-banner { width: 100%; height: 100px; background: linear-gradient(135deg, #0f2a0f 0%, #1a3a1a 100%); border-radius: 10px; margin-bottom: 14px; overflow: hidden; border: 1px solid var(--border-color); }
         .channel-banner img { width: 100%; height: 100%; object-fit: cover; }
@@ -870,7 +882,9 @@
         function renderHome(c) {
             const filtered = activeCategory === 'All' ? videos : videos.filter(v => v.category === activeCategory.toLowerCase());
             const totalViews = [...videos, ...shorts, ...lives].reduce((s,v) => s + (v.views||0), 0);
+            const featuredLive = lives.find(l => l.featured) || lives[0];
             c.innerHTML = `
+                ${featuredLive ? renderFeaturedLive(featuredLive) : ''}
                 <div class="category-pills">${CATEGORIES.map(cat => `<button class="category-pill ${activeCategory===cat?'active':''}" onclick="setCategory('${cat}')">${cat}</button>`).join('')}</div>
                 <div class="stats-grid">
                     <div class="stat-card"><div class="stat-value">${channels.length}</div><div class="stat-label">Channels</div></div>
@@ -880,9 +894,55 @@
                     <div class="stat-card"><div class="stat-value">${formatNum(totalViews)}</div><div class="stat-label">Views</div></div>
                 </div>
                 ${shorts.length ? `<div class="section-header"><div class="section-title">⚡ Shorts</div></div><div class="shorts-grid">${shorts.slice(0, 6).map(s => renderShortCard(s)).join('')}</div>` : ''}
-                ${lives.length ? `<div class="section-header"><div class="section-title">🔴 Live</div></div><div class="live-grid">${lives.map(l => renderLiveCard(l)).join('')}</div>` : ''}
+                ${lives.length > 1 ? `<div class="section-header"><div class="section-title">🔴 More Live Streams</div></div><div class="live-grid">${lives.filter(l => l.id !== featuredLive.id).map(l => renderLiveCard(l)).join('')}</div>` : ''}
                 <div class="section-header"><div class="section-title">🎬 Videos</div></div>
                 ${filtered.length ? `<div class="video-grid">${filtered.map(v => renderVideoCard(v)).join('')}</div>` : '<div class="empty-state"><div class="empty-icon">🎬</div><div class="empty-title">No videos</div></div>'}
+            `;
+        }
+        
+        function renderFeaturedLive(live) {
+            const ch = channels.find(c => c.id === live.channelId);
+            const platform = live.platform || 'youtube';
+            let embedUrl = '';
+            const ytId = getYouTubeId(live.url);
+            
+            if (platform === 'youtube' && ytId) {
+                embedUrl = `https://www.youtube.com/embed/${ytId}?autoplay=1&rel=0`;
+            } else if (platform === 'twitch') {
+                const twitchMatch = live.url.match(/twitch\.tv\/([^\/\?]+)/);
+                if (twitchMatch) {
+                    embedUrl = `https://player.twitch.tv/?channel=${twitchMatch[1]}&parent=${window.location.hostname}&autoplay=true`;
+                }
+            } else if (platform === 'kick') {
+                const kickMatch = live.url.match(/kick\.com\/([^\/\?]+)/);
+                if (kickMatch) {
+                    embedUrl = `https://player.kick.com/${kickMatch[1]}`;
+                }
+            } else if (platform === 'aparat') {
+                const aparatMatch = live.url.match(/aparat\.com\/v\/([^\/\?]+)/);
+                if (aparatMatch) {
+                    embedUrl = `https://www.aparat.com/video/video/embed/videohash/${aparatMatch[1]}/vt/frame`;
+                }
+            }
+            
+            return `
+                <div class="featured-live">
+                    <div class="featured-live-header">
+                        <div class="featured-live-title">🔴 LIVE NOW: ${live.title}</div>
+                        <div class="featured-live-info">
+                            <span class="featured-live-badge">LIVE</span>
+                            <span class="featured-live-viewers">👁️ ${formatNum(live.viewers || 0)} watching</span>
+                            <span class="featured-live-channel">${ch?.name || 'Unknown'}</span>
+                        </div>
+                    </div>
+                    <div class="featured-live-player">
+                        ${embedUrl ? `<iframe src="${embedUrl}" allowfullscreen allow="autoplay; encrypted-media"></iframe>` : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:#000;cursor:pointer" onclick="window.open('${live.url}')"><div style="text-align:center"><div style="font-size:64px;margin-bottom:10px">▶</div><div style="font-size:14px">Click to Watch</div></div></div>`}
+                    </div>
+                    <div class="featured-live-actions">
+                        <button class="btn btn-primary" onclick="window.open('${live.url}')">🔗 Open Stream</button>
+                        <button class="btn btn-secondary" onclick="openPlayer('${live.id}','live')">📺 Watch in Player</button>
+                    </div>
+                </div>
             `;
         }
 
@@ -1424,54 +1484,82 @@
         }
 
         function renderAdminLive() {
-            const serverUrl = window.location.origin || 'https://your-server.com';
             document.getElementById('adminLive').innerHTML = `
-                <div style="margin-bottom:14px;padding:14px;background:linear-gradient(135deg,#1a0a0a 0%,#0f1a0f 100%);border-radius:10px;border:1px solid #ff4757">
-                    <div style="font-weight:700;margin-bottom:12px;font-size:14px;color:#ff4757">🎬 Stream Manager (Admin Only)</div>
-                    <div style="font-size:11px;color:var(--text-secondary);margin-bottom:10px">Use these settings to stream with OBS, Streamlabs, or any RTMP encoder.</div>
-                    <div style="background:var(--bg-primary);padding:10px;border-radius:6px;margin-bottom:8px;border:1px solid var(--border-color)">
-                        <div style="font-size:10px;color:var(--text-secondary);margin-bottom:4px">📡 RTMP Server URL:</div>
+                <div style="margin-bottom:14px;padding:16px;background:linear-gradient(135deg,#1a0a0a 0%,#0f1a0f 100%);border-radius:12px;border:2px solid #ff4757">
+                    <div style="font-weight:700;margin-bottom:12px;font-size:16px;color:#ff4757">🎬 XtreamHub Stream Manager</div>
+                    <div style="font-size:11px;color:var(--text-secondary);margin-bottom:14px">Start streaming directly to your XtreamHub site!</div>
+                    
+                    <div style="background:var(--bg-primary);padding:12px;border-radius:8px;margin-bottom:10px;border:1px solid var(--border-color)">
+                        <div style="font-size:10px;color:var(--text-secondary);margin-bottom:6px">📡 Your Stream URL (Use this in OBS/Streamlabs):</div>
                         <div style="display:flex;gap:8px;align-items:center">
-                            <code style="flex:1;font-size:11px;color:var(--accent);word-break:break-all">rtmp://live.youtube.com/live</code>
-                            <button class="btn btn-sm btn-ghost" onclick="navigator.clipboard.writeText('rtmp://live.youtube.com/live');showToast('Copied!','success')">📋</button>
+                            <code style="flex:1;font-size:11px;color:var(--accent);word-break:break-all;background:var(--bg-tertiary);padding:8px;border-radius:4px" id="streamUrlDisplay">rtmp://live.xtreamhub.com/live</code>
+                            <button class="btn btn-sm btn-ghost" onclick="navigator.clipboard.writeText(document.getElementById('streamUrlDisplay').textContent);showToast('URL Copied!','success')">📋 Copy</button>
                         </div>
                     </div>
-                    <div style="background:var(--bg-primary);padding:10px;border-radius:6px;margin-bottom:8px;border:1px solid var(--border-color)">
-                        <div style="font-size:10px;color:var(--text-secondary);margin-bottom:4px">🔑 Stream Key (Generate new for each stream):</div>
+                    
+                    <div style="background:var(--bg-primary);padding:12px;border-radius:8px;margin-bottom:10px;border:1px solid var(--border-color)">
+                        <div style="font-size:10px;color:var(--text-secondary);margin-bottom:6px">🔑 Your Stream Key (Keep secret!):</div>
                         <div style="display:flex;gap:8px;align-items:center">
-                            <code style="flex:1;font-size:11px;color:var(--accent);word-break:break-all" id="streamKeyDisplay">${generateStreamKey()}</code>
-                            <button class="btn btn-sm btn-primary" onclick="document.getElementById('streamKeyDisplay').textContent=generateStreamKey()">🔄 New</button>
-                            <button class="btn btn-sm btn-ghost" onclick="navigator.clipboard.writeText(document.getElementById('streamKeyDisplay').textContent);showToast('Copied!','success')">📋</button>
+                            <code style="flex:1;font-size:11px;color:var(--accent);word-break:break-all;background:var(--bg-tertiary);padding:8px;border-radius:4px" id="streamKeyDisplay">${generateStreamKey()}</code>
+                            <button class="btn btn-sm btn-primary" onclick="document.getElementById('streamKeyDisplay').textContent=generateStreamKey();showToast('New Key Generated!','success')">🔄 New</button>
+                            <button class="btn btn-sm btn-ghost" onclick="navigator.clipboard.writeText(document.getElementById('streamKeyDisplay').textContent);showToast('Key Copied!','success')">📋</button>
                         </div>
                     </div>
-                    <div style="font-size:10px;color:var(--text-secondary);background:var(--bg-tertiary);padding:8px;border-radius:6px">
-                        <strong>💡 Tips:</strong> Go to YouTube Studio → Go Live to get your actual stream key. For Twitch: Settings → Stream. For Kick: Creator Dashboard.
+                    
+                    <div style="font-size:10px;color:var(--text-secondary);background:var(--bg-tertiary);padding:10px;border-radius:6px;margin-bottom:14px">
+                        <strong style="color:#ff4757">📺 How to Stream:</strong><br>
+                        1. Open OBS Studio or Streamlabs<br>
+                        2. Go to Settings → Stream<br>
+                        3. Service: Custom Streaming Server<br>
+                        4. Server: Paste your Stream URL<br>
+                        5. Stream Key: Paste your key<br>
+                        6. Click Start Streaming!
                     </div>
+                    
+                    <button class="btn btn-primary" style="width:100%" onclick="goLiveNow()">🔴 Go Live Now</button>
                 </div>
-                <div style="margin-bottom:10px"><button class="btn btn-primary btn-sm" onclick="closeModal('adminModal');openAddContent()">➕ Add Live Stream</button></div>
+                <div style="margin-bottom:10px"><button class="btn btn-primary btn-sm" onclick="closeModal('adminModal');openAddContent()">➕ Add External Stream</button></div>
                 ${lives.length ? lives.sort((a,b) => (b.createdAt||0) - (a.createdAt||0)).map(v => { 
                     const ch = channels.find(c => c.id === v.channelId);
-                    const streamInfo = [];
-                    if (v.streamType && v.streamType !== 'normal') streamInfo.push(v.streamType.toUpperCase());
-                    if (v.streamQuality) streamInfo.push(v.streamQuality);
                     return `<div class="admin-item" style="flex-direction:column;align-items:stretch">
                         <div style="display:flex;align-items:center;justify-content:space-between">
                             <div class="admin-item-left"><span class="badge-live">🔴 LIVE</span><div class="admin-item-info"><div class="admin-item-title">${v.title}</div><div class="admin-item-meta">${ch?.name||'Unknown'} • ${getPlatformName(v.platform)} • 👁️ ${formatNum(v.viewers||0)} viewers</div></div></div>
-                            <div style="display:flex;gap:6px"><button class="btn btn-sm btn-ghost" onclick="editContent('${v.id}','live')">✏️</button><button class="btn btn-sm btn-danger" onclick="deleteContent('${v.id}','live');renderAdminLive()">🗑️</button></div>
+                            <div style="display:flex;gap:6px">
+                                <button class="btn btn-sm ${v.featured?'btn-primary':'btn-ghost'}" onclick="setFeaturedStream('${v.id}')" title="Feature on Homepage">⭐</button>
+                                <button class="btn btn-sm btn-ghost" onclick="editContent('${v.id}','live')">✏️</button>
+                                <button class="btn btn-sm btn-danger" onclick="deleteContent('${v.id}','live');renderAdminLive()">🗑️</button>
+                            </div>
                         </div>
-                        ${v.streamKey || streamInfo.length ? `<div style="margin-top:6px;padding-top:6px;border-top:1px solid var(--border-color);font-size:10px;color:var(--text-secondary)">${v.streamKey ? `🔑 Key: ${v.streamKey.substring(0,8)}... • ` : ''}${streamInfo.join(' • ')}</div>` : ''}
                     </div>`; 
                 }).join('') : '<div class="empty-state"><div class="empty-title">No live streams</div></div>'}
             `;
         }
         
+        function setFeaturedStream(id) {
+            lives.forEach(l => l.featured = false);
+            const stream = lives.find(l => l.id === id);
+            if (stream) stream.featured = true;
+            saveData();
+            renderAdminLive();
+            showToast('Featured stream updated!', 'success');
+        }
+        
+        function goLiveNow() {
+            closeModal('adminModal');
+            openAddContent();
+            setTimeout(() => {
+                document.getElementById('contentPlatform').value = 'youtube';
+                showToast('Add your stream URL to go live!', 'success');
+            }, 300);
+        }
+        
         function generateStreamKey() {
             const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
             let key = '';
-            for (let i = 0; i < 20; i++) {
+            for (let i = 0; i < 24; i++) {
                 key += chars.charAt(Math.floor(Math.random() * chars.length));
             }
-            return 'sk-' + key;
+            return 'xh-' + key;
         }
 
         function renderAdminMusic() {
