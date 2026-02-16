@@ -1485,54 +1485,166 @@
 
         function renderAdminLive() {
             document.getElementById('adminLive').innerHTML = `
-                <div style="margin-bottom:14px;padding:16px;background:linear-gradient(135deg,#1a0a0a 0%,#0f1a0f 100%);border-radius:12px;border:2px solid #ff4757">
-                    <div style="font-weight:700;margin-bottom:12px;font-size:16px;color:#ff4757">🎬 XtreamHub Stream Manager</div>
-                    <div style="font-size:11px;color:var(--text-secondary);margin-bottom:14px">Start streaming directly to your XtreamHub site!</div>
-                    
-                    <div style="background:var(--bg-primary);padding:12px;border-radius:8px;margin-bottom:10px;border:1px solid var(--border-color)">
-                        <div style="font-size:10px;color:var(--text-secondary);margin-bottom:6px">📡 Your Stream URL (Use this in OBS/Streamlabs):</div>
-                        <div style="display:flex;gap:8px;align-items:center">
-                            <code style="flex:1;font-size:11px;color:var(--accent);word-break:break-all;background:var(--bg-tertiary);padding:8px;border-radius:4px" id="streamUrlDisplay">rtmp://live.xtreamhub.com/live</code>
-                            <button class="btn btn-sm btn-ghost" onclick="navigator.clipboard.writeText(document.getElementById('streamUrlDisplay').textContent);showToast('URL Copied!','success')">📋 Copy</button>
-                        </div>
+                <div style="margin-bottom:16px;padding:18px;background:linear-gradient(135deg,#1a0505 0%,#0a150a 100%);border-radius:14px;border:2px solid #ff4757">
+                    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+                        <div style="font-weight:800;font-size:18px;color:#ff4757">🔴 Live Stream Studio</div>
+                        <div style="font-size:11px;color:var(--text-secondary)">Stream directly with OBS</div>
                     </div>
                     
-                    <div style="background:var(--bg-primary);padding:12px;border-radius:8px;margin-bottom:10px;border:1px solid var(--border-color)">
-                        <div style="font-size:10px;color:var(--text-secondary);margin-bottom:6px">🔑 Your Stream Key (Keep secret!):</div>
-                        <div style="display:flex;gap:8px;align-items:center">
-                            <code style="flex:1;font-size:11px;color:var(--accent);word-break:break-all;background:var(--bg-tertiary);padding:8px;border-radius:4px" id="streamKeyDisplay">${generateStreamKey()}</code>
-                            <button class="btn btn-sm btn-primary" onclick="document.getElementById('streamKeyDisplay').textContent=generateStreamKey();showToast('New Key Generated!','success')">🔄 New</button>
-                            <button class="btn btn-sm btn-ghost" onclick="navigator.clipboard.writeText(document.getElementById('streamKeyDisplay').textContent);showToast('Key Copied!','success')">📋</button>
-                        </div>
+                    <div style="margin-bottom:14px">
+                        <label style="font-size:11px;color:var(--text-secondary);margin-bottom:6px;display:block">Select Platform:</label>
+                        <select id="streamPlatformSelect" style="width:100%;padding:10px;background:var(--bg-primary);border:1px solid var(--border-color);border-radius:8px;color:var(--text-primary);font-size:12px" onchange="updateStreamSettings()">
+                            <option value="youtube">🔴 YouTube Live</option>
+                            <option value="twitch">🟣 Twitch</option>
+                            <option value="kick">💚 Kick</option>
+                            <option value="aparat">🎬 Aparat</option>
+                        </select>
                     </div>
                     
-                    <div style="font-size:10px;color:var(--text-secondary);background:var(--bg-tertiary);padding:10px;border-radius:6px;margin-bottom:14px">
-                        <strong style="color:#ff4757">📺 How to Stream:</strong><br>
-                        1. Open OBS Studio or Streamlabs<br>
-                        2. Go to Settings → Stream<br>
-                        3. Service: Custom Streaming Server<br>
-                        4. Server: Paste your Stream URL<br>
-                        5. Stream Key: Paste your key<br>
-                        6. Click Start Streaming!
-                    </div>
-                    
-                    <button class="btn btn-primary" style="width:100%" onclick="goLiveNow()">🔴 Go Live Now</button>
-                </div>
-                <div style="margin-bottom:10px"><button class="btn btn-primary btn-sm" onclick="closeModal('adminModal');openAddContent()">➕ Add External Stream</button></div>
-                ${lives.length ? lives.sort((a,b) => (b.createdAt||0) - (a.createdAt||0)).map(v => { 
-                    const ch = channels.find(c => c.id === v.channelId);
-                    return `<div class="admin-item" style="flex-direction:column;align-items:stretch">
-                        <div style="display:flex;align-items:center;justify-content:space-between">
-                            <div class="admin-item-left"><span class="badge-live">🔴 LIVE</span><div class="admin-item-info"><div class="admin-item-title">${v.title}</div><div class="admin-item-meta">${ch?.name||'Unknown'} • ${getPlatformName(v.platform)} • 👁️ ${formatNum(v.viewers||0)} viewers</div></div></div>
-                            <div style="display:flex;gap:6px">
-                                <button class="btn btn-sm ${v.featured?'btn-primary':'btn-ghost'}" onclick="setFeaturedStream('${v.id}')" title="Feature on Homepage">⭐</button>
-                                <button class="btn btn-sm btn-ghost" onclick="editContent('${v.id}','live')">✏️</button>
-                                <button class="btn btn-sm btn-danger" onclick="deleteContent('${v.id}','live');renderAdminLive()">🗑️</button>
+                    <div id="streamSettingsContainer">
+                        <div style="background:var(--bg-primary);padding:14px;border-radius:10px;margin-bottom:12px;border:1px solid var(--border-color)">
+                            <div style="font-size:10px;color:var(--text-secondary);margin-bottom:8px">📡 RTMP Server URL:</div>
+                            <div style="display:flex;gap:8px;align-items:center">
+                                <code id="rtmpUrlBox" style="flex:1;font-size:11px;color:var(--accent);word-break:break-all;background:var(--bg-tertiary);padding:10px;border-radius:6px;font-family:monospace">rtmp://a.rtmp.youtube.com/live2</code>
+                                <button class="btn btn-sm btn-ghost" onclick="navigator.clipboard.writeText(document.getElementById('rtmpUrlBox').textContent);showToast('URL Copied!','success')">📋</button>
                             </div>
                         </div>
+                        
+                        <div style="background:var(--bg-primary);padding:14px;border-radius:10px;margin-bottom:12px;border:1px solid var(--border-color)">
+                            <div style="font-size:10px;color:var(--text-secondary);margin-bottom:8px">🔑 Stream Key (Get from your platform dashboard):</div>
+                            <input type="text" id="userStreamKey" placeholder="Paste your stream key here..." style="width:100%;padding:10px;background:var(--bg-tertiary);border:1px solid var(--border-color);border-radius:6px;color:var(--accent);font-size:11px;font-family:monospace">
+                            <div style="font-size:9px;color:var(--text-secondary);margin-top:6px">
+                                <strong>How to get:</strong> 
+                                <span id="keyInstructions">YouTube Studio → Create → Go Live → Copy stream key</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style="background:var(--bg-tertiary);padding:12px;border-radius:8px;margin-bottom:14px;font-size:10px;color:var(--text-secondary)">
+                        <strong style="color:var(--accent)">📺 OBS Setup:</strong><br>
+                        1. Open OBS Studio → Settings → Stream<br>
+                        2. Service: <strong>Custom Streaming Server</strong><br>
+                        3. Server: Paste the RTMP URL above<br>
+                        4. Stream Key: Paste your key<br>
+                        5. Click <strong>Start Streaming</strong> in OBS<br>
+                        6. Click <strong>Go Live</strong> button below
+                    </div>
+                    
+                    <div style="display:flex;gap:10px">
+                        <button class="btn btn-primary" style="flex:1;padding:12px;font-size:13px" onclick="goLiveWithStream()">🔴 Go Live Now</button>
+                        <button class="btn btn-secondary" onclick="testStream()">🔍 Test Stream</button>
+                    </div>
+                </div>
+                
+                <div style="margin-bottom:12px;display:flex;gap:8px;flex-wrap:wrap">
+                    <button class="btn btn-primary btn-sm" onclick="openAddContent()">➕ Add Stream</button>
+                    <button class="btn btn-secondary btn-sm" onclick="refreshLiveStatus()">🔄 Refresh Status</button>
+                </div>
+                
+                <div style="font-weight:600;margin-bottom:10px;font-size:13px;color:var(--text-primary)">Active Streams (${lives.length})</div>
+                
+                ${lives.length ? lives.sort((a,b) => (b.createdAt||0) - (a.createdAt||0)).map(v => { 
+                    const ch = channels.find(c => c.id === v.channelId);
+                    const isLive = v.isLive !== false;
+                    return `<div class="admin-item" style="flex-direction:column;align-items:stretch;padding:12px">
+                        <div style="display:flex;align-items:center;gap:10px">
+                            <div style="width:80px;height:45px;background:var(--bg-primary);border-radius:6px;overflow:hidden;position:relative;flex-shrink:0">
+                                <img src="${v.thumbnail || getLiveThumbnail(v.url, v.platform) || DEFAULT_THUMB}" style="width:100%;height:100%;object-fit:cover" onerror="this.src='${DEFAULT_THUMB}'">
+                                <div style="position:absolute;top:2px;left:2px;background:${isLive ? '#ff0000' : '#666'};padding:2px 5px;border-radius:3px;font-size:8px;color:white;font-weight:700">${isLive ? 'LIVE' : 'OFFLINE'}</div>
+                            </div>
+                            <div style="flex:1;min-width:0">
+                                <div style="font-weight:600;font-size:12px;margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${v.title}</div>
+                                <div style="font-size:10px;color:var(--text-secondary)">${ch?.name||'Unknown'} • ${getPlatformName(v.platform)} • 👁️ ${formatNum(v.viewers||0)} viewers</div>
+                            </div>
+                        </div>
+                        <div style="display:flex;gap:6px;margin-top:10px;padding-top:10px;border-top:1px solid var(--border-color)">
+                            <button class="btn btn-sm ${v.featured ? 'btn-primary' : 'btn-ghost'}" onclick="setFeaturedStream('${v.id}')" title="Featured on Homepage">⭐ Featured</button>
+                            <button class="btn btn-sm btn-ghost" onclick="toggleStreamLive('${v.id}')" title="Toggle Live Status">${isLive ? '⏸️ Pause' : '▶️ Resume'}</button>
+                            <button class="btn btn-sm btn-ghost" onclick="editContent('${v.id}','live')">✏️ Edit</button>
+                            <button class="btn btn-sm btn-danger" onclick="deleteStream('${v.id}')">🗑️</button>
+                        </div>
                     </div>`; 
-                }).join('') : '<div class="empty-state"><div class="empty-title">No live streams</div></div>'}
+                }).join('') : '<div class="empty-state"><div class="empty-icon">🔴</div><div class="empty-title">No streams yet</div><div style="font-size:11px;color:var(--text-secondary);margin-top:8px">Click "Add Stream" or "Go Live Now" to start</div></div>'}
             `;
+        }
+        
+        function updateStreamSettings() {
+            const platform = document.getElementById('streamPlatformSelect').value;
+            const rtmpBox = document.getElementById('rtmpUrlBox');
+            const keyInstructions = document.getElementById('keyInstructions');
+            
+            const settings = {
+                youtube: {
+                    url: 'rtmp://a.rtmp.youtube.com/live2',
+                    instructions: 'YouTube Studio → Create → Go Live → Stream Settings → Copy key'
+                },
+                twitch: {
+                    url: 'rtmp://live.twitch.tv/live',
+                    instructions: 'Twitch → Creator Dashboard → Settings → Stream → Copy Primary Stream Key'
+                },
+                kick: {
+                    url: 'rtmp://live.kick.com/live',
+                    instructions: 'Kick → Creator Dashboard → Settings → Stream → Copy Stream Key'
+                },
+                aparat: {
+                    url: 'rtmp://live.aparat.com/live',
+                    instructions: 'Aparat → Live → Settings → Copy Stream Key'
+                }
+            };
+            
+            rtmpBox.textContent = settings[platform].url;
+            keyInstructions.textContent = settings[platform].instructions;
+        }
+        
+        function goLiveWithStream() {
+            const streamKey = document.getElementById('userStreamKey').value.trim();
+            const platform = document.getElementById('streamPlatformSelect').value;
+            
+            if (!streamKey) {
+                showToast('Please enter your stream key!', 'error');
+                return;
+            }
+            
+            // Open modal to add stream info
+            openAddContent();
+            
+            setTimeout(() => {
+                document.getElementById('contentType').value = 'live';
+                document.getElementById('contentPlatform').value = platform;
+                document.getElementById('streamKey').value = streamKey;
+                document.getElementById('initialViewers').value = '1';
+                toggleLiveOptions();
+                showToast('Enter stream title and click Add!', 'success');
+            }, 200);
+        }
+        
+        function testStream() {
+            const platform = document.getElementById('streamPlatformSelect').value;
+            showToast('Check OBS - Stream should appear in ' + getPlatformName(platform), 'success');
+        }
+        
+        function toggleStreamLive(id) {
+            const stream = lives.find(l => l.id === id);
+            if (stream) {
+                stream.isLive = stream.isLive === false ? true : false;
+                saveData();
+                renderAdminLive();
+                showToast(stream.isLive ? 'Stream is now LIVE!' : 'Stream paused', 'success');
+            }
+        }
+        
+        function deleteStream(id) {
+            if (confirm('Delete this stream?')) {
+                lives = lives.filter(l => l.id !== id);
+                saveData();
+                renderAdminLive();
+                showToast('Stream deleted!', 'success');
+            }
+        }
+        
+        function refreshLiveStatus() {
+            showToast('Live status refreshed!', 'success');
+            renderAdminLive();
         }
         
         function setFeaturedStream(id) {
@@ -1548,7 +1660,8 @@
             closeModal('adminModal');
             openAddContent();
             setTimeout(() => {
-                document.getElementById('contentPlatform').value = 'youtube';
+                document.getElementById('contentType').value = 'live';
+                toggleLiveOptions();
                 showToast('Add your stream URL to go live!', 'success');
             }, 300);
         }
