@@ -408,7 +408,7 @@
             <div class="mini-channel-name" id="miniChannelName">Channel</div>
         </div>
         <div class="mini-player-actions">
-            <button class="mini-btn" onclick="openYouTube()">▶ YouTube</button>
+            <button class="mini-btn" id="miniOpenBtn" onclick="openPlatform()">▶ Open</button>
             <button class="mini-btn mini-btn-primary" onclick="openPopup()">🖼️ Popup</button>
         </div>
     </div>
@@ -906,7 +906,6 @@
             const ch = channels.find(c => c.id === live.channelId);
             const platform = live.platform || 'youtube';
             let embedUrl = '';
-            let isEmbedable = true;
             const ytId = getYouTubeId(live.url);
             
             if (platform === 'youtube' && ytId) {
@@ -922,8 +921,13 @@
                     embedUrl = `https://player.kick.com/${kickMatch[1]}`;
                 }
             } else if (platform === 'aparat') {
-                // Aparat blocks iframe - show clickable preview
-                isEmbedable = false;
+                // Aparat - open full page in popup
+                const popupW = 1200, popupH = 800;
+                const popupLeft = (screen.width - popupW) / 2;
+                const popupTop = (screen.height - popupH) / 2;
+                setTimeout(() => {
+                    window.open(live.url, 'AparatPlayer', `width=${popupW},height=${popupH},left=${popupLeft},top=${popupTop}`);
+                }, 100);
             }
             
             return `
@@ -937,14 +941,7 @@
                         </div>
                     </div>
                     <div class="featured-live-player">
-                        ${isEmbedable && embedUrl ? `<iframe src="${embedUrl}" allowfullscreen allow="autoplay; encrypted-media"></iframe>` : `
-                        <div style="width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(135deg,#0a150a 0%,#1a0a0a 100%);cursor:pointer" onclick="window.open('${live.url}','_blank')">
-                            <img src="${live.thumbnail || 'https://www.aparat.com/assets/images/logo.png'}" onerror="this.style.display='none'" style="max-width:100%;max-height:50%;object-fit:contain;margin-bottom:20px">
-                            <div style="width:100px;height:100px;background:var(--accent);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:48px;margin-bottom:20px;box-shadow:0 0 40px rgba(0,255,102,0.6);animation:pulse 2s infinite">▶</div>
-                            <div style="font-size:18px;color:var(--accent);font-weight:700">🎬 Click to Watch Live Stream</div>
-                            <div style="font-size:12px;color:var(--text-secondary);margin-top:10px">${getPlatformName(platform)} • Opens in new tab</div>
-                        </div>
-                        `}
+                        ${embedUrl ? `<iframe src="${embedUrl}" allowfullscreen allow="autoplay; encrypted-media"></iframe>` : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:#000;cursor:pointer" onclick="window.open('${live.url}','_blank')"><div style="text-align:center"><div style="font-size:64px;margin-bottom:10px">▶</div><div style="font-size:14px">Click to Watch</div></div></div>`}
                     </div>
                     <div class="featured-live-actions">
                         <button class="btn btn-primary" onclick="window.open('${live.url}','_blank')">🔗 Open Stream</button>
@@ -1161,12 +1158,15 @@
             saveData();
             currentMiniItem = item;
             const ch = channels.find(c => c.id === item.channelId);
+            const platform = item.platform || 'youtube';
             document.getElementById('miniPlayerTitle').textContent = item.title;
             document.getElementById('miniChannelName').textContent = ch?.name || 'Unknown';
+            // Update platform button text based on platform
+            const openBtn = document.getElementById('miniOpenBtn');
+            openBtn.textContent = '▶ ' + getPlatformName(platform);
             const av = document.getElementById('miniChannelAvatar');
             av.innerHTML = ch?.avatar ? `<img src="${ch.avatar}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">` : getEmoji(ch?.name || '?');
             const vid = document.getElementById('miniPlayerVideo');
-            const platform = item.platform || 'youtube';
             let embedUrl = '';
             
             // YouTube
@@ -1197,17 +1197,14 @@
                     vid.innerHTML = getFallbackPlayer(item);
                 }
             }
-            // Aparat - Opens in new tab (Aparat blocks iframe embedding)
+            // Aparat - Open full page in popup window
             else if (platform === 'aparat') {
-                // Aparat blocks iframe, so we show a preview and open in new tab
-                vid.innerHTML = `
-                    <div style="width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(135deg,#0a150a 0%,#1a0a0a 100%);cursor:pointer;position:relative" onclick="window.open('${item.url}','_blank')">
-                        <img src="${item.thumbnail || 'https://www.aparat.com/assets/images/logo.png'}" onerror="this.style.display='none'" style="max-width:100%;max-height:60%;object-fit:contain;margin-bottom:15px">
-                        <div style="width:80px;height:80px;background:var(--accent);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:36px;margin-bottom:15px;box-shadow:0 0 30px rgba(0,255,102,0.5)">▶</div>
-                        <div style="font-size:14px;color:var(--accent);font-weight:600">🎬 Click to Watch on Aparat</div>
-                        <div style="font-size:11px;color:var(--text-secondary);margin-top:8px">${item.url}</div>
-                    </div>
-                `;
+                const popupW = 1200, popupH = 800;
+                const popupLeft = (screen.width - popupW) / 2;
+                const popupTop = (screen.height - popupH) / 2;
+                window.open(item.url, 'AparatPlayer', `width=${popupW},height=${popupH},left=${popupLeft},top=${popupTop}`);
+                showToast('Opening Aparat...', 'success');
+                return;
             }
             // Fallback
             else {
@@ -1234,7 +1231,21 @@
         function closeMiniPlayer() { document.getElementById('miniPlayer').classList.remove('active', 'large', 'fullscreen', 'vertical'); document.getElementById('miniPlayerVideo').innerHTML = ''; currentMiniItem = null; }
         function resizePlayer() { const p = document.getElementById('miniPlayer'); if (playerSize === 'normal') { playerSize = 'large'; p.classList.add('large'); } else { playerSize = 'normal'; p.classList.remove('large'); } }
         function fullscreenPlayer() { const p = document.getElementById('miniPlayer'); if (p.classList.contains('fullscreen')) { p.classList.remove('fullscreen'); document.exitFullscreen && document.exitFullscreen(); } else { p.classList.add('fullscreen'); p.requestFullscreen && p.requestFullscreen(); } }
-        function openYouTube() { if (currentMiniItem?.url) window.open(currentMiniItem.url, '_blank'); }
+        function openPlatform() { 
+            if (currentMiniItem?.url) {
+                window.open(currentMiniItem.url, '_blank');
+                showToast('Opening ' + getPlatformName(currentMiniItem.platform || 'youtube') + '...', 'success');
+            }
+        }
+        function openYouTube() { openPlatform(); }
+        
+        function openAparatPopup(url) {
+            const popupW = 1200, popupH = 800;
+            const popupLeft = (screen.width - popupW) / 2;
+            const popupTop = (screen.height - popupH) / 2;
+            window.open(url, 'AparatPlayer', `width=${popupW},height=${popupH},left=${popupLeft},top=${popupTop}`);
+            showToast('Opening Aparat...', 'success');
+        }
 
         function openPopup() {
             if (!currentMiniItem) return;
@@ -1242,19 +1253,22 @@
             const ch = channels.find(c => c.id === item.channelId);
             const platform = item.platform || 'youtube';
             
-            // Aparat - Open directly in new tab
-            if (platform === 'aparat') {
-                window.open(item.url, '_blank');
-                showToast('Opening Aparat in new tab...', 'success');
-                return;
-            }
-            
-            // Get embed URL for other platforms
+            // Get embed URL for all platforms
             let embedHtml = '';
             const ytId = getYouTubeId(item.url);
+            const aparatMatch = item.url.match(/aparat\.com\/v\/([^\/\?]+)/);
+            const aparatLiveMatch = item.url.match(/aparat\.com\/live\/([^\/\?]+)/);
             
             if (platform === 'youtube' && ytId) {
                 embedHtml = `<iframe src="https://www.youtube.com/embed/${ytId}?autoplay=1" allowfullscreen allow="autoplay"></iframe>`;
+            } else if (platform === 'aparat') {
+                // Aparat - Open full page in popup
+                const popupW = 1200, popupH = 800;
+                const popupLeft = (screen.width - popupW) / 2;
+                const popupTop = (screen.height - popupH) / 2;
+                window.open(item.url, 'AparatPlayer', `width=${popupW},height=${popupH},left=${popupLeft},top=${popupTop}`);
+                showToast('Opening Aparat...', 'success');
+                return;
             } else if (platform === 'twitch') {
                 const twitchMatch = item.url.match(/twitch\.tv\/([^\/\?]+)/);
                 if (twitchMatch) {
@@ -1265,7 +1279,9 @@
                 if (kickMatch) {
                     embedHtml = `<iframe src="https://player.kick.com/${kickMatch[1]}" allowfullscreen></iframe>`;
                 }
-            } else {
+            }
+            
+            if (!embedHtml) {
                 embedHtml = `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;cursor:pointer;background:#000" onclick="window.open('${item.url}')"><div style="font-size:48px">▶</div></div>`;
             }
             
