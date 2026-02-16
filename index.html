@@ -679,7 +679,36 @@
             musicList.push({id:'m'+Date.now(),title,artist,url,cover,addedBy:currentUser?.id,addedAt:Date.now()});
             saveData();
             closeModal('addMusicModal');
+            if(musicList.length === 1) playMusic(0);
             showToast('Music added');
+        }
+        function deleteMusic(id) {
+            if(!currentUser?.isAdmin) return showToast('Admin only','error');
+            if(confirm('Delete this music?')) {
+                const index = musicList.findIndex(m => m.id === id);
+                if(index === currentMusicIndex) {
+                    if(musicAudio) {
+                        musicAudio.pause();
+                        musicAudio = null;
+                    }
+                    if(musicList.length > 1) {
+                        if(index === musicList.length - 1) playMusic(0);
+                        else playMusic(index);
+                    } else {
+                        musicPlaying = false;
+                        document.getElementById('musicPlayPause').textContent = '▶️';
+                        document.getElementById('musicTitle').textContent = 'No music playing';
+                        document.getElementById('musicArtist').textContent = 'Add music from admin panel';
+                        document.getElementById('musicProgress').style.width = '0%';
+                        document.getElementById('musicCurrent').textContent = '0:00';
+                        document.getElementById('musicDuration').textContent = '0:00';
+                    }
+                }
+                musicList = musicList.filter(m => m.id !== id);
+                saveData();
+                renderAdminMusic();
+                showToast('Music deleted');
+            }
         }
 
         // Init
@@ -1025,11 +1054,25 @@
         function renderAdminChannels() { document.getElementById('adminChannelsTab').innerHTML=channels.length?channels.map(c=>`<div class="admin-item"><div class="admin-item-left"><div class="channel-avatar">${getAvatar(c)}</div><div><div style="font-weight:500">${c.name}</div></div></div><div><button class="btn btn-sm btn-ghost" onclick="closeModal('adminModal');editChannel('${c.id}')">✏️</button><button class="btn btn-sm btn-danger" onclick="deleteChannel('${c.id}');renderAdminChannels()">🗑️</button></div></div>`).join(''):'<div class="empty-state"><div class="empty-title">Empty</div></div>'; }
         function renderAdminVideos() { const all=[...videos.map(v=>({...v,_type:'video'})),...shorts.map(v=>({...v,_type:'short'})),...lives.map(v=>({...v,_type:'live'}))]; document.getElementById('adminVideosTab').innerHTML=all.length?all.map(v=>`<div class="admin-item"><div class="admin-item-left"><div style="width:40px;height:22px;background:var(--bg-tertiary);border-radius:4px;overflow:hidden"><img src="${v.thumbnail||DEFAULT_THUMB}" style="width:100%;height:100%;object-fit:cover"></div><div><div style="font-weight:500;font-size:12px">${v.title.substring(0,25)}...</div><div style="font-size:10px;color:var(--text-secondary)">${v._type}</div></div></div><div><button class="btn btn-sm btn-ghost" onclick="closeModal('adminModal');editContent('${v.id}','${v._type}')">✏️</button><button class="btn btn-sm btn-danger" onclick="deleteContent('${v.id}','${v._type}');renderAdminVideos()">🗑️</button></div></div>`).join(''):'<div class="empty-state"><div class="empty-title">Empty</div></div>'; }
         function renderAdminUsers() { document.getElementById('adminUsersTab').innerHTML=users.map(u=>`<div class="admin-item"><div class="admin-item-left"><div class="user-avatar" style="background:${u.avatar?'transparent':u.color}">${u.avatar?`<img src="${u.avatar}">`:u.username[0].toUpperCase()}</div><div><div style="font-weight:500">${u.username} ${u.isAdmin?'<span class="badge badge-admin">Admin</span>':''}</div></div></div>${!u.isAdmin?`<button class="btn btn-sm ${u.isBanned?'btn-primary':'btn-danger'}" onclick="toggleBan('${u.id}')">${u.isBanned?'Unban':'Ban'}</button>`:''}</div>`).join(''); }
-        function renderAdminMusic() { document.getElementById('adminMusicTab').innerHTML=musicList.length?musicList.map(m=>`<div class="admin-item"><div class="admin-item-left"><div>🎵</div><div><div style="font-weight:500">${m.title}</div><div style="font-size:10px">${m.artist}</div></div></div><div><button class="btn btn-sm btn-danger" onclick="deleteMusic('${m.id}')">🗑️</button></div></div>`).join(''):'<div class="empty-state"><div class="empty-title">No music</div></div>'; }
+        function renderAdminMusic() { 
+            document.getElementById('adminMusicTab').innerHTML=musicList.length?musicList.map(m=>`
+                <div class="admin-item">
+                    <div class="admin-item-left">
+                        <div>🎵</div>
+                        <div>
+                            <div style="font-weight:500">${m.title}</div>
+                            <div style="font-size:10px">${m.artist}</div>
+                        </div>
+                    </div>
+                    <div>
+                        <button class="btn btn-sm btn-danger" onclick="deleteMusic('${m.id}')">🗑️</button>
+                    </div>
+                </div>
+            `).join(''):'<div class="empty-state"><div class="empty-title">No music</div></div>'; 
+        }
         function renderAdminBanned() { document.getElementById('adminBannedTab').innerHTML=bannedUsers.length?bannedUsers.map(b=>`<div class="admin-item"><div class="admin-item-left"><div>🚫</div><div><div style="font-weight:500">${b.username}</div><div style="font-size:10px">Banned by: ${b.bannedBy} - ${new Date(b.date).toLocaleDateString()}</div></div></div><div><button class="btn btn-sm btn-primary" onclick="unbanUser('${b.id}')">Unban</button></div></div>`).join(''):'<div class="empty-state"><div class="empty-title">No banned users</div></div>'; }
         function toggleBan(id) { const u=users.find(x=>x.id===id); if(u){u.isBanned=!u.isBanned;if(u.isBanned){bannedUsers.push({id:u.id,username:u.username,reason:'Admin ban',bannedBy:currentUser?.username,date:Date.now()});}else{bannedUsers=bannedUsers.filter(b=>b.id!==id);}saveData();renderAdminUsers();renderAdminBanned();showToast(u.isBanned?'Banned':'Unbanned');} }
         function unbanUser(id) { const u=users.find(x=>x.id===id); if(u){u.isBanned=false;bannedUsers=bannedUsers.filter(b=>b.id!==id);saveData();renderAdminUsers();renderAdminBanned();showToast('Unbanned');} }
-        function deleteMusic(id) { if(confirm('Delete music?')){musicList=musicList.filter(m=>m.id!==id);saveData();renderAdminMusic();if(musicAudio){musicAudio.pause();musicAudio=null;musicPlaying=false;document.getElementById('musicTitle').textContent='No music playing';}} }
 
         // Modal helpers
         const openModal=id=>document.getElementById(id).classList.add('active');
